@@ -7,6 +7,7 @@ import { colors } from '../theme/colors';
 import { spacing, borderRadius } from '../theme/spacing';
 import { typography } from '../theme/typography';
 import { reservationService } from '../services/reservationService';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 const SEAT_PRICE = 12.00;
 
@@ -22,6 +23,7 @@ export const SeatsScreen = ({ navigation, route }: any) => {
   const [selectedSeats, setSelectedSeats] = useState<string[]>([]);
   const [occupiedSeats, setOccupiedSeats] = useState<string[]>([]);
   const [loading, setLoading] = useState(true);
+  const insets = useSafeAreaInsets();
 
   useEffect(() => {
     const loadOccupiedSeats = async () => {
@@ -106,21 +108,19 @@ export const SeatsScreen = ({ navigation, route }: any) => {
       >
         
         {/* Header */}
-        <BlurView intensity={80} tint="dark" style={styles.header}>
-          <SafeAreaView>
-            <View style={styles.headerContent}>
-              <View style={styles.logoContainer}>
-                <TouchableOpacity onPress={() => navigation.goBack()} style={{ marginRight: spacing.sm }}>
-                  <Ionicons name="arrow-back" size={24} color={colors.onSurface} />
-                </TouchableOpacity>
-                <Ionicons name="film" size={24} color={colors.primaryContainer} />
-                <Text style={[typography.h2, styles.logoText, { fontSize: 20 }]}>CineNow</Text>
-              </View>
+        <BlurView intensity={80} tint="dark" style={[styles.header, { paddingTop: insets.top }]}>
+          <View style={styles.headerContent}>
+            <View style={styles.logoContainer}>
+              <TouchableOpacity onPress={() => navigation.goBack()} style={{ marginRight: spacing.sm }}>
+                <Ionicons name="arrow-back" size={24} color={colors.onSurface} />
+              </TouchableOpacity>
+              <Ionicons name="film" size={24} color={colors.primaryContainer} />
+              <Text style={[typography.h2, styles.logoText, { fontSize: 20 }]}>CineNow</Text>
             </View>
-          </SafeAreaView>
+          </View>
         </BlurView>
 
-        <ScrollView showsVerticalScrollIndicator={false} contentContainerStyle={styles.scrollContent}>
+        <ScrollView showsVerticalScrollIndicator={false} contentContainerStyle={[styles.scrollContent, { paddingTop: insets.top + 80 }]}>
           
           <View style={styles.infoSection}>
             <Text style={[typography.h1, styles.screenTitle]}>Selecciona tus Asientos</Text>
@@ -165,41 +165,39 @@ export const SeatsScreen = ({ navigation, route }: any) => {
         </ScrollView>
 
         {/* Bottom Action Bar */}
-        <BlurView intensity={80} tint="dark" style={styles.bottomBar}>
-        <SafeAreaView>
-            <View style={styles.bottomBarContent}>
-              <View style={styles.summaryInfo}>
-                <View style={styles.summaryColumn}>
-                  <Text style={[typography.labelCaps, styles.summaryLabel]}>Boletos</Text>
-                  <View style={styles.summaryValueRow}>
-                    <Text style={[typography.h2, styles.summaryValueMain]}>{selectedSeats.length}</Text>
-                    {selectedSeats.length > 0 && (
-                      <Text style={[typography.bodyMd, styles.summaryValueSub]}>
-                        ({selectedSeats.join(', ')})
-                      </Text>
-                    )}
-                  </View>
-                </View>
-
-                <View style={styles.divider} />
-
-                <View style={styles.summaryColumn}>
-                  <Text style={[typography.labelCaps, styles.summaryLabel]}>Precio Total</Text>
-                  <Text style={[typography.h2, styles.summaryPrice]}>${totalPrice.toFixed(2)}</Text>
+        <BlurView intensity={80} tint="dark" style={[styles.bottomBar, { paddingBottom: insets.bottom }]}>
+          <View style={styles.bottomBarContent}>
+            <View style={styles.summaryInfo}>
+              <View style={styles.summaryColumn}>
+                <Text style={[typography.labelCaps, styles.summaryLabel]}>Boletos</Text>
+                <View style={styles.summaryValueRow}>
+                  <Text style={[typography.h2, styles.summaryValueMain]}>{selectedSeats.length}</Text>
+                  {selectedSeats.length > 0 && (
+                    <Text style={[typography.bodyMd, styles.summaryValueSub]}>
+                      ({selectedSeats.join(', ')})
+                    </Text>
+                  )}
                 </View>
               </View>
 
-              <TouchableOpacity 
-                style={[styles.continueBtn, selectedSeats.length === 0 && styles.continueBtnDisabled]}
-                disabled={selectedSeats.length === 0}
-                onPress={handleContinue}
-                activeOpacity={0.9}
-              >
-                <Text style={styles.continueBtnText}>Continuar</Text>
-                <Ionicons name="chevron-forward" size={20} color={colors.onPrimaryContainer} />
-              </TouchableOpacity>
+              <View style={styles.divider} />
+
+              <View style={styles.summaryColumn}>
+                <Text style={[typography.labelCaps, styles.summaryLabel]}>Precio Total</Text>
+                <Text style={[typography.h2, styles.summaryPrice]}>${totalPrice.toFixed(2)}</Text>
+              </View>
             </View>
-          </SafeAreaView>
+
+            <TouchableOpacity 
+              style={[styles.continueBtn, selectedSeats.length === 0 && styles.continueBtnDisabled]}
+              disabled={selectedSeats.length === 0}
+              onPress={handleContinue}
+              activeOpacity={0.9}
+            >
+              <Text style={styles.continueBtnText}>Continuar</Text>
+              <Ionicons name="chevron-forward" size={20} color={colors.onPrimaryContainer} />
+            </TouchableOpacity>
+          </View>
         </BlurView>
 
       </ImageBackground>

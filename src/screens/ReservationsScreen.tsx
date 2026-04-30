@@ -9,11 +9,13 @@ import { typography } from '../theme/typography';
 import { useAuth } from '../hooks/useAuth';
 import { useReservations } from '../hooks/useReservations';
 import { ReservationData } from '../services/types';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 export const ReservationsScreen = ({ navigation }: any) => {
   const { user } = useAuth();
   const { reservations, isLoading, fetchReservations } = useReservations();
   const [refreshing, setRefreshing] = useState(false);
+  const insets = useSafeAreaInsets();
 
   const loadData = () => {
     if (user?.uid) {
@@ -113,10 +115,8 @@ export const ReservationsScreen = ({ navigation }: any) => {
     <View style={styles.container}>
       <StatusBar barStyle="light-content" translucent backgroundColor="transparent" />
       
-      {/* Header */}
-      <BlurView intensity={80} tint="dark" style={styles.header}>
-        <SafeAreaView>
-          <View style={styles.headerContent}>
+      <BlurView intensity={80} tint="dark" style={[styles.header, { paddingTop: insets.top }]}>
+        <View style={styles.headerContent}>
             <View style={styles.logoContainer}>
               <Ionicons name="film" size={24} color={colors.primaryContainer} />
               <Text style={[typography.h2, styles.logoText, { fontSize: 20 }]}>CineNow</Text>
@@ -128,12 +128,11 @@ export const ReservationsScreen = ({ navigation }: any) => {
               />
             </View>
           </View>
-        </SafeAreaView>
       </BlurView>
 
       <ScrollView 
         showsVerticalScrollIndicator={false} 
-        contentContainerStyle={styles.scrollContent}
+        contentContainerStyle={[styles.scrollContent, { paddingTop: insets.top + 80, paddingBottom: insets.bottom + 90 }]}
         refreshControl={
           <RefreshControl refreshing={refreshing} onRefresh={onRefresh} tintColor={colors.primaryContainer} />
         }
@@ -224,9 +223,7 @@ const styles = StyleSheet.create({
     height: '100%',
   },
   scrollContent: {
-    paddingTop: 100, // space for header
     paddingHorizontal: spacing.containerMargin,
-    paddingBottom: 100, // space for bottom tabs
   },
   titleSection: {
     marginBottom: spacing.xl,

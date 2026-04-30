@@ -3,8 +3,10 @@ import { View, Text, StyleSheet, SafeAreaView, TouchableOpacity, ScrollView } fr
 import { Ionicons } from '@expo/vector-icons';
 import { colors } from '../theme/colors';
 import { spacing, borderRadius } from '../theme/spacing';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 export const NotificationsScreen = ({ navigation }: any) => {
+  const insets = useSafeAreaInsets();
   const notifications = [
     {
       id: '1',
@@ -33,8 +35,8 @@ export const NotificationsScreen = ({ navigation }: any) => {
   ];
 
   return (
-    <SafeAreaView style={styles.container}>
-      <View style={styles.header}>
+    <View style={styles.container}>
+      <View style={[styles.header, { paddingTop: insets.top }]}>
         <TouchableOpacity style={styles.backBtn} onPress={() => navigation.goBack()}>
           <Ionicons name="arrow-back" size={24} color={colors.text} />
         </TouchableOpacity>
@@ -42,7 +44,7 @@ export const NotificationsScreen = ({ navigation }: any) => {
         <View style={{ width: 40 }} />
       </View>
 
-      <ScrollView showsVerticalScrollIndicator={false} contentContainerStyle={styles.scrollContent}>
+      <ScrollView showsVerticalScrollIndicator={false} contentContainerStyle={[styles.scrollContent, { paddingBottom: insets.bottom + 90 }]}>
         {notifications.map((notif) => (
           <View key={notif.id} style={[styles.notifCard, !notif.read && styles.notifCardUnread]}>
             <View style={[styles.iconBox, !notif.read && styles.iconBoxUnread]}>
@@ -57,7 +59,7 @@ export const NotificationsScreen = ({ navigation }: any) => {
           </View>
         ))}
       </ScrollView>
-    </SafeAreaView>
+    </View>
   );
 };
 
@@ -92,7 +94,6 @@ const styles = StyleSheet.create({
   },
   scrollContent: {
     padding: spacing.m,
-    paddingBottom: spacing.xxxl,
     gap: spacing.s,
   },
   notifCard: {

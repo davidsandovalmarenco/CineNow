@@ -1,13 +1,15 @@
 import React from 'react';
-import { View, Text, StyleSheet, SafeAreaView, TouchableOpacity, ScrollView, Image, StatusBar } from 'react-native';
+import { View, Text, StyleSheet, SafeAreaView, TouchableOpacity, ScrollView, Image, StatusBar, Alert, ActivityIndicator } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import { BlurView } from 'expo-blur';
 import { colors } from '../theme/colors';
 import { spacing, borderRadius } from '../theme/spacing';
 import { typography } from '../theme/typography';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 export const ConfirmationScreen = ({ navigation, route }: any) => {
   const { ticket } = route.params || {};
+  const insets = useSafeAreaInsets();
 
   // Mock date format
   const formatMockDate = (createdAtSeconds?: number) => {
@@ -20,8 +22,21 @@ export const ConfirmationScreen = ({ navigation, route }: any) => {
   const seats = ticket?.seats?.join(', ') || 'G12, G13, G14';
   const reservationCode = ticket?.reservationCode || `CR-${Math.floor(1000 + Math.random() * 9000)}-X09`;
 
+  const [isDownloading, setIsDownloading] = React.useState(false);
+
   const handleGoHome = () => {
-    navigation.navigate('HomeTab');
+    navigation.reset({
+      index: 0,
+      routes: [{ name: 'MainTabs' }],
+    });
+  };
+
+  const handleDownload = () => {
+    setIsDownloading(true);
+    setTimeout(() => {
+      setIsDownloading(false);
+      Alert.alert('¡Descarga Exitosa!', 'Tu boleto digital ha sido guardado en tu galería.');
+    }, 1500);
   };
 
   return (
@@ -29,21 +44,19 @@ export const ConfirmationScreen = ({ navigation, route }: any) => {
       <StatusBar barStyle="light-content" translucent backgroundColor="transparent" />
 
       {/* Header */}
-      <BlurView intensity={80} tint="dark" style={styles.header}>
-        <SafeAreaView>
-          <View style={styles.headerContent}>
-            <View style={styles.logoContainer}>
-              <Ionicons name="film" size={24} color={colors.primaryContainer} />
-              <Text style={[typography.h2, styles.logoText, { fontSize: 20 }]}>CineNow</Text>
-            </View>
-            <TouchableOpacity onPress={handleGoHome} style={styles.closeBtn}>
-              <Ionicons name="close" size={24} color={colors.onSurface} />
-            </TouchableOpacity>
+      <BlurView intensity={80} tint="dark" style={[styles.header, { paddingTop: insets.top }]}>
+        <View style={styles.headerContent}>
+          <View style={styles.logoContainer}>
+            <Ionicons name="film" size={24} color={colors.primaryContainer} />
+            <Text style={[typography.h2, styles.logoText, { fontSize: 20 }]}>CineNow</Text>
           </View>
-        </SafeAreaView>
+          <TouchableOpacity onPress={handleGoHome} style={styles.closeBtn}>
+            <Ionicons name="close" size={24} color={colors.onSurface} />
+          </TouchableOpacity>
+        </View>
       </BlurView>
 
-      <ScrollView showsVerticalScrollIndicator={false} contentContainerStyle={styles.scrollContent}>
+      <ScrollView showsVerticalScrollIndicator={false} contentContainerStyle={[styles.scrollContent, { paddingTop: insets.top + 80, paddingBottom: insets.bottom + 90 }]}>
         
         <View style={styles.successMessage}>
           <View style={styles.iconCircle}>
@@ -100,7 +113,7 @@ export const ConfirmationScreen = ({ navigation, route }: any) => {
             {/* QR Code Placeholder */}
             <View style={styles.qrContainer}>
               <Image 
-                source={{ uri: 'https://upload.wikimedia.org/wikipedia/commons/d/d0/QR_code_for_mobile_English_Wikipedia.svg' }} 
+                source={{ uri: `https://api.qrserver.com/v1/create-qr-code/?size=150x150&data=${encodeURIComponent(reservationCode)}` }} 
                 style={styles.qrCode} 
               />
               <Text style={styles.qrHint}>Escanea este código en la entrada de la sala.</Text>
@@ -108,9 +121,20 @@ export const ConfirmationScreen = ({ navigation, route }: any) => {
           </View>
         </View>
         
-        <TouchableOpacity style={styles.downloadBtn} activeOpacity={0.8}>
-          <Ionicons name="download-outline" size={20} color={colors.onSurface} />
-          <Text style={styles.downloadBtnText}>Descargar Boleto</Text>
+        <TouchableOpacity 
+          style={styles.downloadBtn} 
+          activeOpacity={0.8}
+          onPress={handleDownload}
+          disabled={isDownloading}
+        >
+          {isDownloading ? (
+            <ActivityIndicator color={colors.onSurface} size="small" />
+          ) : (
+            <>
+              <Ionicons name="download-outline" size={20} color={colors.onSurface} />
+              <Text style={styles.downloadBtnText}>Descargar Boleto</Text>
+            </>
+          )}
         </TouchableOpacity>
 
       </ScrollView>

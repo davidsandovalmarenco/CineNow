@@ -7,6 +7,7 @@ import { colors } from '../theme/colors';
 import { spacing, borderRadius } from '../theme/spacing';
 import { typography } from '../theme/typography';
 import { MovieCard } from '../components/MovieCard';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 // Using the data from the mockup
 const HERO_MOVIE = {
@@ -79,6 +80,7 @@ const { width } = Dimensions.get('window');
 const HERO_HEIGHT = width * 1.5; // Roughly matches the 751px height in mockup
 
 export const HomeScreen = ({ navigation }: any) => {
+  const insets = useSafeAreaInsets();
 
   const handleMoviePress = (movie: any) => {
     navigation.navigate('MovieDetail', { movie });
@@ -89,24 +91,22 @@ export const HomeScreen = ({ navigation }: any) => {
       <StatusBar barStyle="light-content" translucent backgroundColor="transparent" />
       
       {/* TopAppBar */}
-      <BlurView intensity={80} tint="dark" style={styles.header}>
-        <SafeAreaView style={styles.headerSafeArea}>
-          <View style={styles.headerContent}>
-            <View style={styles.logoContainer}>
-              <Ionicons name="film" size={24} color={colors.primaryContainer} />
-              <Text style={[typography.h2, styles.logoText, { fontSize: 20 }]}>CineNow</Text>
-            </View>
-            <TouchableOpacity style={styles.profileBtn} onPress={() => navigation.navigate('ProfileTab')}>
-              <Image 
-                source={{ uri: 'https://lh3.googleusercontent.com/aida-public/AB6AXuB4hJZVmd5HnlS1UNp7P-Sth4b--grJxAB1L09UWN7Ay3vZLB6a962sCmUw0csTsIYvEYG7nIYy-A3p7uZ5GqsORD2JopGnu0SqWQovUmT4xVtSjxbDY-VdqZ07bVNp0UBnnwFC7rVBDjaOUOYP8WlrW01tJ_mCQwfp4_bb85NJicyiKMwTFRZLx8vd82IyKTXvIGQr2xwnFoYt33sWHl7O5BEMyZWpz6CTo9_mQoNSzsVXynBAfBxJ7sLP8TN9gfiswoF13qeUMJI' }} 
-                style={styles.profileImg}
-              />
-            </TouchableOpacity>
+      <BlurView intensity={80} tint="dark" style={[styles.header, { paddingTop: insets.top }]}>
+        <View style={styles.headerContent}>
+          <View style={styles.logoContainer}>
+            <Ionicons name="film" size={24} color={colors.primaryContainer} />
+            <Text style={[typography.h2, styles.logoText, { fontSize: 20 }]}>CineNow</Text>
           </View>
-        </SafeAreaView>
+          <TouchableOpacity style={styles.profileBtn} onPress={() => navigation.navigate('ProfileTab')}>
+            <Image 
+              source={{ uri: 'https://lh3.googleusercontent.com/aida-public/AB6AXuB4hJZVmd5HnlS1UNp7P-Sth4b--grJxAB1L09UWN7Ay3vZLB6a962sCmUw0csTsIYvEYG7nIYy-A3p7uZ5GqsORD2JopGnu0SqWQovUmT4xVtSjxbDY-VdqZ07bVNp0UBnnwFC7rVBDjaOUOYP8WlrW01tJ_mCQwfp4_bb85NJicyiKMwTFRZLx8vd82IyKTXvIGQr2xwnFoYt33sWHl7O5BEMyZWpz6CTo9_mQoNSzsVXynBAfBxJ7sLP8TN9gfiswoF13qeUMJI' }} 
+              style={styles.profileImg}
+            />
+          </TouchableOpacity>
+        </View>
       </BlurView>
 
-      <ScrollView showsVerticalScrollIndicator={false} style={styles.scrollView} contentContainerStyle={styles.scrollContent}>
+      <ScrollView showsVerticalScrollIndicator={false} style={styles.scrollView} contentContainerStyle={[styles.scrollContent, { paddingBottom: insets.bottom + 90 }]}>
         
         {/* Hero Section */}
         <View style={styles.heroContainer}>
@@ -244,9 +244,6 @@ const styles = StyleSheet.create({
     borderBottomWidth: 1,
     borderBottomColor: 'rgba(255, 255, 255, 0.05)',
   },
-  headerSafeArea: {
-    backgroundColor: 'transparent',
-  },
   headerContent: {
     height: 64, // h-16
     flexDirection: 'row',
@@ -278,7 +275,7 @@ const styles = StyleSheet.create({
     flex: 1,
   },
   scrollContent: {
-    paddingBottom: 100, // Space for BottomTab
+    // padding added dynamically
   },
   heroContainer: {
     height: HERO_HEIGHT,

@@ -1,32 +1,43 @@
 import React from 'react';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
-import { HomeStackNavigator } from './HomeStackNavigator';
+import { HomeScreen } from '../screens/HomeScreen';
 import { SearchScreen } from '../screens/SearchScreen';
-import { ReservationsStackNavigator } from './ReservationsStackNavigator';
-import { ProfileStackNavigator } from './ProfileStackNavigator';
+import { ReservationsScreen } from '../screens/ReservationsScreen';
+import { ProfileScreen } from '../screens/ProfileScreen';
 import { colors } from '../theme/colors';
 import { Ionicons } from '@expo/vector-icons';
+import { BlurView } from 'expo-blur';
+import { StyleSheet, Platform } from 'react-native';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 const Tab = createBottomTabNavigator();
 
 export const MainTabs = () => {
+  const insets = useSafeAreaInsets();
   return (
     <Tab.Navigator
       screenOptions={{
         headerShown: false,
         tabBarStyle: {
-          backgroundColor: colors.surface,
-          borderTopColor: colors.border,
-          height: 60,
-          paddingBottom: 8,
+          position: 'absolute',
+          backgroundColor: 'transparent',
+          borderTopColor: 'rgba(255, 255, 255, 0.1)',
+          borderTopWidth: 1,
+          elevation: 0,
+          height: 60 + insets.bottom,
+          paddingBottom: insets.bottom > 0 ? insets.bottom : 10,
+          paddingTop: 10,
         },
-        tabBarActiveTintColor: colors.primary,
-        tabBarInactiveTintColor: colors.textSecondary,
+        tabBarBackground: () => (
+          <BlurView intensity={80} tint="dark" style={StyleSheet.absoluteFill} />
+        ),
+        tabBarActiveTintColor: colors.primaryContainer,
+        tabBarInactiveTintColor: colors.secondary,
       }}
     >
       <Tab.Screen 
         name="HomeTab" 
-        component={HomeStackNavigator} 
+        component={HomeScreen} 
         options={{
           tabBarLabel: 'Cartelera',
           tabBarIcon: ({ color, size }) => <Ionicons name="film-outline" size={size} color={color} />
@@ -42,7 +53,7 @@ export const MainTabs = () => {
       />
       <Tab.Screen 
         name="ReservationsTab" 
-        component={ReservationsStackNavigator} 
+        component={ReservationsScreen} 
         options={{
           tabBarLabel: 'Mis Reservas',
           tabBarIcon: ({ color, size }) => <Ionicons name="ticket-outline" size={size} color={color} />
@@ -50,7 +61,7 @@ export const MainTabs = () => {
       />
       <Tab.Screen 
         name="ProfileTab" 
-        component={ProfileStackNavigator} 
+        component={ProfileScreen} 
         options={{
           tabBarLabel: 'Perfil',
           tabBarIcon: ({ color, size }) => <Ionicons name="person-outline" size={size} color={color} />

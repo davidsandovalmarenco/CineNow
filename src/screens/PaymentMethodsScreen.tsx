@@ -3,8 +3,10 @@ import { View, Text, StyleSheet, SafeAreaView, TouchableOpacity, ScrollView, Ima
 import { Ionicons } from '@expo/vector-icons';
 import { colors } from '../theme/colors';
 import { spacing, borderRadius } from '../theme/spacing';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 export const PaymentMethodsScreen = ({ navigation }: any) => {
+  const insets = useSafeAreaInsets();
   const cards = [
     {
       id: '1',
@@ -64,8 +66,8 @@ export const PaymentMethodsScreen = ({ navigation }: any) => {
   );
 
   return (
-    <SafeAreaView style={styles.container}>
-      <View style={styles.header}>
+    <View style={styles.container}>
+      <View style={[styles.header, { paddingTop: insets.top }]}>
         <TouchableOpacity style={styles.backBtn} onPress={() => navigation.goBack()}>
           <Ionicons name="arrow-back" size={24} color={colors.text} />
         </TouchableOpacity>
@@ -73,7 +75,7 @@ export const PaymentMethodsScreen = ({ navigation }: any) => {
         <View style={{ width: 40 }} />
       </View>
 
-      <ScrollView showsVerticalScrollIndicator={false} contentContainerStyle={styles.scrollContent}>
+      <ScrollView showsVerticalScrollIndicator={false} contentContainerStyle={[styles.scrollContent, { paddingBottom: insets.bottom + 90 }]}>
         {cards.map(renderCard)}
 
         <TouchableOpacity style={styles.addCardBtn}>
@@ -81,7 +83,7 @@ export const PaymentMethodsScreen = ({ navigation }: any) => {
           <Text style={styles.addCardText}>Agregar nueva tarjeta</Text>
         </TouchableOpacity>
       </ScrollView>
-    </SafeAreaView>
+    </View>
   );
 };
 
@@ -116,7 +118,6 @@ const styles = StyleSheet.create({
   },
   scrollContent: {
     padding: spacing.m,
-    paddingBottom: spacing.xxxl,
     gap: spacing.l,
   },
   cardContainer: {
