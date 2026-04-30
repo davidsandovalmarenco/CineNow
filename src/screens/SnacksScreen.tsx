@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { View, Text, StyleSheet, ScrollView, Image, TouchableOpacity, SafeAreaView, ActivityIndicator, StatusBar } from 'react-native';
+import { View, Text, StyleSheet, ScrollView, Image, TouchableOpacity, ActivityIndicator, StatusBar } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import { BlurView } from 'expo-blur';
 import { colors } from '../theme/colors';
@@ -10,7 +10,7 @@ import { SnackData } from '../services/types';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 export const SnacksScreen = ({ navigation, route }: any) => {
-  const { movieId, scheduleId, seats } = route.params || {};
+  const { movie, movieId, scheduleId, seats } = route.params || {};
   const [snacks, setSnacks] = useState<SnackData[]>([]);
   const [cart, setCart] = useState<{ [key: string]: number }>({});
   const [isLoading, setIsLoading] = useState(true);
@@ -52,6 +52,7 @@ export const SnacksScreen = ({ navigation, route }: any) => {
     
     navigation.navigate('Summary', { 
       movieId, 
+      movie,
       scheduleId, 
       seats, 
       snacks: selectedSnacks 

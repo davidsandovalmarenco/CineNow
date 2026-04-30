@@ -1,21 +1,39 @@
 import React, { useState, useEffect } from 'react';
-import { View, Text, StyleSheet, TextInput, ScrollView, TouchableOpacity, FlatList, Image, SafeAreaView, ActivityIndicator } from 'react-native';
+import { View, Text, StyleSheet, TextInput, ScrollView, TouchableOpacity, FlatList, Image, ActivityIndicator } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import { colors } from '../theme/colors';
 import { spacing, borderRadius } from '../theme/spacing';
 import { typography } from '../theme/typography';
 import { movieService } from '../services/movieService';
-import { MovieData } from '../services/types';
 import { BlurView } from 'expo-blur';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
+import {
+  getMovieImage,
+  normalizeReservationMovie,
+  RECENT_MOVIE_LIST,
+  RECENT_MOVIES,
+  ReservationMovie,
+} from '../data/recentMovies';
 
-const CATEGORIES = ['Todos', 'Acción', 'Drama', 'Comedia', 'Terror', 'Sci-Fi', 'Animación'];
+const FALLBACK_MOVIES = RECENT_MOVIE_LIST.map((movie) => normalizeReservationMovie(movie));
+const CATEGORIES = ['Todos', 'Acción', 'Aventura', 'Ciencia Ficción', 'Fantasía', 'Familiar', 'Comedia', 'Horror', 'Thriller'];
+
+const mergeMovies = (remoteMovies: ReservationMovie[]) => {
+  const movieMap = new Map<string, ReservationMovie>();
+
+  [...FALLBACK_MOVIES, ...remoteMovies].forEach((movie) => {
+    const key = (movie.id || movie.title).toLowerCase();
+    movieMap.set(key, movie);
+  });
+
+  return Array.from(movieMap.values());
+};
 
 export const SearchScreen = ({ navigation }: any) => {
   const [search, setSearch] = useState('');
   const [selectedCategory, setSelectedCategory] = useState('Todos');
-  const [allMovies, setAllMovies] = useState<MovieData[]>([]);
-  const [filteredMovies, setFilteredMovies] = useState<MovieData[]>([]);
+  const [allMovies, setAllMovies] = useState<ReservationMovie[]>(FALLBACK_MOVIES);
+  const [filteredMovies, setFilteredMovies] = useState<ReservationMovie[]>(FALLBACK_MOVIES);
   const [loading, setLoading] = useState(true);
   const insets = useSafeAreaInsets();
 
@@ -23,10 +41,14 @@ export const SearchScreen = ({ navigation }: any) => {
     const fetchMovies = async () => {
       try {
         const data = await movieService.getAllMovies();
-        setAllMovies(data);
-        setFilteredMovies(data);
+        const firebaseMovies = data.map((movie) => normalizeReservationMovie(movie));
+        const nextMovies = mergeMovies(firebaseMovies);
+        setAllMovies(nextMovies);
+        setFilteredMovies(nextMovies);
       } catch (error) {
         console.error('Error fetching movies for search:', error);
+        setAllMovies(FALLBACK_MOVIES);
+        setFilteredMovies(FALLBACK_MOVIES);
       } finally {
         setLoading(false);
       }
@@ -45,11 +67,8 @@ export const SearchScreen = ({ navigation }: any) => {
     setFilteredMovies(filtered);
   }, [search, selectedCategory, allMovies]);
 
-  const handleMoviePress = (movieId: string) => {
-    navigation.navigate('HomeTab', {
-      screen: 'MovieDetail',
-      params: { movieId }
-    });
+  const handleMoviePress = (movie: ReservationMovie) => {
+    navigation.navigate('MovieDetail', { movie });
   };
 
   return (
@@ -75,8 +94,18 @@ export const SearchScreen = ({ navigation }: any) => {
       </BlurView>
 
       <ScrollView showsVerticalScrollIndicator={false} contentContainerStyle={[styles.scrollContent, { paddingTop: insets.top + 80, paddingBottom: insets.bottom + 90 }]}>
+        <View style={styles.heroSection}>
+          <Text style={[typography.h1, styles.heroTitle]}>Explorar cartelera</Text>
+          <Text style={[typography.bodyMd, styles.heroSubtitle]}>
+            Encuentra estrenos recientes, formatos premium y funciones disponibles.
+          </Text>
+        </View>
+
         <View style={styles.section}>
-          <Text style={[typography.h3, styles.sectionTitle]}>Categorías</Text>
+          <View style={styles.sectionHeader}>
+            <Text style={[typography.h3, styles.sectionTitle]}>Categorías</Text>
+            <Text style={styles.catalogCount}>{allMovies.length} películas</Text>
+          </View>
           <ScrollView horizontal showsHorizontalScrollIndicator={false} contentContainerStyle={styles.categoriesScroll}>
             {CATEGORIES.map(cat => (
               <TouchableOpacity
@@ -91,7 +120,10 @@ export const SearchScreen = ({ navigation }: any) => {
         </View>
 
         <View style={[styles.section, { flex: 1 }]}>
-          <Text style={[typography.h3, styles.sectionTitle]}>Resultados para "{selectedCategory}"</Text>
+          <View style={styles.sectionHeader}>
+            <Text style={[typography.h3, styles.sectionTitle]}>{selectedCategory === 'Todos' ? 'Todas las películas' : selectedCategory}</Text>
+            <Text style={styles.catalogCount}>{filteredMovies.length} resultados</Text>
+          </View>
           {loading ? (
             <View style={styles.centered}>
               <ActivityIndicator size="large" color={colors.primaryContainer} />
@@ -113,18 +145,22 @@ export const SearchScreen = ({ navigation }: any) => {
               renderItem={({ item }) => (
                 <TouchableOpacity 
                   style={styles.resultCard} 
-                  onPress={() => handleMoviePress(item.id || '')}
+                  onPress={() => handleMoviePress(item)}
                   activeOpacity={0.8}
                 >
                   <View style={styles.resultImageContainer}>
-                    <Image source={{ uri: item.posterUrl }} style={styles.resultPoster} />
+                    <Image source={{ uri: getMovieImage(item) }} style={styles.resultPoster} />
                     <View style={styles.ratingBadge}>
                       <Text style={styles.ratingText}>{item.rating}</Text>
                     </View>
                   </View>
                   <View style={styles.resultInfo}>
                     <Text style={[typography.bodyLg, styles.resultTitle]} numberOfLines={1}>{item.title}</Text>
-                    <Text style={[typography.bodyMd, styles.resultGenre]}>{item.genre ? item.genre.split(' ')[0] : ''}</Text>
+                    <Text style={[typography.bodyMd, styles.resultGenre]} numberOfLines={1}>{item.genre}</Text>
+                    <View style={styles.resultMetaRow}>
+                      <Text style={styles.metaChip}>{item.classification || 'PG-13'}</Text>
+                      <Text style={styles.resultDuration}>{item.duration}</Text>
+                    </View>
                   </View>
                 </TouchableOpacity>
               )}
@@ -137,12 +173,12 @@ export const SearchScreen = ({ navigation }: any) => {
           <View style={styles.recentList}>
             <TouchableOpacity style={styles.recentItem}>
               <Ionicons name="time-outline" size={20} color={colors.secondary} />
-              <Text style={[typography.bodyMd, styles.recentText]}>Avatar: The Way of Water</Text>
+              <Text style={[typography.bodyMd, styles.recentText]}>{RECENT_MOVIES.superman.title}</Text>
               <Ionicons name="close" size={20} color={colors.secondary} />
             </TouchableOpacity>
             <TouchableOpacity style={styles.recentItem}>
               <Ionicons name="time-outline" size={20} color={colors.secondary} />
-              <Text style={[typography.bodyMd, styles.recentText]}>The Batman</Text>
+              <Text style={[typography.bodyMd, styles.recentText]}>{RECENT_MOVIES.jurassic.title}</Text>
               <Ionicons name="close" size={20} color={colors.secondary} />
             </TouchableOpacity>
           </View>
@@ -188,13 +224,41 @@ const styles = StyleSheet.create({
   scrollContent: {
     // padding controlled dynamically
   },
+  heroSection: {
+    paddingHorizontal: spacing.containerMargin,
+    paddingTop: spacing.lg,
+    paddingBottom: spacing.sm,
+  },
+  heroTitle: {
+    color: colors.onSurface,
+    marginBottom: spacing.xs,
+  },
+  heroSubtitle: {
+    color: colors.secondary,
+    maxWidth: 320,
+  },
   section: {
     marginTop: spacing.xl,
     paddingHorizontal: spacing.containerMargin,
   },
+  sectionHeader: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+    gap: spacing.md,
+    marginBottom: spacing.md,
+  },
   sectionTitle: {
     color: '#fff',
-    marginBottom: spacing.md,
+    marginBottom: 0,
+    flexShrink: 1,
+  },
+  catalogCount: {
+    color: colors.primaryContainer,
+    fontFamily: 'Inter',
+    fontSize: 12,
+    fontWeight: '700',
+    textTransform: 'uppercase',
   },
   categoriesScroll: {
     gap: spacing.sm,
@@ -267,6 +331,29 @@ const styles = StyleSheet.create({
   },
   resultGenre: {
     color: colors.onSurfaceVariant,
+  },
+  resultMetaRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: spacing.xs,
+    marginTop: spacing.xs,
+  },
+  metaChip: {
+    overflow: 'hidden',
+    color: colors.onPrimaryContainer,
+    backgroundColor: colors.primaryContainer,
+    borderRadius: borderRadius.sm,
+    paddingHorizontal: 6,
+    paddingVertical: 2,
+    fontFamily: 'Inter',
+    fontSize: 10,
+    fontWeight: '700',
+  },
+  resultDuration: {
+    color: colors.secondary,
+    fontFamily: 'Inter',
+    fontSize: 12,
+    fontWeight: '600',
   },
   recentList: {
     gap: spacing.sm,

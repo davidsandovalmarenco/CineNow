@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { View, Text, StyleSheet, Image, ScrollView, TouchableOpacity, SafeAreaView, StatusBar, Dimensions } from 'react-native';
+import { View, Text, StyleSheet, Image, ScrollView, TouchableOpacity, StatusBar, Dimensions } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import { LinearGradient } from 'expo-linear-gradient';
 import { BlurView } from 'expo-blur';
@@ -7,12 +7,7 @@ import { colors } from '../theme/colors';
 import { spacing, borderRadius } from '../theme/spacing';
 import { typography } from '../theme/typography';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
-
-const MOCK_MOVIE = {
-  title: 'Duna: Parte Dos',
-  description: 'Sigue el viaje mítico de Paul Atreides mientras se une a Chani y los Fremen en una guerra de venganza contra los conspiradores.',
-  backdropUrl: 'https://lh3.googleusercontent.com/aida-public/AB6AXuCrbZAwZIt5d77ZgYuGwOfRc3BsypkP7UcOn21B6xQm1dcSiR3Asju2i8KzBcfXWDH7Hy3pvDdk12K4PW1lk5gDG44mZjN4jPIjykywVBcvoAwLIegqpxnfS2IrJfuhK0A2cjhtktGBvhFZVcJzdTVuQXLVX3_WoAHJs2fGLrdNW0xqFtyMSCBrRsuaVdf93h0tRx_cUWfNlPYH4m618Bb28ZjyVChnMLlVblcPIF1nvhW2PfSzeK2nfDATSPdRs_OG34bXu0C_dqM',
-};
+import { getMovieImage, normalizeReservationMovie } from '../data/recentMovies';
 
 const DATES = [
   { id: '1', dayName: 'HOY', dayNum: '14', month: 'OCT' },
@@ -32,16 +27,21 @@ const SHOWTIMES = [
 
 const { width } = Dimensions.get('window');
 
-export const ScheduleScreen = ({ navigation }: any) => {
+export const ScheduleScreen = ({ navigation, route }: any) => {
   const [selectedDate, setSelectedDate] = useState(DATES[0].id);
   const insets = useSafeAreaInsets();
+  const movie = normalizeReservationMovie(route.params?.movie);
 
   const handleBack = () => {
     navigation.goBack();
   };
 
-  const handleSelectTime = () => {
-    navigation.navigate('Seats');
+  const handleSelectTime = (scheduleId: string) => {
+    navigation.navigate('Seats', {
+      movie,
+      movieId: movie.id,
+      scheduleId,
+    });
   };
 
   return (
@@ -75,7 +75,7 @@ export const ScheduleScreen = ({ navigation }: any) => {
         {/* Hero Section */}
         <View style={styles.heroContainer}>
           <Image 
-            source={{ uri: MOCK_MOVIE.backdropUrl }} 
+            source={{ uri: getMovieImage(movie) }} 
             style={[styles.heroImage, { opacity: 0.8 }]} // To simulate grayscale/contrast somewhat
           />
           <LinearGradient
@@ -92,8 +92,8 @@ export const ScheduleScreen = ({ navigation }: any) => {
                 <Text style={styles.badgeTextSecondary}>PG-13</Text>
               </BlurView>
             </View>
-            <Text style={[typography.h1, styles.heroTitle]}>{MOCK_MOVIE.title}</Text>
-            <Text style={[typography.bodyMd, styles.heroDesc]}>{MOCK_MOVIE.description}</Text>
+            <Text style={[typography.h1, styles.heroTitle]}>{movie.title}</Text>
+            <Text style={[typography.bodyMd, styles.heroDesc]}>{movie.description}</Text>
           </View>
         </View>
 
@@ -160,7 +160,7 @@ export const ScheduleScreen = ({ navigation }: any) => {
                 {show.available ? (
                   <TouchableOpacity 
                     style={styles.btnSelect}
-                    onPress={handleSelectTime}
+                    onPress={() => handleSelectTime(show.id)}
                     activeOpacity={0.8}
                   >
                     <Text style={styles.btnSelectText}>Seleccionar</Text>

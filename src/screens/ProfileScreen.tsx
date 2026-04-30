@@ -1,5 +1,5 @@
 import React from 'react';
-import { View, Text, StyleSheet, ScrollView, Image, TouchableOpacity, SafeAreaView, ActivityIndicator, StatusBar } from 'react-native';
+import { View, Text, StyleSheet, ScrollView, Image, TouchableOpacity, ActivityIndicator, StatusBar, Alert } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import { BlurView } from 'expo-blur';
 import { colors } from '../theme/colors';
@@ -7,8 +7,8 @@ import { spacing, borderRadius } from '../theme/spacing';
 import { typography } from '../theme/typography';
 import { useAuth } from '../hooks/useAuth';
 import { seedService } from '../services/seedService';
-import { Alert } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
+import { RECENT_MOVIES } from '../data/recentMovies';
 
 export const ProfileScreen = ({ navigation }: any) => {
   const { user, logout } = useAuth();
@@ -27,7 +27,7 @@ export const ProfileScreen = ({ navigation }: any) => {
     setIsSeeding(true);
     try {
       await seedService.seedAll();
-      Alert.alert('Éxito', 'Base de datos poblada correctamente. Reinicia la app para ver los cambios.');
+      Alert.alert('Éxito', 'Cartelera respaldada en Firebase. Home y Buscar ya pueden leer estas películas.');
     } catch (error: any) {
       Alert.alert('Error', error.message || 'Error al poblar la base de datos');
     } finally {
@@ -134,13 +134,13 @@ export const ProfileScreen = ({ navigation }: any) => {
             <View style={styles.historyCard}>
               <View style={styles.historyPoster}>
                 <Image 
-                  source={{ uri: 'https://lh3.googleusercontent.com/aida-public/AB6AXuACFmgFTZiRAGqZK-gLdLcFOochG61PWmxZarZXlgQpN_QA7lYQ9vEHoxfNCjJ1I9uNjvgXmFa7HeYOQ9XszR-xkSFiwqGuY5rqM9vMvtfNvNSFTB_X5x472HYlgR_Cf2xKXJos_7CcZxJW-NfLgHg0YEZ4sd-h8NIvck61VyXAJtftKmrj6nP-IxtJhov978Zr_LmRUDkNLSpcG5CblqE-V8K-5qflLLb4RjYDJpeOq_rEqAoNWTSgFo_5xHEDkj1zWZKRG4m3luY' }} 
+                  source={{ uri: RECENT_MOVIES.fantasticFour.posterUrl }} 
                   style={{ width: '100%', height: '100%' }} 
                 />
               </View>
               <View style={styles.historyContent}>
                 <View>
-                  <Text style={[typography.bodyLg, styles.historyTitle]} numberOfLines={1}>Neon Genesis: Origin</Text>
+                  <Text style={[typography.bodyLg, styles.historyTitle]} numberOfLines={1}>{RECENT_MOVIES.fantasticFour.title}</Text>
                   <Text style={[typography.bodyMd, styles.historyMeta]}>14 Oct, 2023 • Sala 4</Text>
                 </View>
                 <View style={styles.completedBadge}>
@@ -152,13 +152,13 @@ export const ProfileScreen = ({ navigation }: any) => {
             <View style={styles.historyCard}>
               <View style={styles.historyPoster}>
                 <Image 
-                  source={{ uri: 'https://lh3.googleusercontent.com/aida-public/AB6AXuCz0d_dBp0pHiP6q6GOHHzVADyOmDnGr4a_EkPNQTWnPTn_BHWKVChnuvJUMr-aNixkICTBsdafxnuaMjNrpfuMrLCn3SJyjC5P2VbEQyLpmjjfqNtPb02T6nMcZMYQmzhTHZZjt0IGAxurbRjskN5XX6Ov_MRopSCUYFF34PQpH7BX95WrH6gKuot48taeczaKXOKBas_OMVDYg-aN3c2-JocDSHr7Erm0bohYit3k03PeL4th61U5iCivHor_dqo3GdP7B2H7TWA' }} 
+                  source={{ uri: RECENT_MOVIES.missionImpossible.posterUrl }} 
                   style={{ width: '100%', height: '100%' }} 
                 />
               </View>
               <View style={styles.historyContent}>
                 <View>
-                  <Text style={[typography.bodyLg, styles.historyTitle]} numberOfLines={1}>Interstellar Void</Text>
+                  <Text style={[typography.bodyLg, styles.historyTitle]} numberOfLines={1}>{RECENT_MOVIES.missionImpossible.title}</Text>
                   <Text style={[typography.bodyMd, styles.historyMeta]}>28 Sep, 2023 • IMAX</Text>
                 </View>
                 <View style={styles.completedBadge}>
@@ -183,7 +183,7 @@ export const ProfileScreen = ({ navigation }: any) => {
             ) : (
               <>
                 <Ionicons name="cloud-upload" size={20} color={colors.primaryContainer} />
-                <Text style={styles.logoutText}>Poblar Base de Datos</Text>
+                <Text style={styles.logoutText}>Respaldar cartelera en Firebase</Text>
               </>
             )}
           </TouchableOpacity>

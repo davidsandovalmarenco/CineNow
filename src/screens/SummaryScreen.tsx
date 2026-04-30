@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { View, Text, StyleSheet, ScrollView, Image, TouchableOpacity, SafeAreaView, ActivityIndicator, StatusBar, Alert } from 'react-native';
+import { View, Text, StyleSheet, ScrollView, Image, TouchableOpacity, ActivityIndicator, StatusBar, Alert } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import { BlurView } from 'expo-blur';
 import { colors } from '../theme/colors';
@@ -7,20 +7,24 @@ import { spacing, borderRadius } from '../theme/spacing';
 import { typography } from '../theme/typography';
 import { reservationService } from '../services/reservationService';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
+import { getMovieImage, normalizeReservationMovie } from '../data/recentMovies';
+import { useAuth } from '../hooks/useAuth';
 const SEAT_PRICE = 12.50; // Use price from mockup ($12.50 vs previous $12.00 but let's stick to $12.50)
 
 export const SummaryScreen = ({ navigation, route }: any) => {
-  const { movieId, scheduleId, seats = [], snacks = [] } = route.params || {};
+  const { movie: routeMovie, movieId, scheduleId, seats = [], snacks = [] } = route.params || {};
   const [isConfirming, setIsConfirming] = useState(false);
   const insets = useSafeAreaInsets();
+  const { user } = useAuth();
+  const movie = normalizeReservationMovie(routeMovie);
 
   // Mock movie info for summary (since we only pass IDs in navigation for now, 
   // ideally we'd fetch this or pass full objects, but let's hardcode for UI replication)
   const MOCK_MOVIE = {
-    title: 'Crónicas de Marte: El Despertar',
-    duration: '145 min',
-    genre: 'Ciencia Ficción, Drama',
-    posterUrl: 'https://lh3.googleusercontent.com/aida-public/AB6AXuD-UpyaCeWA8zn2OLnKjaD02IGEH7hemI9rysztBxiQ3UTRjKfna7dnl8owYkHZ_gFSxTWEH4IlRcIc-5wYYK3O_2Y0Uy3eauQUb9T9KNVts3IdPCw9ZrsYdDin8dKJZ_OReS2NxL8z0_WO7XlvFxsNk9dDgkqH1qaXUgxivCX8Zj9AYrvMWt_OUWmj-h6xZHEnfjaIswfUU7ghQNxzePTLwFcOzKCmRbzVMIhmRJTL9V4H9qu-6jLohZh4roVrCuggU8N_oyFA9uA',
+    title: movie.title,
+    duration: movie.duration,
+    genre: movie.genre,
+    posterUrl: getMovieImage(movie),
     dateStr: 'Vie, 24 Mayo',
     timeStr: '20:30 PM',
     room: 'SALA 04',
@@ -37,13 +41,17 @@ export const SummaryScreen = ({ navigation, route }: any) => {
   ];
 
   const handleConfirm = async () => {
+    if (!user?.uid) {
+      Alert.alert('Inicia sesión', 'Necesitas iniciar sesión para confirmar tu reserva.');
+      return;
+    }
+
     setIsConfirming(true);
+    const reservationCode = `CR-${Math.floor(1000 + Math.random() * 9000)}-X09`;
     try {
-      // In a real app, we'd wait for user auth, then create reservation
-      const userId = 'anonymous_user'; 
       await reservationService.createReservation({
-        userId,
-        movieId: movieId || 'hero',
+        userId: user.uid,
+        movieId: movieId || movie.id || 'hero',
         movieTitle: MOCK_MOVIE.title,
         cinemaId: 'cinema1',
         scheduleId: scheduleId || 'mockSchedule',
@@ -52,19 +60,27 @@ export const SummaryScreen = ({ navigation, route }: any) => {
         subtotal: grandTotal,
         total: grandTotal,
         status: 'active',
-        reservationCode: `CR-${Math.floor(1000 + Math.random() * 9000)}-X09`
+        reservationCode,
       });
       
       // Simulate network delay
       setTimeout(() => {
         setIsConfirming(false);
-        navigation.navigate('Confirmation');
+        navigation.navigate('Confirmation', {
+          ticket: {
+            movieId: movieId || movie.id || 'hero',
+            movieTitle: MOCK_MOVIE.title,
+            moviePosterUrl: MOCK_MOVIE.posterUrl,
+            seats,
+            reservationCode,
+          },
+        });
       }, 1000);
       
     } catch (error) {
       console.error('Error confirming reservation:', error);
       setIsConfirming(false);
-      Alert.alert('Error', 'Hubo un problema procesando tu reserva.');
+      Alert.alert('Error de permisos', 'No se pudo confirmar la reserva. Verifica que sigues con sesión iniciada.');
     }
   };
 

@@ -1,11 +1,12 @@
 import React from 'react';
-import { View, Text, StyleSheet, SafeAreaView, TouchableOpacity, ScrollView, Image, StatusBar, Alert, ActivityIndicator } from 'react-native';
+import { View, Text, StyleSheet, TouchableOpacity, ScrollView, Image, StatusBar, Alert, ActivityIndicator } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import { BlurView } from 'expo-blur';
 import { colors } from '../theme/colors';
 import { spacing, borderRadius } from '../theme/spacing';
 import { typography } from '../theme/typography';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
+import { RECENT_MOVIES } from '../data/recentMovies';
 
 export const ConfirmationScreen = ({ navigation, route }: any) => {
   const { ticket } = route.params || {};
@@ -18,7 +19,8 @@ export const ConfirmationScreen = ({ navigation, route }: any) => {
     return d.toLocaleDateString('es-ES', { month: 'short', day: 'numeric' }) + ', 20:30 PM';
   };
 
-  const movieTitle = ticket?.movieTitle || 'Crónicas de Marte: El Despertar';
+  const movieTitle = ticket?.movieTitle || RECENT_MOVIES.superman.title;
+  const moviePosterUrl = ticket?.moviePosterUrl || RECENT_MOVIES.superman.posterUrl;
   const seats = ticket?.seats?.join(', ') || 'G12, G13, G14';
   const reservationCode = ticket?.reservationCode || `CR-${Math.floor(1000 + Math.random() * 9000)}-X09`;
 
@@ -70,7 +72,7 @@ export const ConfirmationScreen = ({ navigation, route }: any) => {
           {/* Top Section */}
           <View style={styles.ticketTop}>
             <Image 
-              source={{ uri: 'https://lh3.googleusercontent.com/aida-public/AB6AXuD-UpyaCeWA8zn2OLnKjaD02IGEH7hemI9rysztBxiQ3UTRjKfna7dnl8owYkHZ_gFSxTWEH4IlRcIc-5wYYK3O_2Y0Uy3eauQUb9T9KNVts3IdPCw9ZrsYdDin8dKJZ_OReS2NxL8z0_WO7XlvFxsNk9dDgkqH1qaXUgxivCX8Zj9AYrvMWt_OUWmj-h6xZHEnfjaIswfUU7ghQNxzePTLwFcOzKCmRbzVMIhmRJTL9V4H9qu-6jLohZh4roVrCuggU8N_oyFA9uA' }} 
+              source={{ uri: moviePosterUrl }} 
               style={styles.poster} 
               resizeMode="cover"
             />

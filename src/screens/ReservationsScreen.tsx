@@ -1,5 +1,5 @@
-import React, { useState } from 'react';
-import { View, Text, StyleSheet, ScrollView, Image, ActivityIndicator, RefreshControl, SafeAreaView, TouchableOpacity, StatusBar } from 'react-native';
+import React, { useCallback, useState } from 'react';
+import { View, Text, StyleSheet, ScrollView, Image, ActivityIndicator, RefreshControl, TouchableOpacity, StatusBar } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import { useFocusEffect } from '@react-navigation/native';
 import { BlurView } from 'expo-blur';
@@ -10,6 +10,7 @@ import { useAuth } from '../hooks/useAuth';
 import { useReservations } from '../hooks/useReservations';
 import { ReservationData } from '../services/types';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
+import { RECENT_MOVIES } from '../data/recentMovies';
 
 export const ReservationsScreen = ({ navigation }: any) => {
   const { user } = useAuth();
@@ -17,16 +18,16 @@ export const ReservationsScreen = ({ navigation }: any) => {
   const [refreshing, setRefreshing] = useState(false);
   const insets = useSafeAreaInsets();
 
-  const loadData = () => {
+  const loadData = useCallback(() => {
     if (user?.uid) {
       fetchReservations(user.uid);
     }
-  };
+  }, [fetchReservations, user?.uid]);
 
   useFocusEffect(
-    React.useCallback(() => {
+    useCallback(() => {
       loadData();
-    }, [user])
+    }, [loadData])
   );
 
   const onRefresh = async () => {
@@ -48,7 +49,7 @@ export const ReservationsScreen = ({ navigation }: any) => {
     <View key={item.id} style={styles.activeCard}>
       <View style={styles.activePosterWrapper}>
         <Image 
-          source={{ uri: 'https://lh3.googleusercontent.com/aida-public/AB6AXuCiOwmGY366APgoqfZBqHVRkgsEt770852of4ifU5DLQ6sW2qq141mStouFsAuUf4IKj5pQGfVe3VX-7TaAcm7ZwnbMmFL5Xx5k_7vwYDy1WIS1UgRo4xK-dVgBS796FNx2W757YF4rtXewgfKRCuC4JlqzjPOgCPHKlt8K9d1HqdPHC43-NbZj8KkYE0Yoyc1tuokmFl39gqj80ytINYmnUv9-MV2WpHTtaTPk2EGORxAJHWyxrqymjNvxid6GX532omjxJcL3r-I' }} 
+          source={{ uri: RECENT_MOVIES.superman.posterUrl }} 
           style={styles.poster} 
         />
       </View>
@@ -56,7 +57,7 @@ export const ReservationsScreen = ({ navigation }: any) => {
         <View>
           <View style={styles.cardHeader}>
             <Text style={[typography.h3, styles.movieTitle]} numberOfLines={1}>
-              {item.movieId === 'hero' ? 'Dune: Part Two' : (item.movieTitle || 'Película CineNow')}
+              {item.movieId === 'hero' ? RECENT_MOVIES.superman.title : (item.movieTitle || 'Película CineNow')}
             </Text>
             <Text style={[typography.labelCaps, styles.activeBadge]}>{item.status.toUpperCase()}</Text>
           </View>
@@ -93,13 +94,13 @@ export const ReservationsScreen = ({ navigation }: any) => {
     <View key={item.id} style={styles.pastCard}>
       <View style={styles.pastPosterWrapper}>
         <Image 
-          source={{ uri: 'https://lh3.googleusercontent.com/aida-public/AB6AXuDbnkm_-U3Dggc9Ir2VlNhPRdVnhE9dZegTkHxrgeNanV81UkU3bPrrQYJUHLpmhHhu8UV1MXs61fW9wPEQODsKDVEDLhS7qs4xXza6gvPQ5AUMK-nA1UhSUCiidQPavT4WVB0O4GirlZfZ4NRuKzTmQ8f2ERhAulpdfROaIhMbOwwxY2J_uezUP-1RZWIqtFZOKLKnONdCS9XLj0r35Zlrm8rj8Wc5C6-hT9Xtv2QV7Hmc47yd8Pl0ydlpAyOxPgkKyrVhZQXrtMk' }} 
+          source={{ uri: RECENT_MOVIES.jurassic.posterUrl }} 
           style={styles.poster} 
         />
       </View>
       <View style={styles.pastContent}>
         <Text style={[typography.bodyLg, styles.pastTitle]} numberOfLines={1}>
-          {item.movieId === 'hero' ? 'The Batman' : item.movieId}
+          {item.movieId === 'hero' ? RECENT_MOVIES.jurassic.title : item.movieId}
         </Text>
         <Text style={[typography.bodyMd, styles.pastMeta]}>
           {formatMockDate((item.createdAt as any)?.seconds)} • {item.seats?.length || 0} Seats
