@@ -6,12 +6,13 @@ import { colors } from '../theme/colors';
 import { spacing, borderRadius } from '../theme/spacing';
 import { typography } from '../theme/typography';
 import { reservationService } from '../services/reservationService';
-
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
 const SEAT_PRICE = 12.50; // Use price from mockup ($12.50 vs previous $12.00 but let's stick to $12.50)
 
 export const SummaryScreen = ({ navigation, route }: any) => {
   const { movieId, scheduleId, seats = [], snacks = [] } = route.params || {};
   const [isConfirming, setIsConfirming] = useState(false);
+  const insets = useSafeAreaInsets();
 
   // Mock movie info for summary (since we only pass IDs in navigation for now, 
   // ideally we'd fetch this or pass full objects, but let's hardcode for UI replication)
@@ -72,21 +73,19 @@ export const SummaryScreen = ({ navigation, route }: any) => {
       <StatusBar barStyle="light-content" translucent backgroundColor="transparent" />
 
       {/* Header */}
-      <BlurView intensity={80} tint="dark" style={styles.header}>
-        <SafeAreaView>
-          <View style={styles.headerContent}>
-            <View style={styles.logoContainer}>
-              <Ionicons name="film" size={24} color={colors.primaryContainer} />
-              <Text style={[typography.h2, styles.logoText, { fontSize: 20 }]}>CineNow</Text>
-            </View>
-            <View style={styles.profileBtn}>
-              <Ionicons name="person" size={16} color={colors.onSurface} />
-            </View>
+      <BlurView intensity={80} tint="dark" style={[styles.header, { paddingTop: insets.top }]}>
+        <View style={styles.headerContent}>
+          <View style={styles.logoContainer}>
+            <Ionicons name="film" size={24} color={colors.primaryContainer} />
+            <Text style={[typography.h2, styles.logoText, { fontSize: 20 }]}>CineNow</Text>
           </View>
-        </SafeAreaView>
+          <View style={styles.profileBtn}>
+            <Ionicons name="person" size={16} color={colors.onSurface} />
+          </View>
+        </View>
       </BlurView>
 
-      <ScrollView showsVerticalScrollIndicator={false} contentContainerStyle={styles.scrollContent}>
+      <ScrollView showsVerticalScrollIndicator={false} contentContainerStyle={[styles.scrollContent, { paddingTop: insets.top + 80 }]}>
         
         {/* Title Section */}
         <View style={styles.titleSection}>

@@ -2,7 +2,7 @@ import React from 'react';
 import { NavigationContainer } from '@react-navigation/native';
 import { View, ActivityIndicator } from 'react-native';
 import { AuthNavigator } from './AuthNavigator';
-import { MainTabs } from './MainTabs';
+import { RootStackNavigator } from './RootStackNavigator';
 import { useAuth } from '../hooks/useAuth';
 import { colors } from '../theme/colors';
 
@@ -19,7 +19,7 @@ export const AppNavigator = () => {
 
   return (
     <NavigationContainer>
-      {user ? <MainTabs /> : <AuthNavigator />}
+      {user ? <RootStackNavigator /> : <AuthNavigator />}
     </NavigationContainer>
   );
 };

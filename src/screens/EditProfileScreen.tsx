@@ -7,10 +7,12 @@ import { spacing, borderRadius } from '../theme/spacing';
 import { typography } from '../theme/typography';
 import { useAuth } from '../hooks/useAuth';
 import { userService } from '../services/userService';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 export const EditProfileScreen = ({ navigation }: any) => {
   const { user } = useAuth();
   const [loading, setLoading] = useState(false);
+  const insets = useSafeAreaInsets();
   
   const [formData, setFormData] = useState({
     fullName: user?.displayName || 'Alejandro Martínez',
@@ -47,19 +49,17 @@ export const EditProfileScreen = ({ navigation }: any) => {
     <View style={styles.container}>
       <StatusBar barStyle="light-content" translucent backgroundColor="transparent" />
 
-      <BlurView intensity={80} tint="dark" style={styles.header}>
-        <SafeAreaView>
-          <View style={styles.headerContent}>
-            <TouchableOpacity onPress={() => navigation.goBack()} style={styles.backBtn} activeOpacity={0.8}>
-              <Ionicons name="arrow-back" size={24} color={colors.onSurface} />
-            </TouchableOpacity>
-            <Text style={[typography.h2, styles.headerTitle]}>Editar Perfil</Text>
-            <View style={{ width: 40 }} />
-          </View>
-        </SafeAreaView>
+      <BlurView intensity={80} tint="dark" style={[styles.header, { paddingTop: insets.top }]}>
+        <View style={styles.headerContent}>
+          <TouchableOpacity onPress={() => navigation.goBack()} style={styles.backBtn} activeOpacity={0.8}>
+            <Ionicons name="arrow-back" size={24} color={colors.onSurface} />
+          </TouchableOpacity>
+          <Text style={[typography.h2, styles.headerTitle]}>Editar Perfil</Text>
+          <View style={{ width: 40 }} />
+        </View>
       </BlurView>
 
-      <ScrollView showsVerticalScrollIndicator={false} contentContainerStyle={styles.scrollContent}>
+      <ScrollView showsVerticalScrollIndicator={false} contentContainerStyle={[styles.scrollContent, { paddingTop: insets.top + 80, paddingBottom: insets.bottom + 90 }]}>
         <View style={styles.avatarSection}>
           <View style={styles.avatarWrapper}>
             <Image 
@@ -172,9 +172,7 @@ const styles = StyleSheet.create({
     fontSize: 20,
   },
   scrollContent: {
-    paddingTop: 100, // header space
     paddingHorizontal: spacing.containerMargin,
-    paddingBottom: spacing.xxxl,
   },
   avatarSection: {
     alignItems: 'center',

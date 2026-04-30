@@ -7,6 +7,7 @@ import { typography } from '../theme/typography';
 import { movieService } from '../services/movieService';
 import { MovieData } from '../services/types';
 import { BlurView } from 'expo-blur';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 const CATEGORIES = ['Todos', 'Acción', 'Drama', 'Comedia', 'Terror', 'Sci-Fi', 'Animación'];
 
@@ -16,6 +17,7 @@ export const SearchScreen = ({ navigation }: any) => {
   const [allMovies, setAllMovies] = useState<MovieData[]>([]);
   const [filteredMovies, setFilteredMovies] = useState<MovieData[]>([]);
   const [loading, setLoading] = useState(true);
+  const insets = useSafeAreaInsets();
 
   useEffect(() => {
     const fetchMovies = async () => {
@@ -52,10 +54,9 @@ export const SearchScreen = ({ navigation }: any) => {
 
   return (
     <View style={styles.container}>
-      <BlurView intensity={80} tint="dark" style={styles.headerContainer}>
-        <SafeAreaView>
-          <View style={styles.header}>
-            <View style={styles.searchBar}>
+      <BlurView intensity={80} tint="dark" style={[styles.headerContainer, { paddingTop: insets.top }]}>
+        <View style={styles.header}>
+          <View style={styles.searchBar}>
               <Ionicons name="search" size={20} color={colors.secondary} />
               <TextInput
                 style={styles.searchInput}
@@ -71,10 +72,9 @@ export const SearchScreen = ({ navigation }: any) => {
               )}
             </View>
           </View>
-        </SafeAreaView>
       </BlurView>
 
-      <ScrollView showsVerticalScrollIndicator={false} contentContainerStyle={styles.scrollContent}>
+      <ScrollView showsVerticalScrollIndicator={false} contentContainerStyle={[styles.scrollContent, { paddingTop: insets.top + 80, paddingBottom: insets.bottom + 90 }]}>
         <View style={styles.section}>
           <Text style={[typography.h3, styles.sectionTitle]}>Categorías</Text>
           <ScrollView horizontal showsHorizontalScrollIndicator={false} contentContainerStyle={styles.categoriesScroll}>
@@ -158,7 +158,10 @@ const styles = StyleSheet.create({
     backgroundColor: '#0D0D0D',
   },
   headerContainer: {
-    paddingTop: spacing.sm,
+    position: 'absolute',
+    top: 0,
+    width: '100%',
+    zIndex: 50,
     borderBottomWidth: 1,
     borderBottomColor: 'rgba(255,255,255,0.05)',
   },
@@ -183,7 +186,7 @@ const styles = StyleSheet.create({
     marginLeft: spacing.sm,
   },
   scrollContent: {
-    paddingBottom: 100, // Space for bottom tab
+    // padding controlled dynamically
   },
   section: {
     marginTop: spacing.xl,

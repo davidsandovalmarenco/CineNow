@@ -8,10 +8,12 @@ import { typography } from '../theme/typography';
 import { useAuth } from '../hooks/useAuth';
 import { seedService } from '../services/seedService';
 import { Alert } from 'react-native';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 export const ProfileScreen = ({ navigation }: any) => {
   const { user, logout } = useAuth();
   const [isSeeding, setIsSeeding] = React.useState(false);
+  const insets = useSafeAreaInsets();
 
   const handleLogout = async () => {
     try {
@@ -43,21 +45,19 @@ export const ProfileScreen = ({ navigation }: any) => {
       <StatusBar barStyle="light-content" translucent backgroundColor="transparent" />
       
       {/* Header */}
-      <BlurView intensity={80} tint="dark" style={styles.header}>
-        <SafeAreaView>
-          <View style={styles.headerContent}>
-            <View style={styles.logoContainer}>
-              <Ionicons name="film" size={24} color={colors.primaryContainer} />
-              <Text style={[typography.h2, styles.logoText, { fontSize: 20 }]}>CineNow</Text>
-            </View>
-            <View style={styles.headerProfileBtn}>
-              <Image source={{ uri: profileImage }} style={styles.headerProfileImg} />
-            </View>
+      <BlurView intensity={80} tint="dark" style={[styles.header, { paddingTop: insets.top }]}>
+        <View style={styles.headerContent}>
+          <View style={styles.logoContainer}>
+            <Ionicons name="film" size={24} color={colors.primaryContainer} />
+            <Text style={[typography.h2, styles.logoText, { fontSize: 20 }]}>CineNow</Text>
           </View>
-        </SafeAreaView>
+          <View style={styles.headerProfileBtn}>
+            <Image source={{ uri: profileImage }} style={styles.headerProfileImg} />
+          </View>
+        </View>
       </BlurView>
 
-      <ScrollView showsVerticalScrollIndicator={false} contentContainerStyle={styles.scrollContent}>
+      <ScrollView showsVerticalScrollIndicator={false} contentContainerStyle={[styles.scrollContent, { paddingTop: insets.top + 80, paddingBottom: insets.bottom + 90 }]}>
         
         {/* Profile Header */}
         <View style={styles.profileSection}>
@@ -241,9 +241,7 @@ const styles = StyleSheet.create({
     height: '100%',
   },
   scrollContent: {
-    paddingTop: 100, // header space
     paddingHorizontal: spacing.containerMargin,
-    paddingBottom: 100, // bottom tabs space
   },
   profileSection: {
     alignItems: 'center',

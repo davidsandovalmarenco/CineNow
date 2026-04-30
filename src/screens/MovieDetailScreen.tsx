@@ -6,6 +6,7 @@ import { BlurView } from 'expo-blur';
 import { colors } from '../theme/colors';
 import { spacing, borderRadius } from '../theme/spacing';
 import { typography } from '../theme/typography';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 const MOCK_MOVIE_DETAIL = {
   title: 'El Legado de las Sombras',
@@ -31,6 +32,7 @@ const { width } = Dimensions.get('window');
 const HEADER_HEIGHT = 530;
 
 export const MovieDetailScreen = ({ navigation }: any) => {
+  const insets = useSafeAreaInsets();
 
   const handleSchedulePress = () => {
     navigation.navigate('Schedule');
@@ -52,7 +54,7 @@ export const MovieDetailScreen = ({ navigation }: any) => {
           />
           
           <TouchableOpacity 
-            style={styles.backButton} 
+            style={[styles.backButton, { top: Math.max(insets.top, 20) }]} 
             onPress={() => navigation.goBack()}
             activeOpacity={0.8}
           >
@@ -154,19 +156,17 @@ export const MovieDetailScreen = ({ navigation }: any) => {
       </ScrollView>
 
       {/* Sticky Bottom CTA */}
-      <BlurView intensity={40} tint="dark" style={styles.bottomCta}>
-        <SafeAreaView>
-          <View style={styles.ctaContent}>
-            <TouchableOpacity 
-              style={styles.ctaButton}
-              onPress={handleSchedulePress}
-              activeOpacity={0.9}
-            >
-              <Ionicons name="ticket" size={20} color={colors.onPrimaryContainer} />
-              <Text style={styles.ctaButtonText}>Ver horarios</Text>
-            </TouchableOpacity>
-          </View>
-        </SafeAreaView>
+      <BlurView intensity={40} tint="dark" style={[styles.bottomCta, { paddingBottom: insets.bottom }]}>
+        <View style={styles.ctaContent}>
+          <TouchableOpacity 
+            style={styles.ctaButton}
+            onPress={handleSchedulePress}
+            activeOpacity={0.9}
+          >
+            <Ionicons name="ticket" size={20} color={colors.onPrimaryContainer} />
+            <Text style={styles.ctaButtonText}>Ver horarios</Text>
+          </TouchableOpacity>
+        </View>
       </BlurView>
 
     </View>
@@ -195,7 +195,6 @@ const styles = StyleSheet.create({
   },
   backButton: {
     position: 'absolute',
-    top: 50, // rough safe area
     left: spacing.containerMargin,
     width: 40,
     height: 40,
@@ -369,7 +368,7 @@ const styles = StyleSheet.create({
   ctaContent: {
     paddingHorizontal: spacing.containerMargin,
     paddingTop: spacing.md,
-    paddingBottom: Platform.OS === 'ios' ? 0 : spacing.md, // SafeAreaView handles iOS bottom padding
+    paddingBottom: spacing.md,
   },
   ctaButton: {
     backgroundColor: colors.primaryContainer,

@@ -7,12 +7,14 @@ import { spacing, borderRadius } from '../theme/spacing';
 import { typography } from '../theme/typography';
 import { snackService } from '../services/snackService';
 import { SnackData } from '../services/types';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 export const SnacksScreen = ({ navigation, route }: any) => {
   const { movieId, scheduleId, seats } = route.params || {};
   const [snacks, setSnacks] = useState<SnackData[]>([]);
   const [cart, setCart] = useState<{ [key: string]: number }>({});
   const [isLoading, setIsLoading] = useState(true);
+  const insets = useSafeAreaInsets();
 
   useEffect(() => {
     const fetchSnacks = async () => {
@@ -69,21 +71,19 @@ export const SnacksScreen = ({ navigation, route }: any) => {
       <StatusBar barStyle="light-content" translucent backgroundColor="transparent" />
 
       {/* Header */}
-      <BlurView intensity={80} tint="dark" style={styles.header}>
-        <SafeAreaView>
-          <View style={styles.headerContent}>
-            <View style={styles.logoContainer}>
-              <TouchableOpacity onPress={() => navigation.goBack()} style={{ marginRight: spacing.sm }}>
-                <Ionicons name="arrow-back" size={24} color={colors.onSurface} />
-              </TouchableOpacity>
-              <Ionicons name="film" size={24} color={colors.primaryContainer} />
-              <Text style={[typography.h2, styles.logoText, { fontSize: 20 }]}>CineNow</Text>
-            </View>
+      <BlurView intensity={80} tint="dark" style={[styles.header, { paddingTop: insets.top }]}>
+        <View style={styles.headerContent}>
+          <View style={styles.logoContainer}>
+            <TouchableOpacity onPress={() => navigation.goBack()} style={{ marginRight: spacing.sm }}>
+              <Ionicons name="arrow-back" size={24} color={colors.onSurface} />
+            </TouchableOpacity>
+            <Ionicons name="film" size={24} color={colors.primaryContainer} />
+            <Text style={[typography.h2, styles.logoText, { fontSize: 20 }]}>CineNow</Text>
           </View>
-        </SafeAreaView>
+        </View>
       </BlurView>
 
-      <ScrollView showsVerticalScrollIndicator={false} contentContainerStyle={styles.scrollContent}>
+      <ScrollView showsVerticalScrollIndicator={false} contentContainerStyle={[styles.scrollContent, { paddingTop: insets.top + 80 }]}>
         <View style={styles.promoSection}>
           <Text style={[typography.h1, styles.promoTitle]}>¿Algo para picar?</Text>
           <Text style={[typography.bodyMd, styles.promoSubtitle]}>Completa tu experiencia con nuestros mejores combos</Text>
@@ -120,23 +120,21 @@ export const SnacksScreen = ({ navigation, route }: any) => {
       </ScrollView>
 
       {/* Footer */}
-      <BlurView intensity={80} tint="dark" style={styles.footer}>
-        <SafeAreaView>
-          <View style={styles.footerContent}>
-            <View style={styles.totalContainer}>
-              <Text style={[typography.labelCaps, styles.totalLabel]}>TOTAL DULCERÍA</Text>
-              <Text style={[typography.h2, styles.totalValue]}>${calculateTotal().toFixed(2)}</Text>
-            </View>
-            <TouchableOpacity 
-              style={styles.continueBtn} 
-              onPress={handleContinue}
-              activeOpacity={0.9}
-            >
-              <Text style={styles.continueBtnText}>Continuar</Text>
-              <Ionicons name="chevron-forward" size={20} color={colors.onPrimaryContainer} />
-            </TouchableOpacity>
+      <BlurView intensity={80} tint="dark" style={[styles.footer, { paddingBottom: insets.bottom }]}>
+        <View style={styles.footerContent}>
+          <View style={styles.totalContainer}>
+            <Text style={[typography.labelCaps, styles.totalLabel]}>TOTAL DULCERÍA</Text>
+            <Text style={[typography.h2, styles.totalValue]}>${calculateTotal().toFixed(2)}</Text>
           </View>
-        </SafeAreaView>
+          <TouchableOpacity 
+            style={styles.continueBtn} 
+            onPress={handleContinue}
+            activeOpacity={0.9}
+          >
+            <Text style={styles.continueBtnText}>Continuar</Text>
+            <Ionicons name="chevron-forward" size={20} color={colors.onPrimaryContainer} />
+          </TouchableOpacity>
+        </View>
       </BlurView>
     </View>
   );

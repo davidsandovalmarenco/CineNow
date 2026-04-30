@@ -6,6 +6,7 @@ import { BlurView } from 'expo-blur';
 import { colors } from '../theme/colors';
 import { spacing, borderRadius } from '../theme/spacing';
 import { typography } from '../theme/typography';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 const MOCK_MOVIE = {
   title: 'Duna: Parte Dos',
@@ -33,6 +34,7 @@ const { width } = Dimensions.get('window');
 
 export const ScheduleScreen = ({ navigation }: any) => {
   const [selectedDate, setSelectedDate] = useState(DATES[0].id);
+  const insets = useSafeAreaInsets();
 
   const handleBack = () => {
     navigation.goBack();
@@ -47,27 +49,25 @@ export const ScheduleScreen = ({ navigation }: any) => {
       <StatusBar barStyle="light-content" translucent backgroundColor="transparent" />
 
       {/* Header */}
-      <BlurView intensity={80} tint="dark" style={styles.header}>
-        <SafeAreaView>
-          <View style={styles.headerContent}>
-            <View style={styles.logoContainer}>
-              <TouchableOpacity onPress={handleBack} style={{ marginRight: spacing.sm }}>
-                <Ionicons name="arrow-back" size={24} color={colors.onSurface} />
-              </TouchableOpacity>
-              <Ionicons name="film" size={24} color={colors.primaryContainer} />
-              <Text style={[typography.h2, styles.logoText, { fontSize: 20 }]}>CineNow</Text>
-            </View>
-            <View style={styles.headerActions}>
-              <Ionicons name="search" size={24} color={colors.secondary} />
-              <View style={styles.profileBtn}>
-                <Image 
-                  source={{ uri: 'https://lh3.googleusercontent.com/aida-public/AB6AXuDyqsXrEAufNu9Okb3d4A1sMwB0Q6YYptCZXTIH2oZf0AeemEZzpPxQq5pFzczC06D7orN9xeLxdVGGDEUVNBv6D-J-LYM1ihdM0cXEFgHOCTrD30OXQ51ZFQM3Hc_WVrtVoym7b3qQhGISoWH1x44mWWCRcnumnSzWZgGPF7v-oW8MZYfRx9_rrIFxz1ILMUVCdlZ3F7KfwIVVhMf1GiELmUakF_Mm7NRwXdJiETT1GJyp96ZtS_jfPtEz2yYRnefVAw8yqeMrZQQ' }} 
-                  style={styles.profileImg}
-                />
-              </View>
+      <BlurView intensity={80} tint="dark" style={[styles.header, { paddingTop: insets.top }]}>
+        <View style={styles.headerContent}>
+          <View style={styles.logoContainer}>
+            <TouchableOpacity onPress={handleBack} style={{ marginRight: spacing.sm }}>
+              <Ionicons name="arrow-back" size={24} color={colors.onSurface} />
+            </TouchableOpacity>
+            <Ionicons name="film" size={24} color={colors.primaryContainer} />
+            <Text style={[typography.h2, styles.logoText, { fontSize: 20 }]}>CineNow</Text>
+          </View>
+          <View style={styles.headerActions}>
+            <Ionicons name="search" size={24} color={colors.secondary} />
+            <View style={styles.profileBtn}>
+              <Image 
+                source={{ uri: 'https://lh3.googleusercontent.com/aida-public/AB6AXuDyqsXrEAufNu9Okb3d4A1sMwB0Q6YYptCZXTIH2oZf0AeemEZzpPxQq5pFzczC06D7orN9xeLxdVGGDEUVNBv6D-J-LYM1ihdM0cXEFgHOCTrD30OXQ51ZFQM3Hc_WVrtVoym7b3qQhGISoWH1x44mWWCRcnumnSzWZgGPF7v-oW8MZYfRx9_rrIFxz1ILMUVCdlZ3F7KfwIVVhMf1GiELmUakF_Mm7NRwXdJiETT1GJyp96ZtS_jfPtEz2yYRnefVAw8yqeMrZQQ' }} 
+                style={styles.profileImg}
+              />
             </View>
           </View>
-        </SafeAreaView>
+        </View>
       </BlurView>
 
       <ScrollView showsVerticalScrollIndicator={false} contentContainerStyle={styles.scrollContent}>
@@ -242,7 +242,7 @@ const styles = StyleSheet.create({
     height: '100%',
   },
   scrollContent: {
-    paddingBottom: 40,
+    // padding handled dynamically
   },
   heroContainer: {
     width: '100%',
