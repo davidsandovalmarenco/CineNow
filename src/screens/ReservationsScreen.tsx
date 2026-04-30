@@ -10,7 +10,8 @@ import { useAuth } from '../hooks/useAuth';
 import { useReservations } from '../hooks/useReservations';
 import { ReservationData } from '../services/types';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
-import { RECENT_MOVIES } from '../data/recentMovies';
+import { findRecentMovieByReservation, RECENT_MOVIES } from '../data/recentMovies';
+import { APP_NAME, DEFAULT_ROOM, formatReservationStatus } from '../config/locale';
 
 export const ReservationsScreen = ({ navigation }: any) => {
   const { user } = useAuth();
@@ -42,14 +43,20 @@ export const ReservationsScreen = ({ navigation }: any) => {
   const formatMockDate = (createdAtSeconds?: number) => {
     if (!createdAtSeconds) return 'Próximamente';
     const d = new Date(createdAtSeconds * 1000);
-    return d.toLocaleDateString('en-US', { weekday: 'short', month: 'short', day: 'numeric' });
+    return d.toLocaleDateString('es-NI', { weekday: 'short', month: 'short', day: 'numeric' });
   };
+
+  const getReservationPoster = (item: ReservationData, fallback = RECENT_MOVIES.superman.posterUrl) =>
+    item.moviePosterUrl || findRecentMovieByReservation(item.movieId, item.movieTitle)?.posterUrl || fallback;
+
+  const getReservationTitle = (item: ReservationData, fallback = 'Película CineNow') =>
+    item.movieTitle || findRecentMovieByReservation(item.movieId)?.title || fallback;
 
   const renderActiveCard = (item: ReservationData) => (
     <View key={item.id} style={styles.activeCard}>
       <View style={styles.activePosterWrapper}>
         <Image 
-          source={{ uri: RECENT_MOVIES.superman.posterUrl }} 
+          source={{ uri: getReservationPoster(item) }} 
           style={styles.poster} 
         />
       </View>
@@ -57,9 +64,9 @@ export const ReservationsScreen = ({ navigation }: any) => {
         <View>
           <View style={styles.cardHeader}>
             <Text style={[typography.h3, styles.movieTitle]} numberOfLines={1}>
-              {item.movieId === 'hero' ? RECENT_MOVIES.superman.title : (item.movieTitle || 'Película CineNow')}
+              {getReservationTitle(item)}
             </Text>
-            <Text style={[typography.labelCaps, styles.activeBadge]}>{item.status.toUpperCase()}</Text>
+            <Text style={[typography.labelCaps, styles.activeBadge]}>{formatReservationStatus(item.status)}</Text>
           </View>
           <View style={styles.metaContainer}>
             <View style={styles.metaRow}>
@@ -68,11 +75,15 @@ export const ReservationsScreen = ({ navigation }: any) => {
             </View>
             <View style={styles.metaRow}>
               <Ionicons name="time-outline" size={16} color={colors.secondary} />
-              <Text style={styles.metaText}>19:30 • Sala 4</Text>
+              <Text style={styles.metaText}>{item.showtimeLabel || '19:30'} - {item.room || DEFAULT_ROOM}</Text>
             </View>
             <View style={styles.metaRow}>
               <Ionicons name="tablet-landscape-outline" size={16} color={colors.secondary} />
               <Text style={styles.metaText}>Butacas: {item.seats.join(', ')}</Text>
+            </View>
+            <View style={styles.metaRow}>
+              <Ionicons name="videocam-outline" size={16} color={colors.secondary} />
+              <Text style={styles.metaText}>{item.movieFormat || 'IMAX 3D'}</Text>
             </View>
           </View>
         </View>
@@ -83,7 +94,7 @@ export const ReservationsScreen = ({ navigation }: any) => {
             activeOpacity={0.8}
           >
             <Ionicons name="qr-code-outline" size={18} color={colors.onPrimaryContainer} />
-            <Text style={styles.viewTicketText}>View Ticket</Text>
+            <Text style={styles.viewTicketText}>Ver boleto</Text>
           </TouchableOpacity>
         </View>
       </View>
@@ -94,20 +105,20 @@ export const ReservationsScreen = ({ navigation }: any) => {
     <View key={item.id} style={styles.pastCard}>
       <View style={styles.pastPosterWrapper}>
         <Image 
-          source={{ uri: RECENT_MOVIES.jurassic.posterUrl }} 
+          source={{ uri: getReservationPoster(item, RECENT_MOVIES.jurassic.posterUrl) }} 
           style={styles.poster} 
         />
       </View>
       <View style={styles.pastContent}>
         <Text style={[typography.bodyLg, styles.pastTitle]} numberOfLines={1}>
-          {item.movieId === 'hero' ? RECENT_MOVIES.jurassic.title : item.movieId}
+          {getReservationTitle(item, item.movieId)}
         </Text>
         <Text style={[typography.bodyMd, styles.pastMeta]}>
-          {formatMockDate((item.createdAt as any)?.seconds)} • {item.seats?.length || 0} Seats
+          {formatMockDate((item.createdAt as any)?.seconds)} - {item.seats?.length || 0} butacas
         </Text>
       </View>
       <View>
-        <Text style={[typography.labelCaps, styles.usedBadge]}>{item.status.toUpperCase()}</Text>
+        <Text style={[typography.labelCaps, styles.usedBadge]}>{formatReservationStatus(item.status)}</Text>
       </View>
     </View>
   );
@@ -120,7 +131,7 @@ export const ReservationsScreen = ({ navigation }: any) => {
         <View style={styles.headerContent}>
             <View style={styles.logoContainer}>
               <Ionicons name="film" size={24} color={colors.primaryContainer} />
-              <Text style={[typography.h2, styles.logoText, { fontSize: 20 }]}>CineNow</Text>
+              <Text style={[typography.h2, styles.logoText, { fontSize: 20 }]}>{APP_NAME}</Text>
             </View>
             <View style={styles.profileBtn}>
               <Image 
@@ -139,8 +150,8 @@ export const ReservationsScreen = ({ navigation }: any) => {
         }
       >
         <View style={styles.titleSection}>
-          <Text style={[typography.h1, styles.pageTitle]}>My Bookings</Text>
-          <Text style={[typography.bodyMd, styles.pageSubtitle]}>Manage your cinema experiences</Text>
+          <Text style={[typography.h1, styles.pageTitle]}>Mis reservas</Text>
+          <Text style={[typography.bodyMd, styles.pageSubtitle]}>Administra tus boletos de Centro Plaza Chinandega</Text>
         </View>
 
         {isLoading && !refreshing && (
@@ -157,9 +168,9 @@ export const ReservationsScreen = ({ navigation }: any) => {
         {activeReservations.length > 0 && (
           <View style={styles.section}>
             <View style={styles.sectionHeader}>
-              <Text style={[typography.h2, styles.sectionTitle]}>Upcoming</Text>
+              <Text style={[typography.h2, styles.sectionTitle]}>Próximas funciones</Text>
               <View style={styles.countBadge}>
-                <Text style={[typography.labelCaps, styles.countText]}>{activeReservations.length} ACTIVE</Text>
+                <Text style={[typography.labelCaps, styles.countText]}>{activeReservations.length} ACTIVAS</Text>
               </View>
             </View>
             {activeReservations.map(renderActiveCard)}
@@ -168,12 +179,12 @@ export const ReservationsScreen = ({ navigation }: any) => {
 
         {pastReservations.length > 0 && (
           <View style={styles.section}>
-            <Text style={[typography.h2, styles.sectionTitle, { marginBottom: spacing.md }]}>Past Visits</Text>
+            <Text style={[typography.h2, styles.sectionTitle, { marginBottom: spacing.md }]}>Historial</Text>
             <View style={styles.pastList}>
               {pastReservations.map(renderPastCard)}
             </View>
             <TouchableOpacity style={styles.loadMoreBtn} activeOpacity={0.8}>
-              <Text style={styles.loadMoreText}>Load More History</Text>
+              <Text style={styles.loadMoreText}>Ver más historial</Text>
             </TouchableOpacity>
           </View>
         )}

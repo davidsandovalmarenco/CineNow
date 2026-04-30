@@ -8,9 +8,10 @@ import { spacing, borderRadius } from '../theme/spacing';
 import { typography } from '../theme/typography';
 import { reservationService } from '../services/reservationService';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
-import { RECENT_MOVIES } from '../data/recentMovies';
+import { getMovieImage, normalizeReservationMovie, RECENT_MOVIES } from '../data/recentMovies';
+import { APP_NAME, DEFAULT_ROOM, formatCurrency } from '../config/locale';
 
-const SEAT_PRICE = 12.00;
+const SEAT_PRICE = 220;
 
 // Dummy seat layout: 5 rows, 10 columns (0-9). Columns 2 and 7 are aisles.
 const ROWS = ['A', 'B', 'C', 'D', 'E'];
@@ -20,7 +21,8 @@ const AISLES = [2, 7];
 const BACKGROUND_URL = RECENT_MOVIES.jurassic.posterUrl;
 
 export const SeatsScreen = ({ navigation, route }: any) => {
-  const { movie, movieId, scheduleId } = route.params || {};
+  const { movie: routeMovie, movieId, scheduleId, selectedFormat, showtime } = route.params || {};
+  const movie = normalizeReservationMovie(routeMovie);
   const [selectedSeats, setSelectedSeats] = useState<string[]>([]);
   const [occupiedSeats, setOccupiedSeats] = useState<string[]>([]);
   const [loading, setLoading] = useState(true);
@@ -62,6 +64,8 @@ export const SeatsScreen = ({ navigation, route }: any) => {
         movieId, 
         movie,
         scheduleId, 
+        selectedFormat,
+        showtime,
         seats: selectedSeats,
         totalSeats: totalPrice 
       });
@@ -103,7 +107,7 @@ export const SeatsScreen = ({ navigation, route }: any) => {
       <StatusBar barStyle="light-content" translucent backgroundColor="transparent" />
       
       <ImageBackground 
-        source={{ uri: BACKGROUND_URL }} 
+        source={{ uri: getMovieImage(movie) || BACKGROUND_URL }} 
         style={styles.backgroundImage}
         imageStyle={{ opacity: 0.2 }}
         blurRadius={40}
@@ -117,7 +121,7 @@ export const SeatsScreen = ({ navigation, route }: any) => {
                 <Ionicons name="arrow-back" size={24} color={colors.onSurface} />
               </TouchableOpacity>
               <Ionicons name="film" size={24} color={colors.primaryContainer} />
-              <Text style={[typography.h2, styles.logoText, { fontSize: 20 }]}>CineNow</Text>
+              <Text style={[typography.h2, styles.logoText, { fontSize: 20 }]}>{APP_NAME}</Text>
             </View>
           </View>
         </BlurView>
@@ -125,10 +129,12 @@ export const SeatsScreen = ({ navigation, route }: any) => {
         <ScrollView showsVerticalScrollIndicator={false} contentContainerStyle={[styles.scrollContent, { paddingTop: insets.top + 80 }]}>
           
           <View style={styles.infoSection}>
-            <Text style={[typography.h1, styles.screenTitle]}>Selecciona tus Asientos</Text>
+            <Text style={[typography.h1, styles.screenTitle]}>Selecciona tus asientos</Text>
             <View style={styles.metaInfo}>
               <Ionicons name="time-outline" size={16} color={colors.onSurfaceVariant} />
-              <Text style={styles.metaText}>19:45 • Sala 4 • IMAX</Text>
+              <Text style={styles.metaText}>
+                {showtime?.time || '19:45'} - {showtime?.room || DEFAULT_ROOM} - {selectedFormat || showtime?.format || 'IMAX'}
+              </Text>
             </View>
           </View>
 
@@ -185,8 +191,8 @@ export const SeatsScreen = ({ navigation, route }: any) => {
               <View style={styles.divider} />
 
               <View style={styles.summaryColumn}>
-                <Text style={[typography.labelCaps, styles.summaryLabel]}>Precio Total</Text>
-                <Text style={[typography.h2, styles.summaryPrice]}>${totalPrice.toFixed(2)}</Text>
+                <Text style={[typography.labelCaps, styles.summaryLabel]}>TOTAL</Text>
+                <Text style={[typography.h2, styles.summaryPrice]}>{formatCurrency(totalPrice)}</Text>
               </View>
             </View>
 

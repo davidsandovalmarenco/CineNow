@@ -4,6 +4,7 @@ import {
   createUserWithEmailAndPassword, 
   signOut, 
   onAuthStateChanged,
+  updateProfile,
   User
 } from 'firebase/auth';
 import { auth } from '../services/firebase';
@@ -19,6 +20,19 @@ interface AuthContextData {
 }
 
 const AuthContext = createContext<AuthContextData>({} as AuthContextData);
+
+const getAuthMessage = (err: any, fallback: string) => {
+  const code = err?.code || '';
+
+  if (code.includes('invalid-credential') || code.includes('wrong-password')) return 'Correo o contraseña incorrectos.';
+  if (code.includes('user-not-found')) return 'No encontramos una cuenta con ese correo.';
+  if (code.includes('email-already-in-use')) return 'Ya existe una cuenta con ese correo.';
+  if (code.includes('weak-password')) return 'La contraseña debe tener al menos 6 caracteres.';
+  if (code.includes('invalid-email')) return 'Ingresa un correo válido.';
+  if (code.includes('network-request-failed')) return 'No se pudo conectar. Revisa tu internet.';
+
+  return fallback;
+};
 
 export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
   const [user, setUser] = useState<User | null>(null);
@@ -41,7 +55,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
       await signInWithEmailAndPassword(auth, data.email, data.password);
     } catch (err: any) {
       console.error(err);
-      setError(err.message || 'Error al iniciar sesión');
+      setError(getAuthMessage(err, 'Error al iniciar sesión'));
     } finally {
       setIsLoading(false);
     }
@@ -52,6 +66,9 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     setError(null);
     try {
       const userCredential = await createUserWithEmailAndPassword(auth, data.email, data.password);
+      await updateProfile(userCredential.user, {
+        displayName: data.name,
+      });
       
       // Also save the user profile in Firestore
       await userService.createUser(userCredential.user.uid, {
@@ -63,7 +80,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
       
     } catch (err: any) {
       console.error(err);
-      setError(err.message || 'Error al registrarse');
+      setError(getAuthMessage(err, 'Error al registrarse'));
     } finally {
       setIsLoading(false);
     }

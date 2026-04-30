@@ -1,38 +1,101 @@
-import React from 'react';
-import { View, Text, StyleSheet, TouchableOpacity, ScrollView } from 'react-native';
+import React, { useEffect, useState } from 'react';
+import { View, Text, StyleSheet, TouchableOpacity, ScrollView, Switch, ActivityIndicator, Alert } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import { colors } from '../theme/colors';
 import { spacing, borderRadius } from '../theme/spacing';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
+import { useAuth } from '../hooks/useAuth';
+import { userService } from '../services/userService';
+import { NotificationSettings } from '../services/types';
+
+const DEFAULT_SETTINGS: NotificationSettings = {
+  reservationUpdates: true,
+  movieReminders: true,
+  promotions: true,
+  emailNotifications: false,
+};
 
 export const NotificationsScreen = ({ navigation }: any) => {
+  const { user } = useAuth();
   const insets = useSafeAreaInsets();
-  const notifications = [
+  const [settings, setSettings] = useState<NotificationSettings>(DEFAULT_SETTINGS);
+  const [loading, setLoading] = useState(true);
+  const [saving, setSaving] = useState(false);
+
+  useEffect(() => {
+    const loadSettings = async () => {
+      if (!user?.uid) {
+        setLoading(false);
+        return;
+      }
+
+      try {
+        const data = await userService.getNotificationSettings(user.uid);
+        setSettings(data);
+      } catch (error) {
+        console.error('Error loading notification settings:', error);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    loadSettings();
+  }, [user?.uid]);
+
+  const toggleSetting = async (key: keyof NotificationSettings) => {
+    if (!user?.uid) return;
+
+    const nextSettings = { ...settings, [key]: !settings[key] };
+    setSettings(nextSettings);
+    setSaving(true);
+
+    try {
+      await userService.updateNotificationSettings(user.uid, nextSettings);
+    } catch (error: any) {
+      setSettings(settings);
+      Alert.alert('Error', error.message || 'No se pudieron guardar las notificaciones');
+    } finally {
+      setSaving(false);
+    }
+  };
+
+  const notificationCards = [
     {
       id: '1',
-      title: '¡Tu película empieza pronto!',
-      message: 'Recuerda que tu función de "Duna: Parte Dos" comienza en 30 minutos.',
-      time: 'Hace 5 min',
-      icon: 'time',
-      read: false,
+      title: 'Reserva confirmada',
+      message: settings.reservationUpdates
+        ? 'Recibirás avisos cuando una reserva se confirme o cambie de estado.'
+        : 'Los avisos de reservas están desactivados.',
+      icon: 'checkmark-circle',
+      active: settings.reservationUpdates,
     },
     {
       id: '2',
-      title: 'Reserva Confirmada',
-      message: 'Tu reserva (CR-8492-X09) ha sido procesada con éxito.',
-      time: 'Hace 2 horas',
-      icon: 'checkmark-circle',
-      read: true,
+      title: 'Recordatorios de funciones',
+      message: settings.movieReminders
+        ? 'Te avisaremos antes de que empiece tu película.'
+        : 'No enviaremos recordatorios antes de la función.',
+      icon: 'time',
+      active: settings.movieReminders,
     },
     {
       id: '3',
-      title: 'Promoción de Martes',
-      message: 'Aprovecha un 2x1 en entradas tradicionales mostrando este mensaje en taquilla.',
-      time: 'Ayer',
+      title: 'Promociones',
+      message: settings.promotions
+        ? 'Recibirás promociones y descuentos disponibles.'
+        : 'Las promociones están silenciadas para tu usuario.',
       icon: 'pricetag',
-      read: true,
+      active: settings.promotions,
     },
   ];
+
+  if (loading) {
+    return (
+      <View style={[styles.container, styles.centered]}>
+        <ActivityIndicator color={colors.primary} size="large" />
+      </View>
+    );
+  }
 
   return (
     <View style={styles.container}>
@@ -45,17 +108,42 @@ export const NotificationsScreen = ({ navigation }: any) => {
       </View>
 
       <ScrollView showsVerticalScrollIndicator={false} contentContainerStyle={[styles.scrollContent, { paddingBottom: insets.bottom + 90 }]}>
-        {notifications.map((notif) => (
-          <View key={notif.id} style={[styles.notifCard, !notif.read && styles.notifCardUnread]}>
-            <View style={[styles.iconBox, !notif.read && styles.iconBoxUnread]}>
-              <Ionicons name={notif.icon as any} size={24} color={!notif.read ? colors.text : colors.primary} />
+        <View style={styles.settingsCard}>
+          <NotificationToggle
+            label="Actualizaciones de reserva"
+            value={settings.reservationUpdates}
+            onChange={() => toggleSetting('reservationUpdates')}
+          />
+          <NotificationToggle
+            label="Recordatorios de película"
+            value={settings.movieReminders}
+            onChange={() => toggleSetting('movieReminders')}
+          />
+          <NotificationToggle
+            label="Promociones"
+            value={settings.promotions}
+            onChange={() => toggleSetting('promotions')}
+          />
+          <NotificationToggle
+            label="Enviar también por correo"
+            value={settings.emailNotifications}
+            onChange={() => toggleSetting('emailNotifications')}
+            last
+          />
+        </View>
+
+        {saving && <Text style={styles.savingText}>Guardando cambios...</Text>}
+
+        {notificationCards.map((notif) => (
+          <View key={notif.id} style={[styles.notifCard, notif.active && styles.notifCardUnread]}>
+            <View style={[styles.iconBox, notif.active && styles.iconBoxUnread]}>
+              <Ionicons name={notif.icon as any} size={24} color={notif.active ? colors.text : colors.primary} />
             </View>
             <View style={styles.notifContent}>
               <Text style={styles.notifTitle}>{notif.title}</Text>
               <Text style={styles.notifMessage}>{notif.message}</Text>
-              <Text style={styles.notifTime}>{notif.time}</Text>
             </View>
-            {!notif.read && <View style={styles.unreadDot} />}
+            {notif.active && <View style={styles.unreadDot} />}
           </View>
         ))}
       </ScrollView>
@@ -63,11 +151,21 @@ export const NotificationsScreen = ({ navigation }: any) => {
   );
 };
 
+const NotificationToggle = ({ label, value, onChange, last }: { label: string; value: boolean; onChange: () => void; last?: boolean }) => (
+  <View style={[styles.toggleRow, last && styles.toggleRowLast]}>
+    <Text style={styles.toggleLabel}>{label}</Text>
+    <Switch
+      value={value}
+      onValueChange={onChange}
+      thumbColor={value ? colors.primary : colors.textSecondary}
+      trackColor={{ false: 'rgba(255,255,255,0.12)', true: 'rgba(229,9,20,0.45)' }}
+    />
+  </View>
+);
+
 const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    backgroundColor: colors.background,
-  },
+  container: { flex: 1, backgroundColor: colors.background },
+  centered: { justifyContent: 'center', alignItems: 'center' },
   header: {
     flexDirection: 'row',
     justifyContent: 'space-between',
@@ -87,15 +185,27 @@ const styles = StyleSheet.create({
     borderWidth: 1,
     borderColor: 'rgba(255,255,255,0.1)',
   },
-  headerTitle: {
-    color: colors.text,
-    fontSize: 18,
-    fontWeight: 'bold',
+  headerTitle: { color: colors.text, fontSize: 18, fontWeight: 'bold' },
+  scrollContent: { padding: spacing.m, gap: spacing.s },
+  settingsCard: {
+    backgroundColor: 'rgba(28,28,28,0.45)',
+    borderRadius: borderRadius.l,
+    borderWidth: 1,
+    borderColor: 'rgba(255,255,255,0.05)',
+    marginBottom: spacing.m,
   },
-  scrollContent: {
-    padding: spacing.m,
-    gap: spacing.s,
+  toggleRow: {
+    minHeight: 58,
+    paddingHorizontal: spacing.m,
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+    borderBottomWidth: 1,
+    borderBottomColor: 'rgba(255,255,255,0.05)',
   },
+  toggleRowLast: { borderBottomWidth: 0 },
+  toggleLabel: { color: colors.text, fontSize: 15, fontWeight: '600' },
+  savingText: { color: colors.textSecondary, fontSize: 12, marginBottom: spacing.s },
   notifCard: {
     flexDirection: 'row',
     backgroundColor: 'rgba(28,28,28,0.4)',
@@ -104,10 +214,7 @@ const styles = StyleSheet.create({
     borderWidth: 1,
     borderColor: 'rgba(255,255,255,0.05)',
   },
-  notifCardUnread: {
-    backgroundColor: 'rgba(28,28,28,0.8)',
-    borderColor: 'rgba(255,255,255,0.1)',
-  },
+  notifCardUnread: { backgroundColor: 'rgba(28,28,28,0.8)', borderColor: 'rgba(255,255,255,0.1)' },
   iconBox: {
     width: 48,
     height: 48,
@@ -117,34 +224,9 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     marginRight: spacing.m,
   },
-  iconBoxUnread: {
-    backgroundColor: colors.primary,
-  },
-  notifContent: {
-    flex: 1,
-    justifyContent: 'center',
-  },
-  notifTitle: {
-    color: colors.text,
-    fontSize: 16,
-    fontWeight: 'bold',
-    marginBottom: 4,
-  },
-  notifMessage: {
-    color: colors.textSecondary,
-    fontSize: 14,
-    lineHeight: 20,
-    marginBottom: 8,
-  },
-  notifTime: {
-    color: colors.textSecondary,
-    fontSize: 12,
-  },
-  unreadDot: {
-    width: 8,
-    height: 8,
-    borderRadius: 4,
-    backgroundColor: colors.primary,
-    marginTop: spacing.s,
-  },
+  iconBoxUnread: { backgroundColor: colors.primary },
+  notifContent: { flex: 1, justifyContent: 'center' },
+  notifTitle: { color: colors.text, fontSize: 16, fontWeight: 'bold', marginBottom: 4 },
+  notifMessage: { color: colors.textSecondary, fontSize: 14, lineHeight: 20 },
+  unreadDot: { width: 8, height: 8, borderRadius: 4, backgroundColor: colors.primary, marginTop: spacing.s },
 });

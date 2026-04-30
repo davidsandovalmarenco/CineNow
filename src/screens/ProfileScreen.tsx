@@ -7,13 +7,34 @@ import { spacing, borderRadius } from '../theme/spacing';
 import { typography } from '../theme/typography';
 import { useAuth } from '../hooks/useAuth';
 import { seedService } from '../services/seedService';
+import { userService } from '../services/userService';
+import { UserData } from '../services/types';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { RECENT_MOVIES } from '../data/recentMovies';
+import { useFocusEffect } from '@react-navigation/native';
+import { APP_NAME, CINEMA_LOCATION } from '../config/locale';
 
 export const ProfileScreen = ({ navigation }: any) => {
   const { user, logout } = useAuth();
+  const [profile, setProfile] = React.useState<UserData | null>(null);
   const [isSeeding, setIsSeeding] = React.useState(false);
   const insets = useSafeAreaInsets();
+
+  const loadProfile = React.useCallback(async () => {
+    if (!user?.uid) return;
+    try {
+      const data = await userService.getUser(user.uid);
+      setProfile(data);
+    } catch (error) {
+      console.error('Error loading profile:', error);
+    }
+  }, [user?.uid]);
+
+  useFocusEffect(
+    React.useCallback(() => {
+      loadProfile();
+    }, [loadProfile])
+  );
 
   const handleLogout = async () => {
     try {
@@ -27,7 +48,7 @@ export const ProfileScreen = ({ navigation }: any) => {
     setIsSeeding(true);
     try {
       await seedService.seedAll();
-      Alert.alert('Éxito', 'Cartelera respaldada en Firebase. Home y Buscar ya pueden leer estas películas.');
+      Alert.alert('Éxito', 'Cartelera respaldada en Firebase para Centro Plaza Chinandega.');
     } catch (error: any) {
       Alert.alert('Error', error.message || 'Error al poblar la base de datos');
     } finally {
@@ -35,10 +56,12 @@ export const ProfileScreen = ({ navigation }: any) => {
     }
   };
 
-  const displayName = user?.displayName || 'Alejandro Martínez';
-  const displayEmail = user?.email || 'amartinez@cinenow.ca';
-  const profileImage = user?.photoURL || 'https://lh3.googleusercontent.com/aida-public/AB6AXuAL-0xxE4axeMmU7z-P5Weaxieip5I8LTGui3TcyWEJyYwiefyDv71Ia_bu9bTUAItfSd6SPyNpyRxvMivzBkwcCpe1nkZc3Th5pDsKzBuWXWg1dHNgwja-7UM36FVwjVM7-fgCzd1hP5Zs9BUV2sGzapohm-3a0eenn6HWwRmgCq28BZ4QMh3Nwui4Lu8Eu8ZYj33ZDfnpqgXYSrdNzoq5TSk2D7F4ryw8nmAtYdS2YMIrwSJUfgAT9z52jG5YNrxl_LicSdsD-uU';
-  const largeProfileImage = 'https://lh3.googleusercontent.com/aida-public/AB6AXuAGBhUMDOv567pyGr2JSHYx1KR4Usx5xXCiBFJtCLWky_EtSlb-TXIf7jTGrZwBmGj6RuhP54LeKIFT1Il-KNnyCoofr_1LmhnGFe2Cvg5Kkpm7TyYxupv2rUeu6Z7slv--bm6B6eJc0nQWEg52ulL7XboURZlMfItf2PqVAq0CXXS3kXqiF3oX1LDQ_w9p6Y06qbhlRPUmYqss-Ut4D6lDcnu_lpzpxDZuyUTjHMEtEGqfL7DQuOan2zvuK9r-Nze3B6u3B_f4AFA';
+  const displayName = profile?.fullName || user?.displayName || 'Usuario CineNow';
+  const displayEmail = profile?.email || user?.email || 'correo@cinenow.com.ni';
+  const profileImage =
+    profile?.photoURL ||
+    user?.photoURL ||
+    `https://ui-avatars.com/api/?name=${encodeURIComponent(displayName)}&background=1f1f1f&color=ffffff&bold=true&size=256`;
 
   return (
     <View style={styles.container}>
@@ -49,7 +72,7 @@ export const ProfileScreen = ({ navigation }: any) => {
         <View style={styles.headerContent}>
           <View style={styles.logoContainer}>
             <Ionicons name="film" size={24} color={colors.primaryContainer} />
-            <Text style={[typography.h2, styles.logoText, { fontSize: 20 }]}>CineNow</Text>
+            <Text style={[typography.h2, styles.logoText, { fontSize: 20 }]}>{APP_NAME}</Text>
           </View>
           <View style={styles.headerProfileBtn}>
             <Image source={{ uri: profileImage }} style={styles.headerProfileImg} />
@@ -63,7 +86,7 @@ export const ProfileScreen = ({ navigation }: any) => {
         <View style={styles.profileSection}>
           <View style={styles.avatarContainer}>
             <View style={styles.avatarWrapper}>
-              <Image source={{ uri: largeProfileImage }} style={styles.avatar} />
+              <Image source={{ uri: profileImage }} style={styles.avatar} />
             </View>
             <TouchableOpacity style={styles.editBtn} onPress={() => navigation.navigate('EditProfile')} activeOpacity={0.8}>
               <Ionicons name="pencil" size={20} color={colors.onPrimaryContainer} />
@@ -86,7 +109,7 @@ export const ProfileScreen = ({ navigation }: any) => {
                 <View style={styles.menuIconBox}>
                   <Ionicons name="person" size={20} color={colors.secondary} />
                 </View>
-                <Text style={[typography.bodyLg, styles.menuItemText]}>Account</Text>
+                <Text style={[typography.bodyLg, styles.menuItemText]}>Cuenta</Text>
               </View>
               <Ionicons name="chevron-forward" size={20} color={colors.secondary} />
             </TouchableOpacity>
@@ -100,7 +123,7 @@ export const ProfileScreen = ({ navigation }: any) => {
                 <View style={styles.menuIconBox}>
                   <Ionicons name="notifications" size={20} color={colors.secondary} />
                 </View>
-                <Text style={[typography.bodyLg, styles.menuItemText]}>Notifications</Text>
+                <Text style={[typography.bodyLg, styles.menuItemText]}>Notificaciones</Text>
               </View>
               <Ionicons name="chevron-forward" size={20} color={colors.secondary} />
             </TouchableOpacity>
@@ -114,7 +137,7 @@ export const ProfileScreen = ({ navigation }: any) => {
                 <View style={styles.menuIconBox}>
                   <Ionicons name="card" size={20} color={colors.secondary} />
                 </View>
-                <Text style={[typography.bodyLg, styles.menuItemText]}>Payment Methods</Text>
+                <Text style={[typography.bodyLg, styles.menuItemText]}>Métodos de pago</Text>
               </View>
               <Ionicons name="chevron-forward" size={20} color={colors.secondary} />
             </TouchableOpacity>
@@ -124,7 +147,7 @@ export const ProfileScreen = ({ navigation }: any) => {
         {/* History Overview Section */}
         <View style={styles.section}>
           <View style={styles.sectionHeader}>
-            <Text style={[typography.h3, styles.sectionTitle]}>History overview</Text>
+            <Text style={[typography.h3, styles.sectionTitle]}>Historial reciente</Text>
             <TouchableOpacity activeOpacity={0.7}>
               <Text style={styles.seeAllText}>Ver todo</Text>
             </TouchableOpacity>
@@ -141,7 +164,7 @@ export const ProfileScreen = ({ navigation }: any) => {
               <View style={styles.historyContent}>
                 <View>
                   <Text style={[typography.bodyLg, styles.historyTitle]} numberOfLines={1}>{RECENT_MOVIES.fantasticFour.title}</Text>
-                  <Text style={[typography.bodyMd, styles.historyMeta]}>14 Oct, 2023 • Sala 4</Text>
+                  <Text style={[typography.bodyMd, styles.historyMeta]}>14 oct. 2023 - {CINEMA_LOCATION}</Text>
                 </View>
                 <View style={styles.completedBadge}>
                   <Text style={[typography.labelCaps, styles.completedText]}>COMPLETADO</Text>
@@ -159,7 +182,7 @@ export const ProfileScreen = ({ navigation }: any) => {
               <View style={styles.historyContent}>
                 <View>
                   <Text style={[typography.bodyLg, styles.historyTitle]} numberOfLines={1}>{RECENT_MOVIES.missionImpossible.title}</Text>
-                  <Text style={[typography.bodyMd, styles.historyMeta]}>28 Sep, 2023 • IMAX</Text>
+                  <Text style={[typography.bodyMd, styles.historyMeta]}>28 sep. 2023 - IMAX</Text>
                 </View>
                 <View style={styles.completedBadge}>
                   <Text style={[typography.labelCaps, styles.completedText]}>COMPLETADO</Text>

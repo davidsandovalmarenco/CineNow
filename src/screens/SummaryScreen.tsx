@@ -9,10 +9,12 @@ import { reservationService } from '../services/reservationService';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { getMovieImage, normalizeReservationMovie } from '../data/recentMovies';
 import { useAuth } from '../hooks/useAuth';
-const SEAT_PRICE = 12.50; // Use price from mockup ($12.50 vs previous $12.00 but let's stick to $12.50)
+import { APP_NAME, CINEMA_LOCATION, DEFAULT_CINEMA_ID, DEFAULT_ROOM, formatCurrency } from '../config/locale';
+
+const SEAT_PRICE = 220;
 
 export const SummaryScreen = ({ navigation, route }: any) => {
-  const { movie: routeMovie, movieId, scheduleId, seats = [], snacks = [] } = route.params || {};
+  const { movie: routeMovie, movieId, scheduleId, selectedFormat, showtime, seats = [], snacks = [] } = route.params || {};
   const [isConfirming, setIsConfirming] = useState(false);
   const insets = useSafeAreaInsets();
   const { user } = useAuth();
@@ -25,10 +27,10 @@ export const SummaryScreen = ({ navigation, route }: any) => {
     duration: movie.duration,
     genre: movie.genre,
     posterUrl: getMovieImage(movie),
-    dateStr: 'Vie, 24 Mayo',
-    timeStr: '20:30 PM',
-    room: 'SALA 04',
-    format: 'IMAX Laser'
+    dateStr: 'Vie, 24 de mayo',
+    timeStr: showtime?.time || '20:30',
+    room: showtime?.room?.toUpperCase?.() || DEFAULT_ROOM.toUpperCase(),
+    format: selectedFormat || showtime?.format || 'IMAX 3D'
   };
 
   const seatsTotal = seats.length * SEAT_PRICE;
@@ -37,7 +39,7 @@ export const SummaryScreen = ({ navigation, route }: any) => {
   
   // Hardcoded mockup snacks for display if none passed
   const displaySnacks = snacks.length > 0 ? snacks : [
-    { id: '1', name: 'Combo Individual Premium', description: 'Palomitas L + Bebida', price: 12.50, quantity: 1 }
+    { id: '1', name: 'Combo individual premium', description: 'Palomitas grandes + bebida', price: 185, quantity: 1 }
   ];
 
   const handleConfirm = async () => {
@@ -53,7 +55,11 @@ export const SummaryScreen = ({ navigation, route }: any) => {
         userId: user.uid,
         movieId: movieId || movie.id || 'hero',
         movieTitle: MOCK_MOVIE.title,
-        cinemaId: 'cinema1',
+        moviePosterUrl: MOCK_MOVIE.posterUrl,
+        movieFormat: MOCK_MOVIE.format,
+        showtimeLabel: MOCK_MOVIE.timeStr,
+        room: MOCK_MOVIE.room,
+        cinemaId: DEFAULT_CINEMA_ID,
         scheduleId: scheduleId || 'mockSchedule',
         seats,
         snacks: displaySnacks.map((s: any) => ({ snackId: s.id, name: s.name, quantity: s.quantity, price: s.price })),
@@ -71,6 +77,9 @@ export const SummaryScreen = ({ navigation, route }: any) => {
             movieId: movieId || movie.id || 'hero',
             movieTitle: MOCK_MOVIE.title,
             moviePosterUrl: MOCK_MOVIE.posterUrl,
+            movieFormat: MOCK_MOVIE.format,
+            showtimeLabel: MOCK_MOVIE.timeStr,
+            room: MOCK_MOVIE.room,
             seats,
             reservationCode,
           },
@@ -93,7 +102,7 @@ export const SummaryScreen = ({ navigation, route }: any) => {
         <View style={styles.headerContent}>
           <View style={styles.logoContainer}>
             <Ionicons name="film" size={24} color={colors.primaryContainer} />
-            <Text style={[typography.h2, styles.logoText, { fontSize: 20 }]}>CineNow</Text>
+            <Text style={[typography.h2, styles.logoText, { fontSize: 20 }]}>{APP_NAME}</Text>
           </View>
           <View style={styles.profileBtn}>
             <Ionicons name="person" size={16} color={colors.onSurface} />
@@ -109,7 +118,7 @@ export const SummaryScreen = ({ navigation, route }: any) => {
             <Ionicons name="arrow-back" size={20} color={colors.secondary} />
             <Text style={styles.backBtnText}>Regresar</Text>
           </TouchableOpacity>
-          <Text style={[typography.h1, styles.screenTitle]}>Resumen de Reserva</Text>
+          <Text style={[typography.h1, styles.screenTitle]}>Resumen de reserva</Text>
           <Text style={[typography.bodyMd, styles.screenSubtitle]}>Por favor, revisa los detalles de tu compra antes de confirmar.</Text>
         </View>
 
@@ -124,6 +133,10 @@ export const SummaryScreen = ({ navigation, route }: any) => {
               <Text style={styles.exclusiveBadgeText}>ESTRENO EXCLUSIVO</Text>
             </View>
             <Text style={[typography.h2, styles.movieTitle]}>{MOCK_MOVIE.title}</Text>
+            <View style={styles.movieMetaRow}>
+              <Ionicons name="location-outline" size={14} color={colors.secondary} />
+              <Text style={styles.movieMetaText}>{CINEMA_LOCATION}</Text>
+            </View>
             <View style={styles.movieMetaRow}>
               <Ionicons name="time-outline" size={14} color={colors.secondary} />
               <Text style={styles.movieMetaText}>{MOCK_MOVIE.duration}</Text>
@@ -176,7 +189,7 @@ export const SummaryScreen = ({ navigation, route }: any) => {
                     </Text>
                   </View>
                 </View>
-                <Text style={[typography.h3, styles.itemPrice]}>${(seats.length > 0 ? seatsTotal : 45.00).toFixed(2)}</Text>
+                <Text style={[typography.h3, styles.itemPrice]}>{formatCurrency(seats.length > 0 ? seatsTotal : 660)}</Text>
               </View>
 
               {/* Snacks Items */}
@@ -191,7 +204,7 @@ export const SummaryScreen = ({ navigation, route }: any) => {
                       <Text style={[typography.bodyMd, styles.itemDesc]}>{snack.description}</Text>
                     </View>
                   </View>
-                  <Text style={[typography.h3, styles.itemPrice]}>${(snack.price * snack.quantity).toFixed(2)}</Text>
+                  <Text style={[typography.h3, styles.itemPrice]}>{formatCurrency(snack.price * snack.quantity)}</Text>
                 </View>
               ))}
             </View>
@@ -203,7 +216,7 @@ export const SummaryScreen = ({ navigation, route }: any) => {
                 <Text style={styles.taxText}>Incluye IVA (16%)</Text>
               </View>
               <Text style={[typography.h1, styles.grandTotalText]}>
-                ${(seats.length > 0 ? grandTotal : 57.50).toFixed(2)}
+                {formatCurrency(seats.length > 0 ? grandTotal : 845)}
               </Text>
             </View>
 

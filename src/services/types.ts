@@ -7,7 +7,26 @@ export interface UserData {
   phone: string;
   photoURL?: string;
   role: 'client' | 'admin';
+  notificationSettings?: NotificationSettings;
+  paymentMethods?: PaymentMethod[];
   createdAt: FieldValue | Date;
+}
+
+export interface NotificationSettings {
+  reservationUpdates: boolean;
+  movieReminders: boolean;
+  promotions: boolean;
+  emailNotifications: boolean;
+}
+
+export interface PaymentMethod {
+  id: string;
+  type: 'visa' | 'mastercard' | 'amex' | 'other';
+  last4: string;
+  expiry: string;
+  cardholder: string;
+  isDefault: boolean;
+  createdAt?: FieldValue | Date;
 }
 
 export interface MovieData {
@@ -57,6 +76,10 @@ export interface ReservationData {
   userId: string;
   movieId: string;
   movieTitle?: string;
+  moviePosterUrl?: string;
+  movieFormat?: string;
+  showtimeLabel?: string;
+  room?: string;
   cinemaId: string;
   scheduleId: string;
   seats: string[];

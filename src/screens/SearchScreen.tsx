@@ -16,7 +16,7 @@ import {
 } from '../data/recentMovies';
 
 const FALLBACK_MOVIES = RECENT_MOVIE_LIST.map((movie) => normalizeReservationMovie(movie));
-const CATEGORIES = ['Todos', 'Acción', 'Aventura', 'Ciencia Ficción', 'Fantasía', 'Familiar', 'Comedia', 'Horror', 'Thriller'];
+const CATEGORIES = ['Todos', 'Acción', 'Aventura', 'Ciencia ficción', 'Fantasía', 'Familiar', 'Comedia', 'Terror', 'Suspenso'];
 
 const mergeMovies = (remoteMovies: ReservationMovie[]) => {
   const movieMap = new Map<string, ReservationMovie>();
@@ -97,7 +97,7 @@ export const SearchScreen = ({ navigation }: any) => {
         <View style={styles.heroSection}>
           <Text style={[typography.h1, styles.heroTitle]}>Explorar cartelera</Text>
           <Text style={[typography.bodyMd, styles.heroSubtitle]}>
-            Encuentra estrenos recientes, formatos premium y funciones disponibles.
+            Encuentra estrenos, formatos premium y funciones disponibles en Centro Plaza Chinandega.
           </Text>
         </View>
 
@@ -169,7 +169,7 @@ export const SearchScreen = ({ navigation }: any) => {
         </View>
 
         <View style={[styles.section, { marginBottom: spacing.xl }]}>
-          <Text style={[typography.h3, styles.sectionTitle]}>Búsquedas Recientes</Text>
+          <Text style={[typography.h3, styles.sectionTitle]}>Búsquedas recientes</Text>
           <View style={styles.recentList}>
             <TouchableOpacity style={styles.recentItem}>
               <Ionicons name="time-outline" size={20} color={colors.secondary} />

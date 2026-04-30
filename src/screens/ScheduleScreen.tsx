@@ -8,6 +8,7 @@ import { spacing, borderRadius } from '../theme/spacing';
 import { typography } from '../theme/typography';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { getMovieImage, normalizeReservationMovie } from '../data/recentMovies';
+import { APP_NAME, CINEMA_LOCATION } from '../config/locale';
 
 const DATES = [
   { id: '1', dayName: 'HOY', dayNum: '14', month: 'OCT' },
@@ -31,16 +32,19 @@ export const ScheduleScreen = ({ navigation, route }: any) => {
   const [selectedDate, setSelectedDate] = useState(DATES[0].id);
   const insets = useSafeAreaInsets();
   const movie = normalizeReservationMovie(route.params?.movie);
+  const selectedFormat = route.params?.selectedFormat || 'IMAX 3D';
 
   const handleBack = () => {
     navigation.goBack();
   };
 
-  const handleSelectTime = (scheduleId: string) => {
+  const handleSelectTime = (show: typeof SHOWTIMES[number]) => {
     navigation.navigate('Seats', {
       movie,
       movieId: movie.id,
-      scheduleId,
+      scheduleId: show.id,
+      selectedFormat,
+      showtime: show,
     });
   };
 
@@ -56,7 +60,7 @@ export const ScheduleScreen = ({ navigation, route }: any) => {
               <Ionicons name="arrow-back" size={24} color={colors.onSurface} />
             </TouchableOpacity>
             <Ionicons name="film" size={24} color={colors.primaryContainer} />
-            <Text style={[typography.h2, styles.logoText, { fontSize: 20 }]}>CineNow</Text>
+            <Text style={[typography.h2, styles.logoText, { fontSize: 20 }]}>{APP_NAME}</Text>
           </View>
           <View style={styles.headerActions}>
             <Ionicons name="search" size={24} color={colors.secondary} />
@@ -86,7 +90,7 @@ export const ScheduleScreen = ({ navigation, route }: any) => {
           <View style={styles.heroContent}>
             <View style={styles.badgesRow}>
               <View style={styles.badgePrimary}>
-                <Text style={styles.badgeTextPrimary}>IMAX</Text>
+                <Text style={styles.badgeTextPrimary}>{selectedFormat}</Text>
               </View>
               <BlurView intensity={20} tint="light" style={styles.badgeSecondary}>
                 <Text style={styles.badgeTextSecondary}>PG-13</Text>
@@ -94,6 +98,7 @@ export const ScheduleScreen = ({ navigation, route }: any) => {
             </View>
             <Text style={[typography.h1, styles.heroTitle]}>{movie.title}</Text>
             <Text style={[typography.bodyMd, styles.heroDesc]}>{movie.description}</Text>
+            <Text style={styles.locationText}>{CINEMA_LOCATION}</Text>
           </View>
         </View>
 
@@ -121,7 +126,7 @@ export const ScheduleScreen = ({ navigation, route }: any) => {
         {/* Showtimes List */}
         <View style={styles.showtimesContainer}>
           <View style={styles.showtimesHeader}>
-            <Text style={typography.h2}>Horarios Disponibles</Text>
+            <Text style={typography.h2}>Horarios disponibles</Text>
             <Ionicons name="options-outline" size={24} color={colors.secondary} />
           </View>
 
@@ -160,7 +165,7 @@ export const ScheduleScreen = ({ navigation, route }: any) => {
                 {show.available ? (
                   <TouchableOpacity 
                     style={styles.btnSelect}
-                    onPress={() => handleSelectTime(show.id)}
+                    onPress={() => handleSelectTime(show)}
                     activeOpacity={0.8}
                   >
                     <Text style={styles.btnSelectText}>Seleccionar</Text>
@@ -183,9 +188,9 @@ export const ScheduleScreen = ({ navigation, route }: any) => {
           <BlurView intensity={20} tint="dark" style={styles.disclosureBox}>
             <Ionicons name="information-circle" size={24} color={colors.primaryContainer} style={{ marginTop: 2 }} />
             <View style={styles.disclosureTextContent}>
-              <Text style={styles.disclosureTitle}>Precios y Promociones</Text>
+              <Text style={styles.disclosureTitle}>Precios y promociones</Text>
               <Text style={styles.disclosureText}>
-                Los lunes y miércoles cuentan con un 20% de descuento en salas tradicionales. Precios sujetos a cambios según formato (IMAX/Dolby).
+                Los lunes y miércoles hay 20% de descuento en salas tradicionales de Centro Plaza Chinandega. Precios en córdobas y sujetos a cambios según formato.
               </Text>
             </View>
           </BlurView>
@@ -300,6 +305,12 @@ const styles = StyleSheet.create({
   heroDesc: {
     color: colors.secondary,
     maxWidth: 320,
+  },
+  locationText: {
+    color: colors.primaryContainer,
+    fontFamily: 'Inter',
+    fontSize: 12,
+    fontWeight: '700',
   },
   datePickerContainer: {
     backgroundColor: 'rgba(13, 13, 13, 0.95)',

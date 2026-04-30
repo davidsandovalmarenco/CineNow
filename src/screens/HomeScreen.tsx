@@ -9,6 +9,7 @@ import { typography } from '../theme/typography';
 import { MovieCard } from '../components/MovieCard';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { RECENT_MOVIE_LIST, RECENT_MOVIES } from '../data/recentMovies';
+import { APP_NAME, CINEMA_LOCATION } from '../config/locale';
 
 const HERO_MOVIE = {
   ...RECENT_MOVIES.superman,
@@ -89,7 +90,7 @@ export const HomeScreen = ({ navigation }: any) => {
         <View style={styles.headerContent}>
           <View style={styles.logoContainer}>
             <Ionicons name="film" size={24} color={colors.primaryContainer} />
-            <Text style={[typography.h2, styles.logoText, { fontSize: 20 }]}>CineNow</Text>
+            <Text style={[typography.h2, styles.logoText, { fontSize: 20 }]}>{APP_NAME}</Text>
           </View>
           <TouchableOpacity style={styles.profileBtn} onPress={() => navigation.navigate('ProfileTab')}>
             <Image 
@@ -114,7 +115,7 @@ export const HomeScreen = ({ navigation }: any) => {
           <View style={styles.heroContent}>
             <View style={styles.badgesRow}>
               <View style={styles.badgePrimary}>
-                <Text style={styles.badgeTextPrimary}>IMAX</Text>
+                <Text style={styles.badgeTextPrimary}>CHINANDEGA</Text>
               </View>
               <BlurView intensity={40} tint="light" style={styles.badgeSecondary}>
                 <Text style={styles.badgeTextSecondary}>ESTRENO</Text>
@@ -123,6 +124,7 @@ export const HomeScreen = ({ navigation }: any) => {
             
             <Text style={[typography.h1, styles.heroTitle]}>{HERO_MOVIE.title}</Text>
             <Text style={[typography.bodyMd, styles.heroDesc]}>{HERO_MOVIE.description}</Text>
+            <Text style={styles.locationText}>{CINEMA_LOCATION}</Text>
             
             <View style={styles.heroActions}>
               <TouchableOpacity 
@@ -135,7 +137,7 @@ export const HomeScreen = ({ navigation }: any) => {
               </TouchableOpacity>
               
               <TouchableOpacity style={styles.btnTrailer} activeOpacity={0.8}>
-                <Text style={styles.btnTrailerText}>Trailer</Text>
+                <Text style={styles.btnTrailerText}>Tráiler</Text>
               </TouchableOpacity>
             </View>
           </View>
@@ -326,6 +328,13 @@ const styles = StyleSheet.create({
   heroDesc: {
     maxWidth: 320,
     marginBottom: spacing.xs,
+  },
+  locationText: {
+    color: colors.primaryContainer,
+    fontFamily: 'Inter',
+    fontSize: 12,
+    fontWeight: '700',
+    textTransform: 'uppercase',
   },
   heroActions: {
     flexDirection: 'row',

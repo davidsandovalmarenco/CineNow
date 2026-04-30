@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { View, Text, StyleSheet, Image, ScrollView, TouchableOpacity, StatusBar } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import { LinearGradient } from 'expo-linear-gradient';
@@ -10,16 +10,10 @@ import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { getMovieImage, normalizeReservationMovie } from '../data/recentMovies';
 
 const MOVIE_DETAIL_EXTRAS = {
-  cast: [
-    { id: '1', name: 'Julian Drake', role: 'Protagonista', image: 'https://lh3.googleusercontent.com/aida-public/AB6AXuDDHn9udIE_nbyOxVXx487ZH_D6p1kXTy-W5t0mmg7_zmaq86XwUBhtcPztEUsl0Vw4V1081xpcfLOVHo7kxD-qgSmCWqSn0z7lemY_Ps6hRkaDzqoDnJZH_D3ihdjUkVRZkrB5p1q_BW50OnbFoYrUB3gLlMORVIsMZGB_ZoRNq1d0Fx3ntwk3MCB-cOmGfSGvT1LF47ZrmeQ5gq-ljoql-AUKJqNwREEuXjYOMWRC0TAmrf6dj4rECa4z-3bBvqiC7uzqLPp7WKA' },
-    { id: '2', name: 'Elena Mars', role: 'Antagonista', image: 'https://lh3.googleusercontent.com/aida-public/AB6AXuDA3TLaFfYZIQAF_jpiUWIp7kFe-vBCjTee1vR36QsyHf3cavoYNq23CTulybbaRGKBbr5XvWXvVsi1tGWRbKSsNFKGUNPBdzL1dqMVE3q0eyIlrxorRYTbTQEkx3lpCxZO6E6fJBNl6XtEaKaemx-7zKU8BDKXe2DhSn6X_EE0JMY_nvVXanXB_5aVrJZ8K7NwxGtj_S0hptuoJjoQPm9KKMdzvF8NFrbW9diH-FF2xBxKrAZFz3FeRY56r5mY2oOLrpsgvIn2hNk' },
-    { id: '3', name: 'Robert Smith', role: 'Secundario', image: 'https://lh3.googleusercontent.com/aida-public/AB6AXuACPdbot-_sfPEWvN_3V25aopM9xz8sFxilyyxvwHlXH_Sn6OUuZpHbRKHy1s3oOpW-Dc3hEuc7kAPdyORB35Rr2PHMF_rCmjPAJORNgm9dFhqPr93FFX58c9HbkB3S3FcQWNVqhc09_hc9vcFiXeF_yR8Q-fpTzo7FCnIKm7mzsPwwR83MMnGaA740wWir9fT-Z1ALivaxwkfM_AC2Gg--Hb40zqGjfn8aQuTwFliFHSQMmigovAAqUUP3W5ZhFLnBRwE-CCS_N20' },
-    { id: '4', name: 'Aria Luna', role: 'Secundario', image: 'https://lh3.googleusercontent.com/aida-public/AB6AXuD8JPWu4eQqKFRKN2_eYR8bBO8yE3evCxph-dyJ2FKfsmC3wI_47iZ70KgDADgibmSWClSWTa3k9ldKcddQQnA3ciMGpLaY_0KcIi5P3BUxvrGEfFMT-CEN54L0N3mUhKI1vHDZwxsRD5pu6j4oJhLMCyKBk-njgJDAY8EeuVdywDqnHaiU00ikkayyOSPU1-8Cq_BIdcLYbELeChSxYc8XD5L4VGCkZByDKuVXMH1pNEMxlxE_zvoHr8KbWGE7kNlTx9IwJWAObso' }
-  ],
   formats: [
-    { id: 'f1', name: '4DX', icon: 'water-outline', active: false },
-    { id: 'f2', name: 'IMAX 3D', icon: 'videocam-outline', active: true },
-    { id: 'f3', name: 'Dolby Atmos', icon: 'volume-high-outline', active: false },
+    { id: 'f1', name: '4DX', icon: 'water-outline' },
+    { id: 'f2', name: 'IMAX 3D', icon: 'videocam-outline' },
+    { id: 'f3', name: 'Dolby Atmos', icon: 'volume-high-outline' },
   ]
 };
 
@@ -28,9 +22,10 @@ const HEADER_HEIGHT = 530;
 export const MovieDetailScreen = ({ navigation, route }: any) => {
   const insets = useSafeAreaInsets();
   const movie = normalizeReservationMovie(route.params?.movie);
+  const [selectedFormat, setSelectedFormat] = useState(MOVIE_DETAIL_EXTRAS.formats[1].name);
 
   const handleSchedulePress = () => {
-    navigation.navigate('Schedule', { movie });
+    navigation.navigate('Schedule', { movie, selectedFormat });
   };
 
   return (
@@ -91,7 +86,7 @@ export const MovieDetailScreen = ({ navigation, route }: any) => {
         <View style={styles.section}>
           <Text style={[typography.h2, styles.sectionTitle]}>Sinopsis</Text>
           <Text style={[typography.bodyLg, styles.synopsisText]}>
-            {movie.synopsis}
+            {movie.synopsis || 'Sinopsis no disponible por el momento.'}
           </Text>
         </View>
 
@@ -105,7 +100,7 @@ export const MovieDetailScreen = ({ navigation, route }: any) => {
           </View>
           
           <View style={styles.castGrid}>
-            {MOVIE_DETAIL_EXTRAS.cast.map((actor) => (
+            {movie.cast?.map((actor) => (
               <View key={actor.id} style={styles.castCardWrapper}>
                 <BlurView intensity={20} tint="dark" style={styles.castCard}>
                   <Image source={{ uri: actor.image }} style={styles.castImage} />
@@ -121,30 +116,39 @@ export const MovieDetailScreen = ({ navigation, route }: any) => {
         <View style={[styles.section, { marginBottom: spacing.xl * 2 }]}>
           <Text style={[typography.h2, styles.sectionTitle]}>Formatos disponibles</Text>
           <ScrollView horizontal showsHorizontalScrollIndicator={false} contentContainerStyle={styles.formatsScroll}>
-            {MOVIE_DETAIL_EXTRAS.formats.map((format) => (
-              <BlurView 
-                key={format.id} 
-                intensity={20} 
-                tint="dark" 
-                style={[
-                  styles.formatCard, 
-                  format.active && styles.formatCardActive
-                ]}
-              >
-                <Ionicons 
-                  name={format.icon as any} 
-                  size={24} 
-                  color={format.active ? colors.primaryContainer : colors.onSurface} 
-                />
-                <Text style={[
-                  typography.button, 
-                  styles.formatText,
-                  format.active && styles.formatTextActive
-                ]}>
-                  {format.name}
-                </Text>
-              </BlurView>
-            ))}
+            {MOVIE_DETAIL_EXTRAS.formats.map((format) => {
+              const isSelected = selectedFormat === format.name;
+
+              return (
+                <TouchableOpacity
+                  key={format.id}
+                  activeOpacity={0.85}
+                  onPress={() => setSelectedFormat(format.name)}
+                >
+                  <BlurView
+                    intensity={20}
+                    tint="dark"
+                    style={[
+                      styles.formatCard,
+                      isSelected && styles.formatCardActive
+                    ]}
+                  >
+                    <Ionicons
+                      name={format.icon as any}
+                      size={24}
+                      color={isSelected ? colors.primaryContainer : colors.onSurface}
+                    />
+                    <Text style={[
+                      typography.button,
+                      styles.formatText,
+                      isSelected && styles.formatTextActive
+                    ]}>
+                      {format.name}
+                    </Text>
+                  </BlurView>
+                </TouchableOpacity>
+              );
+            })}
           </ScrollView>
         </View>
 
