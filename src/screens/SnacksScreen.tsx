@@ -1,8 +1,10 @@
 import React, { useState, useEffect } from 'react';
-import { View, Text, StyleSheet, ScrollView, Image, TouchableOpacity, SafeAreaView, ActivityIndicator } from 'react-native';
+import { View, Text, StyleSheet, ScrollView, Image, TouchableOpacity, SafeAreaView, ActivityIndicator, StatusBar } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
+import { BlurView } from 'expo-blur';
 import { colors } from '../theme/colors';
 import { spacing, borderRadius } from '../theme/spacing';
+import { typography } from '../theme/typography';
 import { snackService } from '../services/snackService';
 import { SnackData } from '../services/types';
 
@@ -57,35 +59,44 @@ export const SnacksScreen = ({ navigation, route }: any) => {
   if (isLoading) {
     return (
       <View style={[styles.container, styles.centered]}>
-        <ActivityIndicator size="large" color={colors.primary} />
+        <ActivityIndicator size="large" color={colors.primaryContainer} />
       </View>
     );
   }
 
   return (
-    <SafeAreaView style={styles.container}>
-      <View style={styles.header}>
-        <TouchableOpacity onPress={() => navigation.goBack()} style={styles.backBtn}>
-          <Ionicons name="arrow-back" size={24} color={colors.text} />
-        </TouchableOpacity>
-        <Text style={styles.headerTitle}>Dulcería</Text>
-        <View style={styles.placeholder} />
-      </View>
+    <View style={styles.container}>
+      <StatusBar barStyle="light-content" translucent backgroundColor="transparent" />
+
+      {/* Header */}
+      <BlurView intensity={80} tint="dark" style={styles.header}>
+        <SafeAreaView>
+          <View style={styles.headerContent}>
+            <View style={styles.logoContainer}>
+              <TouchableOpacity onPress={() => navigation.goBack()} style={{ marginRight: spacing.sm }}>
+                <Ionicons name="arrow-back" size={24} color={colors.onSurface} />
+              </TouchableOpacity>
+              <Ionicons name="film" size={24} color={colors.primaryContainer} />
+              <Text style={[typography.h2, styles.logoText, { fontSize: 20 }]}>CineNow</Text>
+            </View>
+          </View>
+        </SafeAreaView>
+      </BlurView>
 
       <ScrollView showsVerticalScrollIndicator={false} contentContainerStyle={styles.scrollContent}>
         <View style={styles.promoSection}>
-          <Text style={styles.promoTitle}>¿Algo para picar?</Text>
-          <Text style={styles.promoSubtitle}>Completa tu experiencia con nuestros mejores combos</Text>
+          <Text style={[typography.h1, styles.promoTitle]}>¿Algo para picar?</Text>
+          <Text style={[typography.bodyMd, styles.promoSubtitle]}>Completa tu experiencia con nuestros mejores combos</Text>
         </View>
 
         {snacks.map((snack) => {
           const snackId = snack.id || Math.random().toString();
           return (
-            <View key={snackId} style={styles.snackCard}>
+            <BlurView key={snackId} intensity={20} tint="dark" style={styles.snackCard}>
               <Image source={{ uri: snack.imageUrl }} style={styles.snackImg} />
               <View style={styles.snackInfo}>
-                <Text style={styles.snackName}>{snack.name}</Text>
-                <Text style={styles.snackDesc} numberOfLines={2}>{snack.description}</Text>
+                <Text style={[typography.h3, styles.snackName]}>{snack.name}</Text>
+                <Text style={[typography.bodyMd, styles.snackDesc]} numberOfLines={2}>{snack.description}</Text>
                 <Text style={styles.snackPrice}>${snack.price.toFixed(2)}</Text>
               </View>
               <View style={styles.counter}>
@@ -93,85 +104,97 @@ export const SnacksScreen = ({ navigation, route }: any) => {
                   style={styles.counterBtn} 
                   onPress={() => updateQuantity(snackId, -1)}
                 >
-                  <Ionicons name="remove" size={20} color={colors.text} />
+                  <Ionicons name="remove" size={20} color={colors.onSurface} />
                 </TouchableOpacity>
                 <Text style={styles.counterText}>{cart[snackId] || 0}</Text>
                 <TouchableOpacity 
                   style={styles.counterBtn} 
                   onPress={() => updateQuantity(snackId, 1)}
                 >
-                  <Ionicons name="add" size={20} color={colors.text} />
+                  <Ionicons name="add" size={20} color={colors.onSurface} />
                 </TouchableOpacity>
               </View>
-            </View>
+            </BlurView>
           );
         })}
       </ScrollView>
 
-      <View style={styles.footer}>
-        <View style={styles.totalContainer}>
-          <Text style={styles.totalLabel}>TOTAL DULCERÍA</Text>
-          <Text style={styles.totalValue}>${calculateTotal().toFixed(2)}</Text>
-        </View>
-        <TouchableOpacity style={styles.continueBtn} onPress={handleContinue}>
-          <Text style={styles.continueBtnText}>Continuar</Text>
-          <Ionicons name="arrow-forward" size={20} color={colors.text} />
-        </TouchableOpacity>
-      </View>
-    </SafeAreaView>
+      {/* Footer */}
+      <BlurView intensity={80} tint="dark" style={styles.footer}>
+        <SafeAreaView>
+          <View style={styles.footerContent}>
+            <View style={styles.totalContainer}>
+              <Text style={[typography.labelCaps, styles.totalLabel]}>TOTAL DULCERÍA</Text>
+              <Text style={[typography.h2, styles.totalValue]}>${calculateTotal().toFixed(2)}</Text>
+            </View>
+            <TouchableOpacity 
+              style={styles.continueBtn} 
+              onPress={handleContinue}
+              activeOpacity={0.9}
+            >
+              <Text style={styles.continueBtnText}>Continuar</Text>
+              <Ionicons name="chevron-forward" size={20} color={colors.onPrimaryContainer} />
+            </TouchableOpacity>
+          </View>
+        </SafeAreaView>
+      </BlurView>
+    </View>
   );
 };
 
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: colors.background,
+    backgroundColor: '#0D0D0D',
   },
   centered: {
     justifyContent: 'center',
     alignItems: 'center',
   },
   header: {
+    position: 'absolute',
+    top: 0,
+    width: '100%',
+    zIndex: 50,
+    borderBottomWidth: 1,
+    borderBottomColor: 'rgba(255, 255, 255, 0.05)',
+  },
+  headerContent: {
+    height: 64,
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'center',
-    paddingHorizontal: spacing.m,
-    paddingVertical: spacing.s,
+    paddingHorizontal: spacing.containerMargin,
   },
-  headerTitle: {
-    color: colors.text,
-    fontSize: 20,
-    fontWeight: 'bold',
+  logoContainer: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: spacing.xs,
   },
-  backBtn: {
-    padding: spacing.xs,
-  },
-  placeholder: {
-    width: 40,
+  logoText: {
+    color: colors.primaryContainer,
   },
   scrollContent: {
-    padding: spacing.m,
-    paddingBottom: 120,
+    paddingTop: 100, // space for header
+    paddingBottom: 160, // space for footer
+    paddingHorizontal: spacing.containerMargin,
   },
   promoSection: {
-    marginBottom: spacing.l,
+    marginBottom: spacing.xl,
   },
   promoTitle: {
-    color: colors.text,
-    fontSize: 28,
-    fontWeight: 'bold',
+    color: colors.onSurface,
+    marginBottom: spacing.xs,
   },
   promoSubtitle: {
-    color: colors.textSecondary,
-    fontSize: 14,
-    marginTop: 4,
+    color: colors.onSurfaceVariant,
   },
   snackCard: {
     flexDirection: 'row',
-    backgroundColor: colors.surface,
-    borderRadius: borderRadius.l,
-    padding: spacing.m,
-    marginBottom: spacing.m,
+    backgroundColor: 'rgba(28, 28, 28, 0.4)',
+    borderRadius: borderRadius.xl,
+    padding: spacing.md,
+    marginBottom: spacing.md,
     alignItems: 'center',
     borderWidth: 1,
     borderColor: 'rgba(255,255,255,0.05)',
@@ -179,32 +202,32 @@ const styles = StyleSheet.create({
   snackImg: {
     width: 80,
     height: 80,
-    borderRadius: borderRadius.m,
+    borderRadius: borderRadius.lg,
+    backgroundColor: colors.surfaceContainer,
   },
   snackInfo: {
     flex: 1,
-    marginLeft: spacing.m,
+    marginLeft: spacing.md,
+    justifyContent: 'center',
   },
   snackName: {
-    color: colors.text,
-    fontSize: 16,
-    fontWeight: 'bold',
+    color: colors.onSurface,
   },
   snackDesc: {
-    color: colors.textSecondary,
-    fontSize: 12,
+    color: colors.onSurfaceVariant,
     marginVertical: 4,
   },
   snackPrice: {
-    color: colors.primary,
+    color: colors.primaryContainer, // text-red-600
     fontSize: 16,
     fontWeight: 'bold',
+    fontFamily: 'Inter',
   },
   counter: {
     flexDirection: 'row',
     alignItems: 'center',
     backgroundColor: 'rgba(255,255,255,0.05)',
-    borderRadius: borderRadius.m,
+    borderRadius: borderRadius.full,
     padding: 4,
   },
   counterBtn: {
@@ -212,55 +235,66 @@ const styles = StyleSheet.create({
     height: 32,
     justifyContent: 'center',
     alignItems: 'center',
+    backgroundColor: 'rgba(255, 255, 255, 0.05)',
+    borderRadius: 16,
   },
   counterText: {
-    color: colors.text,
+    color: colors.onSurface,
     fontSize: 16,
     fontWeight: 'bold',
-    marginHorizontal: spacing.s,
+    marginHorizontal: spacing.sm,
     minWidth: 20,
     textAlign: 'center',
+    fontFamily: 'Inter',
   },
   footer: {
     position: 'absolute',
     bottom: 0,
     left: 0,
     right: 0,
-    backgroundColor: 'rgba(28,28,28,0.98)',
-    padding: spacing.l,
+    borderTopWidth: 1,
+    borderTopColor: 'rgba(255,255,255,0.1)',
+    borderTopLeftRadius: 24,
+    borderTopRightRadius: 24,
+    overflow: 'hidden',
+  },
+  footerContent: {
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'space-between',
-    borderTopLeftRadius: borderRadius.l,
-    borderTopRightRadius: borderRadius.l,
+    paddingHorizontal: spacing.containerMargin,
+    paddingTop: spacing.sm,
+    paddingBottom: spacing.lg,
   },
   totalContainer: {
     flex: 1,
   },
   totalLabel: {
-    color: colors.textSecondary,
-    fontSize: 10,
-    fontWeight: 'bold',
-    letterSpacing: 1,
+    color: colors.onSurfaceVariant,
+    marginBottom: 4,
   },
   totalValue: {
-    color: colors.text,
-    fontSize: 24,
-    fontWeight: 'bold',
+    color: colors.onSurface,
   },
   continueBtn: {
-    backgroundColor: colors.primary,
+    backgroundColor: colors.primaryContainer,
     flexDirection: 'row',
-    height: 56,
-    paddingHorizontal: spacing.xl,
-    borderRadius: borderRadius.m,
-    justifyContent: 'center',
     alignItems: 'center',
-    gap: spacing.s,
+    justifyContent: 'center',
+    paddingVertical: spacing.md,
+    paddingHorizontal: spacing.xl,
+    borderRadius: borderRadius.lg,
+    gap: spacing.xs,
+    shadowColor: colors.primaryContainer,
+    shadowOffset: { width: 0, height: 4 },
+    shadowOpacity: 0.2,
+    shadowRadius: 10,
+    elevation: 8,
   },
   continueBtnText: {
-    color: colors.text,
+    color: colors.onPrimaryContainer,
+    fontFamily: 'Inter',
+    fontWeight: '600',
     fontSize: 16,
-    fontWeight: 'bold',
   },
 });

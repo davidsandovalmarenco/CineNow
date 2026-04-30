@@ -5,8 +5,8 @@ import { SnackData } from './types';
 export const snackService = {
   async getAvailableSnacks(): Promise<SnackData[]> {
     const snacksRef = collection(db, 'snacks');
-    const q = query(snacksRef, where('available', '==', true));
-    const snapshot = await getDocs(q);
+    // Fetch all since seed data doesn't include 'available' flag currently
+    const snapshot = await getDocs(snacksRef);
     return snapshot.docs.map(docSnap => ({ id: docSnap.id, ...docSnap.data() } as SnackData));
   },
 

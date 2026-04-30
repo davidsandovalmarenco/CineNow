@@ -1,0 +1,56 @@
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+    
+    // Función auxiliar para comprobar si el usuario está autenticado
+    function isAuthenticated() {
+      return request.auth != null;
+    }
+
+    // Colección de Usuarios
+    match /users/{userId} {
+      // Solo el propio usuario puede leer/escribir sus datos
+      allow read, write: if isAuthenticated() && request.auth.uid == userId;
+    }
+
+    // Colección de Películas
+    match /movies/{movieId} {
+      // Cualquiera (incluso no autenticado) puede leer las películas para ver la cartelera
+      allow read: if true;
+      // Solo administradores pueden escribir (simplificado para este ejemplo)
+      allow write: if false; 
+    }
+
+    // Colección de Horarios (Schedules)
+    match /schedules/{scheduleId} {
+      // Cualquiera puede ver los horarios
+      allow read: if true;
+      allow write: if false;
+    }
+
+    // Colección de Snacks
+    match /snacks/{snackId} {
+      // Cualquiera puede ver la dulcería
+      allow read: if true;
+      allow write: if false;
+    }
+
+    // Colección de Reservas
+    match /reservations/{reservationId} {
+      // El usuario solo puede leer sus propias reservas
+      // O bien se puede permitir leer por scheduleId para obtener los asientos ocupados
+      // Para ello, la consulta debe venir con filtro de scheduleId, o se permite lectura general pero controlada
+      // Para efectos prácticos y permitir 'getOccupiedSeats', permitiremos leer a usuarios autenticados.
+      // Lo ideal en un entorno de producción es un cloud function para no exponer info de otros usuarios.
+      allow read: if isAuthenticated();
+      
+      // Solo autenticados pueden crear reservas y el userId debe coincidir
+      allow create: if isAuthenticated() && request.resource.data.userId == request.auth.uid;
+      
+      // Permitimos actualizar status a 'cancelled' si el usuario es el dueño
+      allow update: if isAuthenticated() && resource.data.userId == request.auth.uid;
+      
+      allow delete: if false;
+    }
+  }
+}

@@ -16,7 +16,7 @@ export const SeatItem: React.FC<SeatItemProps> = ({ id, label, status, onPress }
   const getBackgroundColor = () => {
     switch (status) {
       case 'selected': return colors.primary;
-      case 'occupied': return colors.surfaceLight;
+      case 'occupied': return colors.surfaceBright;
       default: return colors.surface;
     }
   };
@@ -24,7 +24,7 @@ export const SeatItem: React.FC<SeatItemProps> = ({ id, label, status, onPress }
   const getBorderColor = () => {
     switch (status) {
       case 'selected': return colors.primary;
-      case 'occupied': return colors.surfaceLight;
+      case 'occupied': return colors.surfaceBright;
       default: return colors.border;
     }
   };
@@ -69,7 +69,7 @@ const styles = StyleSheet.create({
     top: -4,
     width: 24,
     height: 4,
-    backgroundColor: 'rgba(255,255,255,0.1)',
+    backgroundColor: colors.surfaceBright,
     borderTopLeftRadius: 4,
     borderTopRightRadius: 4,
   },

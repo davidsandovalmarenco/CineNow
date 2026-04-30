@@ -1,133 +1,145 @@
 import React, { useState } from 'react';
-import { View, Text, StyleSheet, ImageBackground, TouchableOpacity, ScrollView } from 'react-native';
-import { useForm, Controller } from 'react-hook-form';
-import { yupResolver } from '@hookform/resolvers/yup';
+import { View, Text, StyleSheet, ImageBackground, TouchableOpacity, SafeAreaView, KeyboardAvoidingView, Platform, ScrollView } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
+import { LinearGradient } from 'expo-linear-gradient';
+import { BlurView } from 'expo-blur';
 import { colors } from '../theme/colors';
 import { spacing, borderRadius } from '../theme/spacing';
+import { typography } from '../theme/typography';
 import { AppInput } from '../components/AppInput';
 import { AppButton } from '../components/AppButton';
-import { loginSchema } from '../validations/authSchemas';
 import { useAuth } from '../hooks/useAuth';
 
+const LOGIN_BG_URL = 'https://lh3.googleusercontent.com/aida-public/AB6AXuCUm40hUHGjdHQG4CgTyuFPWt4jC3gXmfxzFIQBBxF9S4myd02h6EIFkA89DXjq1SIgvfawtCC7Wn0wEto7J38uUbbKFiCQPChC6EHf7Ieyp6Koi6riW_6JFcJo9vdHJICg8ypOTZwuTPUhS0fRq8LzXPtLjroSNJrZko8XEG8UTApf53UvCuOnGp4MkP6QO7NEU_aDlZ4uSireuUFxE5XQrkkftU5P_iYdWZZ5ipJ7vzzENmEXuZI72JcN4lLiv3tKhgTCLQWI8ZA';
+
 export const LoginScreen = ({ navigation }: any) => {
-  const { login, isLoading } = useAuth();
+  const [email, setEmail] = useState('');
+  const [password, setPassword] = useState('');
   const [showPassword, setShowPassword] = useState(false);
+  const [error, setError] = useState('');
+  const { login, error: authError, isLoading } = useAuth();
 
-  const { control, handleSubmit, formState: { errors } } = useForm({
-    resolver: yupResolver(loginSchema),
-    defaultValues: { email: '', password: '' }
-  });
-
-  const onSubmit = (data: any) => {
-    login(data);
-    // After login, useAuth handles state which AppNavigator listens to
+  const handleLogin = async () => {
+    if (!email || !password) {
+      setError('Por favor, ingresa tu correo y contraseña.');
+      return;
+    }
+    setError('');
+    await login({ email, password });
   };
 
   return (
     <View style={styles.container}>
       <ImageBackground
-        source={{ uri: 'https://lh3.googleusercontent.com/aida-public/AB6AXuCUm40hUHGjdHQG4CgTyuFPWt4jC3gXmfxzFIQBBxF9S4myd02h6EIFkA89DXjq1SIgvfawtCC7Wn0wEto7J38uUbbKFiCQPChC6EHf7Ieyp6Koi6riW_6JFcJo9vdHJICg8ypOTZwuTPUhS0fRq8LzXPtLjroSNJrZko8XEG8UTApf53UvCuOnGp4MkP6QO7NEU_aDlZ4uSireuUFxE5XQrkkftU5P_iYdWZZ5ipJ7vzzENmEXuZI72JcN4lLiv3tKhgTCLQWI8ZA' }}
+        source={{ uri: LOGIN_BG_URL }}
         style={styles.backgroundImage}
-        resizeMode="cover"
+        imageStyle={{ opacity: 0.4 }}
       >
-        <View style={styles.overlay} />
+        <LinearGradient
+          colors={['transparent', 'rgba(13, 13, 13, 0.6)', colors.background]}
+          locations={[0, 0.5, 1]}
+          style={styles.gradient}
+        />
         
-        <ScrollView contentContainerStyle={styles.scrollContent} keyboardShouldPersistTaps="handled">
-          
-          <View style={styles.header}>
-            <View style={styles.logoContainer}>
-              <Ionicons name="film-outline" size={32} color={colors.text} />
-            </View>
-            <Text style={styles.title}>CineNow</Text>
-            <Text style={styles.subtitle}>Disfruta de la mejor experiencia cinematográfica de la ciudad.</Text>
-          </View>
-
-          <View style={styles.glassPanel}>
-            <Controller
-              control={control}
-              name="email"
-              render={({ field: { onChange, onBlur, value } }) => (
-                <AppInput
-                  label="CORREO ELECTRÓNICO"
-                  placeholder="ejemplo@cine.com"
-                  autoCapitalize="none"
-                  keyboardType="email-address"
-                  onBlur={onBlur}
-                  onChangeText={onChange}
-                  value={value}
-                  error={errors.email?.message}
-                  leftIcon={<Ionicons name="mail-outline" size={20} color={colors.textSecondary} />}
-                />
-              )}
-            />
-
-            <View style={styles.passwordHeader}>
-              <Text style={styles.passwordLabel}>CONTRASEÑA</Text>
-              <TouchableOpacity>
-                <Text style={styles.forgotText}>¿Olvidaste la contraseña?</Text>
-              </TouchableOpacity>
-            </View>
-            
-            <Controller
-              control={control}
-              name="password"
-              render={({ field: { onChange, onBlur, value } }) => (
-                <AppInput
-                  placeholder="********"
-                  secureTextEntry={!showPassword}
-                  onBlur={onBlur}
-                  onChangeText={onChange}
-                  value={value}
-                  error={errors.password?.message}
-                  leftIcon={<Ionicons name="lock-closed-outline" size={20} color={colors.textSecondary} />}
-                  rightIcon={
-                    <TouchableOpacity onPress={() => setShowPassword(!showPassword)}>
-                      <Ionicons 
-                        name={showPassword ? "eye-off-outline" : "eye-outline"} 
-                        size={20} 
-                        color={colors.textSecondary} 
-                      />
-                    </TouchableOpacity>
-                  }
-                />
-              )}
-            />
-
-            <View style={styles.actions}>
-              <AppButton 
-                title="Iniciar sesión" 
-                onPress={handleSubmit(onSubmit)} 
-                isLoading={isLoading}
-              />
+        <SafeAreaView style={styles.safeArea}>
+          <KeyboardAvoidingView 
+            behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
+            style={styles.keyboardView}
+          >
+            <ScrollView 
+              contentContainerStyle={styles.scrollContent}
+              showsVerticalScrollIndicator={false}
+            >
               
-              <View style={styles.dividerContainer}>
-                <View style={styles.divider} />
-                <Text style={styles.dividerText}>O CONTINUAR CON</Text>
-                <View style={styles.divider} />
+              <View style={styles.headerContainer}>
+                <View style={styles.iconBox}>
+                  <Ionicons name="film" size={32} color={colors.onPrimaryContainer} />
+                </View>
+                <Text style={[typography.h1, styles.title]}>CineNow</Text>
+                <Text style={[typography.bodyMd, styles.subtitle]}>
+                  Disfruta de la mejor experiencia cinematográfica de la ciudad.
+                </Text>
               </View>
 
-              <View style={styles.socialButtons}>
-                <TouchableOpacity style={styles.socialBtn}>
-                  <Ionicons name="logo-google" size={18} color={colors.text} />
-                  <Text style={styles.socialBtnText}>Google</Text>
-                </TouchableOpacity>
-                <TouchableOpacity style={styles.socialBtn}>
-                  <Ionicons name="logo-apple" size={18} color={colors.text} />
-                  <Text style={styles.socialBtnText}>Apple</Text>
-                </TouchableOpacity>
+              <BlurView intensity={20} tint="dark" style={styles.glassPanel}>
+                <View style={styles.formContainer}>
+                  
+                  <AppInput
+                    label="CORREO ELECTRÓNICO"
+                    placeholder="ejemplo@cine.com"
+                    value={email}
+                    onChangeText={setEmail}
+                    keyboardType="email-address"
+                    autoCapitalize="none"
+                    leftIcon={<Ionicons name="mail" size={20} color={colors.secondary} />}
+                  />
+
+                  <View style={styles.passwordHeader}>
+                    <Text style={[typography.labelCaps, styles.passwordLabel, error ? { color: colors.error } : null]}>
+                      CONTRASEÑA
+                    </Text>
+                    <TouchableOpacity>
+                      <Text style={[typography.labelCaps, styles.forgotText]}>¿Olvidaste la contraseña?</Text>
+                    </TouchableOpacity>
+                  </View>
+                  
+                  <AppInput
+                    placeholder="********"
+                    value={password}
+                    onChangeText={setPassword}
+                    secureTextEntry={!showPassword}
+                    error={error || authError || ''}
+                    leftIcon={<Ionicons name="lock-closed" size={20} color={error || authError ? colors.error : colors.secondary} />}
+                    rightIcon={
+                      <TouchableOpacity onPress={() => setShowPassword(!showPassword)}>
+                        <Ionicons name={showPassword ? "eye" : "eye-off"} size={20} color={colors.secondary} />
+                      </TouchableOpacity>
+                    }
+                  />
+
+                  <View style={styles.actionsContainer}>
+                    <AppButton title={isLoading ? "Cargando..." : "Iniciar sesión"} onPress={handleLogin} disabled={isLoading} />
+
+                    <View style={styles.dividerContainer}>
+                      <View style={styles.dividerLine} />
+                      <Text style={[typography.labelCaps, styles.dividerText]}>O CONTINUAR CON</Text>
+                      <View style={styles.dividerLine} />
+                    </View>
+
+                    <View style={styles.socialButtonsContainer}>
+                      <AppButton 
+                        title="Google" 
+                        variant="secondary" 
+                        onPress={() => {}} 
+                        style={styles.socialButton}
+                      />
+                      <AppButton 
+                        title="Apple" 
+                        variant="secondary" 
+                        onPress={() => {}} 
+                        style={styles.socialButton}
+                      />
+                    </View>
+                  </View>
+                  
+                </View>
+              </BlurView>
+
+              <View style={styles.footerContainer}>
+                <Text style={[typography.bodyMd, styles.footerText]}>
+                  ¿No tienes una cuenta?{' '}
+                  <Text 
+                    style={styles.footerLink} 
+                    onPress={() => navigation.navigate('Register')}
+                  >
+                    Crear cuenta
+                  </Text>
+                </Text>
               </View>
-            </View>
-          </View>
 
-          <View style={styles.footer}>
-            <Text style={styles.footerText}>¿No tienes una cuenta? </Text>
-            <TouchableOpacity onPress={() => navigation.navigate('Register')}>
-              <Text style={styles.footerLink}>Crear cuenta</Text>
-            </TouchableOpacity>
-          </View>
-
-        </ScrollView>
+            </ScrollView>
+          </KeyboardAvoidingView>
+        </SafeAreaView>
       </ImageBackground>
     </View>
   );
@@ -136,130 +148,114 @@ export const LoginScreen = ({ navigation }: any) => {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: colors.background,
+    backgroundColor: '#0D0D0D', // Specific background from mockup
   },
   backgroundImage: {
     flex: 1,
     width: '100%',
     height: '100%',
   },
-  overlay: {
+  gradient: {
     ...StyleSheet.absoluteFillObject,
-    backgroundColor: 'rgba(0, 0, 0, 0.65)',
+  },
+  safeArea: {
+    flex: 1,
+  },
+  keyboardView: {
+    flex: 1,
   },
   scrollContent: {
     flexGrow: 1,
     justifyContent: 'center',
-    padding: spacing.m,
+    padding: spacing.containerMargin,
+    paddingVertical: spacing.xl,
   },
-  header: {
+  headerContainer: {
     alignItems: 'center',
     marginBottom: spacing.xl,
   },
-  logoContainer: {
+  iconBox: {
     width: 64,
     height: 64,
     borderRadius: 32,
-    backgroundColor: colors.primary,
+    backgroundColor: colors.primaryContainer,
     justifyContent: 'center',
     alignItems: 'center',
-    marginBottom: spacing.m,
-    shadowColor: colors.primary,
-    shadowOffset: { width: 0, height: 4 },
-    shadowOpacity: 0.3,
-    shadowRadius: 8,
-    elevation: 8,
+    marginBottom: spacing.md,
+    shadowColor: colors.primaryContainer,
+    shadowOffset: { width: 0, height: 10 },
+    shadowOpacity: 0.2,
+    shadowRadius: 15,
+    elevation: 10,
   },
   title: {
-    fontSize: 32,
-    fontWeight: 'bold',
-    color: colors.text,
+    color: colors.onPrimaryContainer,
     marginBottom: spacing.xs,
   },
   subtitle: {
-    fontSize: 14,
-    color: colors.textSecondary,
+    color: colors.secondary,
     textAlign: 'center',
     maxWidth: 280,
   },
   glassPanel: {
-    backgroundColor: 'rgba(28, 28, 28, 0.75)',
     borderRadius: borderRadius.xl,
-    padding: spacing.l,
+    overflow: 'hidden',
     borderWidth: 1,
-    borderColor: 'rgba(255, 255, 255, 0.1)',
+    borderColor: 'rgba(255, 255, 255, 0.05)',
+  },
+  formContainer: {
+    padding: spacing.lg,
+    backgroundColor: 'rgba(28, 28, 28, 0.7)', // Fallback for BlurView
   },
   passwordHeader: {
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'flex-end',
     marginBottom: spacing.xs,
+    marginLeft: 4,
   },
   passwordLabel: {
-    color: colors.textSecondary,
-    fontSize: 12,
-    fontWeight: '600',
-    letterSpacing: 0.5,
+    color: colors.secondary,
   },
   forgotText: {
     color: colors.primary,
-    fontSize: 12,
-    fontWeight: '600',
+    textTransform: 'none',
   },
-  actions: {
-    marginTop: spacing.m,
+  actionsContainer: {
+    marginTop: spacing.md,
+    gap: spacing.md,
   },
   dividerContainer: {
     flexDirection: 'row',
     alignItems: 'center',
-    marginVertical: spacing.l,
+    paddingVertical: spacing.xs,
   },
-  divider: {
+  dividerLine: {
     flex: 1,
     height: 1,
     backgroundColor: 'rgba(255, 255, 255, 0.1)',
   },
   dividerText: {
-    color: colors.textSecondary,
-    fontSize: 12,
-    marginHorizontal: spacing.m,
-    fontWeight: '600',
-    letterSpacing: 0.5,
+    color: 'rgba(255, 255, 255, 0.4)', // zinc-600
+    marginHorizontal: spacing.md,
   },
-  socialButtons: {
+  socialButtonsContainer: {
     flexDirection: 'row',
-    justifyContent: 'space-between',
-    gap: spacing.m,
+    gap: spacing.md,
   },
-  socialBtn: {
+  socialButton: {
     flex: 1,
-    flexDirection: 'row',
     height: 48,
-    backgroundColor: 'rgba(255, 255, 255, 0.05)',
-    borderWidth: 1,
-    borderColor: 'rgba(255, 255, 255, 0.1)',
-    borderRadius: borderRadius.m,
-    justifyContent: 'center',
+  },
+  footerContainer: {
+    marginTop: spacing.lg,
     alignItems: 'center',
-    gap: spacing.s,
-  },
-  socialBtnText: {
-    color: colors.text,
-    fontSize: 14,
-    fontWeight: '600',
-  },
-  footer: {
-    flexDirection: 'row',
-    justifyContent: 'center',
-    marginTop: spacing.xl,
   },
   footerText: {
-    color: colors.textSecondary,
-    fontSize: 14,
+    color: colors.secondary,
   },
   footerLink: {
-    color: colors.primary,
-    fontSize: 14,
-    fontWeight: 'bold',
+    color: colors.primaryContainer,
+    fontWeight: '600',
   },
 });

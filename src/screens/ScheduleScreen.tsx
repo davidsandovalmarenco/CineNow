@@ -1,181 +1,196 @@
-import React, { useState, useEffect } from 'react';
-import { View, Text, StyleSheet, ScrollView, ImageBackground, TouchableOpacity, SafeAreaView, ActivityIndicator } from 'react-native';
+import React, { useState } from 'react';
+import { View, Text, StyleSheet, Image, ScrollView, TouchableOpacity, SafeAreaView, StatusBar, Dimensions } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
+import { LinearGradient } from 'expo-linear-gradient';
+import { BlurView } from 'expo-blur';
 import { colors } from '../theme/colors';
 import { spacing, borderRadius } from '../theme/spacing';
-import { movieService } from '../services/movieService';
-import { ScheduleData, MovieData } from '../services/types';
+import { typography } from '../theme/typography';
 
-export const ScheduleScreen = ({ navigation, route }: any) => {
-  const { movieId } = route.params || {};
-  const [selectedDate, setSelectedDate] = useState('14');
-  const [movie, setMovie] = useState<MovieData | null>(null);
-  const [schedules, setSchedules] = useState<ScheduleData[]>([]);
-  const [loading, setLoading] = useState(true);
+const MOCK_MOVIE = {
+  title: 'Duna: Parte Dos',
+  description: 'Sigue el viaje mítico de Paul Atreides mientras se une a Chani y los Fremen en una guerra de venganza contra los conspiradores.',
+  backdropUrl: 'https://lh3.googleusercontent.com/aida-public/AB6AXuCrbZAwZIt5d77ZgYuGwOfRc3BsypkP7UcOn21B6xQm1dcSiR3Asju2i8KzBcfXWDH7Hy3pvDdk12K4PW1lk5gDG44mZjN4jPIjykywVBcvoAwLIegqpxnfS2IrJfuhK0A2cjhtktGBvhFZVcJzdTVuQXLVX3_WoAHJs2fGLrdNW0xqFtyMSCBrRsuaVdf93h0tRx_cUWfNlPYH4m618Bb28ZjyVChnMLlVblcPIF1nvhW2PfSzeK2nfDATSPdRs_OG34bXu0C_dqM',
+};
 
-  useEffect(() => {
-    const fetchData = async () => {
-      if (!movieId) {
-        setLoading(false);
-        return;
-      }
-      try {
-        const [movieData, schedulesData] = await Promise.all([
-          movieService.getMovieById(movieId),
-          movieService.getMovieSchedules(movieId)
-        ]);
-        setMovie(movieData);
-        setSchedules(schedulesData);
-        // If we have real schedules, we could extract unique dates, but for now we'll keep the mock date picker UI
-      } catch (error) {
-        console.error('Error fetching schedule data:', error);
-      } finally {
-        setLoading(false);
-      }
-    };
-    fetchData();
-  }, [movieId]);
+const DATES = [
+  { id: '1', dayName: 'HOY', dayNum: '14', month: 'OCT' },
+  { id: '2', dayName: 'MAR', dayNum: '15', month: 'OCT' },
+  { id: '3', dayName: 'MIÉ', dayNum: '16', month: 'OCT' },
+  { id: '4', dayName: 'JUE', dayNum: '17', month: 'OCT' },
+  { id: '5', dayName: 'VIE', dayNum: '18', month: 'OCT' },
+  { id: '6', dayName: 'SÁB', dayNum: '19', month: 'OCT' },
+];
 
+const SHOWTIMES = [
+  { id: 's1', time: '14:30', format: 'DOLBY', room: 'Sala 04', language: 'SUB (Español)', formatType: 'primary', available: true },
+  { id: 's2', time: '17:15', format: 'DIGITAL', room: 'Sala 02', language: 'DUB (Latino)', formatType: 'secondary', available: true },
+  { id: 's3', time: '19:45', format: 'IMAX 3D', room: 'Sala 01', language: 'SUB (Español)', formatType: 'danger', available: false },
+  { id: 's4', time: '21:00', format: 'DIGITAL', room: 'Sala 06', language: 'DUB (Latino)', formatType: 'secondary', available: true },
+];
 
-  // We keep mock dates for the UI since Firestore schedules might not have full date parsing implemented yet
-  const dates = [
-    { day: 'HOY', num: '14', month: 'OCT' },
-    { day: 'MAR', num: '15', month: 'OCT' },
-    { day: 'MIÉ', num: '16', month: 'OCT' },
-    { day: 'JUE', num: '17', month: 'OCT' },
-    { day: 'VIE', num: '18', month: 'OCT' },
-    { day: 'SÁB', num: '19', month: 'OCT' },
-  ];
+const { width } = Dimensions.get('window');
 
-  const handleSelectSchedule = (scheduleId: string) => {
-    navigation.navigate('Seats', { movieId, scheduleId });
+export const ScheduleScreen = ({ navigation }: any) => {
+  const [selectedDate, setSelectedDate] = useState(DATES[0].id);
+
+  const handleBack = () => {
+    navigation.goBack();
   };
 
-  if (loading) {
-    return (
-      <View style={[styles.container, { justifyContent: 'center', alignItems: 'center' }]}>
-        <ActivityIndicator size="large" color={colors.primary} />
-      </View>
-    );
-  }
+  const handleSelectTime = () => {
+    navigation.navigate('Seats');
+  };
 
   return (
     <View style={styles.container}>
-      <ScrollView showsVerticalScrollIndicator={false} stickyHeaderIndices={[1]} contentContainerStyle={styles.scrollContent}>
-        
-        {/* Hero Poster Section */}
-        <View style={styles.heroContainer}>
-          <ImageBackground 
-            source={{ uri: movie?.bannerUrl || movie?.posterUrl || 'https://lh3.googleusercontent.com/aida-public/AB6AXuCrbZAwZIt5d77ZgYuGwOfRc3BsypkP7UcOn21B6xQm1dcSiR3Asju2i8KzBcfXWDH7Hy3pvDdk12K4PW1lk5gDG44mZjN4jPIjykywVBcvoAwLIegqpxnfS2IrJfuhK0A2cjhtktGBvhFZVcJzdTVuQXLVX3_WoAHJs2fGLrdNW0xqFtyMSCBrRsuaVdf93h0tRx_cUWfNlPYH4m618Bb28ZjyVChnMLlVblcPIF1nvhW2PfSzeK2nfDATSPdRs_OG34bXu0C_dqM' }} 
-            style={styles.heroImage}
-          >
-            <View style={styles.gradientOverlay} />
-            
-            <SafeAreaView style={styles.safeAreaBtn}>
-              <TouchableOpacity style={styles.backBtn} onPress={() => navigation.goBack()}>
-                <Ionicons name="arrow-back" size={24} color={colors.text} />
-              </TouchableOpacity>
-            </SafeAreaView>
+      <StatusBar barStyle="light-content" translucent backgroundColor="transparent" />
 
-            <View style={styles.heroContent}>
-              <View style={styles.badgesContainer}>
-                <View style={styles.badgePrimary}><Text style={styles.badgeText}>IMAX</Text></View>
-                <View style={styles.badgeSecondary}><Text style={styles.badgeTextSecondary}>{movie?.classification || 'PG-13'}</Text></View>
-              </View>
-              <Text style={styles.heroTitle}>{movie?.title || 'Duna: Parte Dos'}</Text>
-              <Text style={styles.heroDesc} numberOfLines={2}>
-                {movie?.synopsis || 'Sigue el viaje mítico de Paul Atreides mientras se une a Chani y los Fremen en una guerra de venganza contra los conspiradores.'}
-              </Text>
+      {/* Header */}
+      <BlurView intensity={80} tint="dark" style={styles.header}>
+        <SafeAreaView>
+          <View style={styles.headerContent}>
+            <View style={styles.logoContainer}>
+              <TouchableOpacity onPress={handleBack} style={{ marginRight: spacing.sm }}>
+                <Ionicons name="arrow-back" size={24} color={colors.onSurface} />
+              </TouchableOpacity>
+              <Ionicons name="film" size={24} color={colors.primaryContainer} />
+              <Text style={[typography.h2, styles.logoText, { fontSize: 20 }]}>CineNow</Text>
             </View>
-          </ImageBackground>
+            <View style={styles.headerActions}>
+              <Ionicons name="search" size={24} color={colors.secondary} />
+              <View style={styles.profileBtn}>
+                <Image 
+                  source={{ uri: 'https://lh3.googleusercontent.com/aida-public/AB6AXuDyqsXrEAufNu9Okb3d4A1sMwB0Q6YYptCZXTIH2oZf0AeemEZzpPxQq5pFzczC06D7orN9xeLxdVGGDEUVNBv6D-J-LYM1ihdM0cXEFgHOCTrD30OXQ51ZFQM3Hc_WVrtVoym7b3qQhGISoWH1x44mWWCRcnumnSzWZgGPF7v-oW8MZYfRx9_rrIFxz1ILMUVCdlZ3F7KfwIVVhMf1GiELmUakF_Mm7NRwXdJiETT1GJyp96ZtS_jfPtEz2yYRnefVAw8yqeMrZQQ' }} 
+                  style={styles.profileImg}
+                />
+              </View>
+            </View>
+          </View>
+        </SafeAreaView>
+      </BlurView>
+
+      <ScrollView showsVerticalScrollIndicator={false} contentContainerStyle={styles.scrollContent}>
+        
+        {/* Hero Section */}
+        <View style={styles.heroContainer}>
+          <Image 
+            source={{ uri: MOCK_MOVIE.backdropUrl }} 
+            style={[styles.heroImage, { opacity: 0.8 }]} // To simulate grayscale/contrast somewhat
+          />
+          <LinearGradient
+            colors={['transparent', 'rgba(13, 13, 13, 0.4)', '#0D0D0D']}
+            locations={[0, 0.6, 1]}
+            style={styles.gradient}
+          />
+          <View style={styles.heroContent}>
+            <View style={styles.badgesRow}>
+              <View style={styles.badgePrimary}>
+                <Text style={styles.badgeTextPrimary}>IMAX</Text>
+              </View>
+              <BlurView intensity={20} tint="light" style={styles.badgeSecondary}>
+                <Text style={styles.badgeTextSecondary}>PG-13</Text>
+              </BlurView>
+            </View>
+            <Text style={[typography.h1, styles.heroTitle]}>{MOCK_MOVIE.title}</Text>
+            <Text style={[typography.bodyMd, styles.heroDesc]}>{MOCK_MOVIE.description}</Text>
+          </View>
         </View>
 
-        {/* Date Picker (Sticky) */}
+        {/* Sticky-like Date Picker (just inline for now) */}
         <View style={styles.datePickerContainer}>
           <ScrollView horizontal showsHorizontalScrollIndicator={false} contentContainerStyle={styles.datePickerScroll}>
-            {dates.map((date, index) => {
-              const isActive = selectedDate === date.num;
+            {DATES.map((date) => {
+              const isActive = selectedDate === date.id;
               return (
                 <TouchableOpacity 
-                  key={index} 
+                  key={date.id} 
                   style={[styles.dateCard, isActive && styles.dateCardActive]}
-                  onPress={() => setSelectedDate(date.num)}
+                  onPress={() => setSelectedDate(date.id)}
+                  activeOpacity={0.8}
                 >
-                  <Text style={[styles.dateDay, isActive && styles.dateTextActive]}>{date.day}</Text>
-                  <Text style={[styles.dateNum, isActive && styles.dateTextActive]}>{date.num}</Text>
-                  <Text style={[styles.dateMonth, isActive && styles.dateTextActive]}>{date.month}</Text>
+                  <Text style={[styles.dayName, isActive && styles.textActive]}>{date.dayName}</Text>
+                  <Text style={[styles.dayNum, isActive && styles.textActive]}>{date.dayNum}</Text>
+                  <Text style={[styles.month, isActive && styles.textActive]}>{date.month}</Text>
                 </TouchableOpacity>
               );
             })}
           </ScrollView>
         </View>
 
-        {/* Schedules List */}
-        <View style={styles.mainContent}>
-          <View style={styles.sectionHeader}>
-            <Text style={styles.sectionTitle}>Horarios Disponibles</Text>
-            <Ionicons name="options-outline" size={20} color={colors.textSecondary} />
+        {/* Showtimes List */}
+        <View style={styles.showtimesContainer}>
+          <View style={styles.showtimesHeader}>
+            <Text style={typography.h2}>Horarios Disponibles</Text>
+            <Ionicons name="options-outline" size={24} color={colors.secondary} />
           </View>
 
-          <View style={styles.schedulesContainer}>
-            {schedules.length === 0 ? (
-              <Text style={{ color: colors.textSecondary, textAlign: 'center', marginTop: spacing.l }}>
-                No hay horarios disponibles para esta película.
-              </Text>
-            ) : (
-              schedules.map((schedule) => {
-                const isSoldOut = false; // We can add a capacity check later
-                return (
-                  <View key={schedule.id} style={[styles.scheduleCard, isSoldOut && styles.scheduleCardSoldOut]}>
-                    <View style={styles.scheduleInfo}>
-                      <View style={styles.timeRow}>
-                        <Text style={styles.timeText}>{schedule.time}</Text>
-                        <View style={[styles.formatBadge, schedule.format?.includes('IMAX') && styles.formatBadgeImax]}>
-                          <Text style={[styles.formatText, schedule.format?.includes('IMAX') && styles.formatTextImax]}>{schedule.format}</Text>
-                        </View>
-                      </View>
-                      
-                      <View style={styles.detailsRow}>
-                        <Ionicons name="business-outline" size={14} color={colors.textSecondary} />
-                        <Text style={styles.detailsText}>{schedule.room}</Text>
-                        <View style={styles.dot} />
-                        <Text style={styles.detailsTextHighlight}>{schedule.language}</Text>
-                      </View>
-                    </View>
+          <View style={styles.showtimesList}>
+            {SHOWTIMES.map((show) => (
+              <View key={show.id} style={[styles.showCard, !show.available && styles.showCardDisabled]}>
+                <View style={styles.showInfo}>
+                  <View style={styles.showTimeRow}>
+                    <Text style={[typography.h1, { fontSize: 24, lineHeight: 28 }]}>{show.time}</Text>
                     
-                    {isSoldOut ? (
-                      <View style={styles.soldOutContainer}>
-                        <View style={styles.soldOutBtn}>
-                          <Text style={styles.soldOutBtnText}>Agotado</Text>
-                        </View>
-                        <Text style={styles.nextAvailableText}>Siguiente: Próximamente</Text>
-                      </View>
-                    ) : (
-                      <TouchableOpacity 
-                        style={styles.selectBtn} 
-                        onPress={() => handleSelectSchedule(schedule.id || '')}
-                      >
-                        <Text style={styles.selectBtnText}>Seleccionar</Text>
-                      </TouchableOpacity>
-                    )}
+                    <View style={[
+                      styles.formatBadge, 
+                      show.formatType === 'primary' && styles.formatBadgePrimary,
+                      show.formatType === 'secondary' && styles.formatBadgeSecondary,
+                      show.formatType === 'danger' && styles.formatBadgeDanger,
+                    ]}>
+                      <Text style={[
+                        styles.formatBadgeText,
+                        show.formatType === 'primary' && styles.formatBadgeTextPrimary,
+                        show.formatType === 'secondary' && styles.formatBadgeTextSecondary,
+                        show.formatType === 'danger' && styles.formatBadgeTextDanger,
+                      ]}>{show.format}</Text>
+                    </View>
                   </View>
-                );
-              })
-            )}
-          </View>
+                  
+                  <View style={styles.showMetaRow}>
+                    <View style={styles.metaIconRow}>
+                      <Ionicons name="easel-outline" size={16} color={colors.secondary} />
+                      <Text style={styles.metaText}>{show.room}</Text>
+                    </View>
+                    <View style={styles.dot} />
+                    <Text style={styles.metaLanguage}>{show.language}</Text>
+                  </View>
+                </View>
 
-          {/* Pricing Info */}
-          <View style={styles.infoBox}>
-            <Ionicons name="information-circle-outline" size={24} color={colors.primary} />
-            <View style={styles.infoTextContainer}>
-              <Text style={styles.infoTitle}>Precios y Promociones</Text>
-              <Text style={styles.infoDesc}>
-                Los lunes y miércoles cuentan con un 20% de descuento en salas tradicionales. Precios sujetos a cambios según formato.
+                {show.available ? (
+                  <TouchableOpacity 
+                    style={styles.btnSelect}
+                    onPress={handleSelectTime}
+                    activeOpacity={0.8}
+                  >
+                    <Text style={styles.btnSelectText}>Seleccionar</Text>
+                  </TouchableOpacity>
+                ) : (
+                  <View style={styles.soldOutContainer}>
+                    <View style={styles.btnSoldOut}>
+                      <Text style={styles.btnSoldOutText}>Agotado</Text>
+                    </View>
+                    <Text style={styles.soldOutSubtext}>Siguiente función: 22:30</Text>
+                  </View>
+                )}
+              </View>
+            ))}
+          </View>
+        </View>
+
+        {/* Pricing Disclosure */}
+        <View style={styles.disclosureContainer}>
+          <BlurView intensity={20} tint="dark" style={styles.disclosureBox}>
+            <Ionicons name="information-circle" size={24} color={colors.primaryContainer} style={{ marginTop: 2 }} />
+            <View style={styles.disclosureTextContent}>
+              <Text style={styles.disclosureTitle}>Precios y Promociones</Text>
+              <Text style={styles.disclosureText}>
+                Los lunes y miércoles cuentan con un 20% de descuento en salas tradicionales. Precios sujetos a cambios según formato (IMAX/Dolby).
               </Text>
             </View>
-          </View>
-
+          </BlurView>
         </View>
+
       </ScrollView>
     </View>
   );
@@ -184,268 +199,294 @@ export const ScheduleScreen = ({ navigation, route }: any) => {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: colors.background,
+    backgroundColor: '#0D0D0D',
+  },
+  header: {
+    position: 'absolute',
+    top: 0,
+    width: '100%',
+    zIndex: 50,
+    borderBottomWidth: 1,
+    borderBottomColor: 'rgba(255, 255, 255, 0.05)',
+  },
+  headerContent: {
+    height: 64,
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    paddingHorizontal: spacing.containerMargin,
+  },
+  logoContainer: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: spacing.xs,
+  },
+  logoText: {
+    color: colors.primaryContainer,
+  },
+  headerActions: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: spacing.md,
+  },
+  profileBtn: {
+    width: 32,
+    height: 32,
+    borderRadius: 16,
+    overflow: 'hidden',
+    borderWidth: 1,
+    borderColor: 'rgba(255, 255, 255, 0.1)',
+  },
+  profileImg: {
+    width: '100%',
+    height: '100%',
   },
   scrollContent: {
-    paddingBottom: spacing.xxl,
+    paddingBottom: 40,
   },
   heroContainer: {
-    height: 350,
+    width: '100%',
+    height: width * 1.1, // Approx 442px
+    position: 'relative',
   },
   heroImage: {
     width: '100%',
     height: '100%',
-    justifyContent: 'space-between',
   },
-  gradientOverlay: {
+  gradient: {
     ...StyleSheet.absoluteFillObject,
-    backgroundColor: 'rgba(0,0,0,0.6)',
-  },
-  safeAreaBtn: {
-    marginTop: spacing.l,
-    marginLeft: spacing.m,
-  },
-  backBtn: {
-    width: 40,
-    height: 40,
-    borderRadius: 20,
-    backgroundColor: 'rgba(28,28,28,0.6)',
-    justifyContent: 'center',
-    alignItems: 'center',
-    borderWidth: 1,
-    borderColor: 'rgba(255,255,255,0.1)',
   },
   heroContent: {
-    padding: spacing.m,
+    position: 'absolute',
+    bottom: 0,
+    left: 0,
+    right: 0,
+    paddingHorizontal: spacing.containerMargin,
+    paddingBottom: spacing.lg,
   },
-  badgesContainer: {
+  badgesRow: {
     flexDirection: 'row',
-    gap: spacing.s,
-    marginBottom: spacing.xs,
+    gap: spacing.xs,
+    marginBottom: spacing.sm,
   },
   badgePrimary: {
-    backgroundColor: colors.primary,
-    paddingHorizontal: 8,
-    paddingVertical: 4,
-    borderRadius: borderRadius.s,
+    backgroundColor: colors.primaryContainer,
+    paddingHorizontal: spacing.xs,
+    paddingVertical: 2,
+    borderRadius: borderRadius.full,
   },
-  badgeText: {
-    color: colors.text,
+  badgeTextPrimary: {
+    color: colors.onPrimaryContainer,
     fontSize: 10,
     fontWeight: 'bold',
     letterSpacing: 1,
   },
   badgeSecondary: {
-    backgroundColor: 'rgba(255,255,255,0.1)',
-    paddingHorizontal: 8,
-    paddingVertical: 4,
-    borderRadius: borderRadius.s,
+    paddingHorizontal: spacing.xs,
+    paddingVertical: 2,
+    borderRadius: borderRadius.full,
     borderWidth: 1,
-    borderColor: 'rgba(255,255,255,0.2)',
+    borderColor: 'rgba(255, 255, 255, 0.1)',
   },
   badgeTextSecondary: {
-    color: colors.text,
+    color: '#fff',
     fontSize: 10,
     fontWeight: 'bold',
   },
   heroTitle: {
-    color: colors.text,
-    fontSize: 32,
-    fontWeight: 'bold',
-    marginBottom: 4,
+    color: '#fff',
+    marginBottom: spacing.xs,
   },
   heroDesc: {
-    color: colors.textSecondary,
-    fontSize: 14,
-    lineHeight: 20,
+    color: colors.secondary,
+    maxWidth: 320,
   },
   datePickerContainer: {
-    backgroundColor: 'rgba(13,13,13,0.95)',
+    backgroundColor: 'rgba(13, 13, 13, 0.95)',
     borderBottomWidth: 1,
-    borderBottomColor: 'rgba(255,255,255,0.05)',
-    paddingVertical: spacing.s,
+    borderBottomColor: 'rgba(255, 255, 255, 0.05)',
+    paddingVertical: spacing.md,
   },
   datePickerScroll: {
-    paddingHorizontal: spacing.m,
-    gap: spacing.s,
+    paddingHorizontal: spacing.containerMargin,
+    gap: spacing.md,
   },
   dateCard: {
     width: 64,
     height: 80,
-    borderRadius: borderRadius.m,
-    backgroundColor: colors.surface,
+    borderRadius: borderRadius.lg,
+    backgroundColor: colors.surfaceContainer,
     borderWidth: 1,
-    borderColor: 'rgba(255,255,255,0.05)',
+    borderColor: 'rgba(255, 255, 255, 0.05)',
     justifyContent: 'center',
     alignItems: 'center',
   },
   dateCardActive: {
-    backgroundColor: colors.primary,
-    borderColor: colors.primary,
-    shadowColor: colors.primary,
-    shadowOffset: { width: 0, height: 4 },
-    shadowOpacity: 0.3,
-    shadowRadius: 8,
-    elevation: 8,
+    backgroundColor: colors.primaryContainer,
+    borderColor: colors.primaryContainer,
   },
-  dateDay: {
-    color: colors.textSecondary,
+  dayName: {
     fontSize: 12,
     fontWeight: '600',
+    color: colors.secondary,
+    opacity: 0.8,
   },
-  dateNum: {
-    color: colors.text,
+  dayNum: {
     fontSize: 20,
     fontWeight: 'bold',
+    color: colors.secondary,
   },
-  dateMonth: {
-    color: colors.textSecondary,
+  month: {
     fontSize: 10,
     fontWeight: 'bold',
+    color: colors.secondary,
   },
-  dateTextActive: {
-    color: colors.text,
+  textActive: {
+    color: colors.onPrimaryContainer,
   },
-  mainContent: {
-    padding: spacing.m,
+  showtimesContainer: {
+    padding: spacing.containerMargin,
   },
-  sectionHeader: {
+  showtimesHeader: {
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'center',
-    marginBottom: spacing.m,
+    marginBottom: spacing.lg,
   },
-  sectionTitle: {
-    color: colors.text,
-    fontSize: 24,
-    fontWeight: 'bold',
+  showtimesList: {
+    gap: spacing.md,
   },
-  schedulesContainer: {
-    gap: spacing.m,
-  },
-  scheduleCard: {
-    backgroundColor: colors.surface,
+  showCard: {
+    backgroundColor: colors.surfaceContainerLow,
     borderWidth: 1,
-    borderColor: 'rgba(255,255,255,0.05)',
-    borderRadius: borderRadius.l,
-    padding: spacing.m,
+    borderColor: 'rgba(255, 255, 255, 0.05)',
+    borderRadius: borderRadius.xl,
+    padding: spacing.md,
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'center',
   },
-  scheduleCardSoldOut: {
-    opacity: 0.75,
+  showCardDisabled: {
+    opacity: 0.5,
   },
-  scheduleInfo: {
-    flex: 1,
+  showInfo: {
+    gap: 4,
   },
-  timeRow: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    gap: spacing.s,
-    marginBottom: 4,
-  },
-  timeText: {
-    color: colors.text,
-    fontSize: 24,
-    fontWeight: 'bold',
-  },
-  formatBadge: {
-    borderWidth: 1,
-    borderColor: 'rgba(255,255,255,0.1)',
-    paddingHorizontal: 6,
-    paddingVertical: 2,
-    borderRadius: 4,
-  },
-  formatBadgeImax: {
-    borderColor: 'rgba(229,9,20,0.3)',
-  },
-  formatText: {
-    color: colors.textSecondary,
-    fontSize: 10,
-    fontWeight: 'bold',
-  },
-  formatTextImax: {
-    color: colors.primary,
-  },
-  detailsRow: {
+  showTimeRow: {
     flexDirection: 'row',
     alignItems: 'center',
     gap: spacing.xs,
   },
-  detailsText: {
-    color: colors.textSecondary,
+  formatBadge: {
+    paddingHorizontal: 6,
+    paddingVertical: 2,
+    borderRadius: 4,
+    borderWidth: 1,
+  },
+  formatBadgePrimary: {
+    borderColor: 'rgba(229, 9, 20, 0.3)',
+  },
+  formatBadgeSecondary: {
+    borderColor: 'rgba(255, 255, 255, 0.1)',
+  },
+  formatBadgeDanger: {
+    borderColor: 'rgba(229, 9, 20, 0.3)',
+  },
+  formatBadgeText: {
+    fontSize: 10,
+    fontWeight: 'bold',
+  },
+  formatBadgeTextPrimary: {
+    color: colors.primaryContainer,
+  },
+  formatBadgeTextSecondary: {
+    color: colors.secondary,
+  },
+  formatBadgeTextDanger: {
+    color: colors.error,
+  },
+  showMetaRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: spacing.xs,
+  },
+  metaIconRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 4,
+  },
+  metaText: {
+    color: colors.secondary,
     fontSize: 14,
   },
   dot: {
     width: 4,
     height: 4,
     borderRadius: 2,
-    backgroundColor: colors.textSecondary,
+    backgroundColor: colors.secondary,
   },
-  detailsTextHighlight: {
-    color: colors.textSecondary,
-    fontSize: 14,
+  metaLanguage: {
+    color: '#a1a1aa', // zinc-400 equivalent
     fontWeight: '600',
-  },
-  selectBtn: {
-    backgroundColor: colors.primary,
-    paddingHorizontal: spacing.l,
-    paddingVertical: spacing.s,
-    borderRadius: borderRadius.m,
-    shadowColor: colors.primary,
-    shadowOffset: { width: 0, height: 4 },
-    shadowOpacity: 0.2,
-    shadowRadius: 8,
-    elevation: 4,
-  },
-  selectBtnText: {
-    color: colors.text,
     fontSize: 14,
-    fontWeight: 'bold',
+  },
+  btnSelect: {
+    backgroundColor: colors.primaryContainer,
+    paddingHorizontal: spacing.lg,
+    paddingVertical: spacing.sm,
+    borderRadius: borderRadius.lg,
+  },
+  btnSelectText: {
+    color: colors.onPrimaryContainer,
+    fontFamily: 'Inter',
+    fontWeight: '600',
+    fontSize: 14,
   },
   soldOutContainer: {
     alignItems: 'flex-end',
   },
-  soldOutBtn: {
-    backgroundColor: 'rgba(255,255,255,0.1)',
-    paddingHorizontal: spacing.l,
-    paddingVertical: spacing.s,
-    borderRadius: borderRadius.m,
+  btnSoldOut: {
+    backgroundColor: 'rgba(255, 255, 255, 0.1)',
+    paddingHorizontal: spacing.lg,
+    paddingVertical: spacing.sm,
+    borderRadius: borderRadius.lg,
   },
-  soldOutBtnText: {
-    color: colors.textSecondary,
+  btnSoldOutText: {
+    color: colors.secondary,
+    fontFamily: 'Inter',
+    fontWeight: '600',
     fontSize: 14,
-    fontWeight: 'bold',
   },
-  nextAvailableText: {
-    color: colors.textSecondary,
+  soldOutSubtext: {
     fontSize: 10,
+    color: 'rgba(255, 255, 255, 0.4)',
     marginTop: 4,
   },
-  infoBox: {
-    backgroundColor: 'rgba(255,255,255,0.05)',
-    borderRadius: borderRadius.l,
-    padding: spacing.m,
+  disclosureContainer: {
+    paddingHorizontal: spacing.containerMargin,
+    paddingBottom: spacing.xl,
+  },
+  disclosureBox: {
     flexDirection: 'row',
     alignItems: 'flex-start',
-    gap: spacing.m,
-    marginTop: spacing.xl,
+    gap: spacing.md,
+    padding: spacing.md,
+    borderRadius: borderRadius.xl,
+    backgroundColor: 'rgba(70, 47, 44, 0.3)', // surface-container-highest/30 equivalent
     borderWidth: 1,
-    borderColor: 'rgba(255,255,255,0.05)',
+    borderColor: 'rgba(255, 255, 255, 0.05)',
   },
-  infoTextContainer: {
+  disclosureTextContent: {
     flex: 1,
   },
-  infoTitle: {
-    color: colors.text,
+  disclosureTitle: {
     fontSize: 14,
-    fontWeight: 'bold',
+    fontWeight: '600',
+    color: '#fff',
     marginBottom: 4,
   },
-  infoDesc: {
-    color: colors.textSecondary,
+  disclosureText: {
     fontSize: 12,
-    lineHeight: 18,
+    color: colors.secondary,
   },
 });

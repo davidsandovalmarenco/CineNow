@@ -31,5 +31,22 @@ export const reservationService = {
   async updateReservationStatus(reservationId: string, status: ReservationData['status']): Promise<void> {
     const reservationRef = doc(db, 'reservations', reservationId);
     await updateDoc(reservationRef, { status });
+  },
+
+  async getOccupiedSeats(scheduleId: string): Promise<string[]> {
+    const reservationsRef = collection(db, 'reservations');
+    const q = query(reservationsRef, where('scheduleId', '==', scheduleId));
+    const snapshot = await getDocs(q);
+    
+    let occupiedSeats: string[] = [];
+    snapshot.docs.forEach(docSnap => {
+      const data = docSnap.data() as ReservationData;
+      if (data.status !== 'cancelled' && Array.isArray(data.seats)) {
+        occupiedSeats = [...occupiedSeats, ...data.seats];
+      }
+    });
+    
+    // Remove duplicates just in case
+    return [...new Set(occupiedSeats)];
   }
 };

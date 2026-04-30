@@ -1,10 +1,12 @@
-import React, { useState, useEffect, useCallback } from 'react';
+import React, { useState, useEffect } from 'react';
 import { View, Text, StyleSheet, TextInput, ScrollView, TouchableOpacity, FlatList, Image, SafeAreaView, ActivityIndicator } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import { colors } from '../theme/colors';
 import { spacing, borderRadius } from '../theme/spacing';
+import { typography } from '../theme/typography';
 import { movieService } from '../services/movieService';
 import { MovieData } from '../services/types';
+import { BlurView } from 'expo-blur';
 
 const CATEGORIES = ['Todos', 'Acción', 'Drama', 'Comedia', 'Terror', 'Sci-Fi', 'Animación'];
 
@@ -49,28 +51,32 @@ export const SearchScreen = ({ navigation }: any) => {
   };
 
   return (
-    <SafeAreaView style={styles.container}>
-      <View style={styles.header}>
-        <View style={styles.searchBar}>
-          <Ionicons name="search" size={20} color={colors.textSecondary} />
-          <TextInput
-            style={styles.searchInput}
-            placeholder="Buscar películas, géneros..."
-            placeholderTextColor={colors.textSecondary}
-            value={search}
-            onChangeText={setSearch}
-          />
-          {search.length > 0 && (
-            <TouchableOpacity onPress={() => setSearch('')}>
-              <Ionicons name="close-circle" size={20} color={colors.textSecondary} />
-            </TouchableOpacity>
-          )}
-        </View>
-      </View>
+    <View style={styles.container}>
+      <BlurView intensity={80} tint="dark" style={styles.headerContainer}>
+        <SafeAreaView>
+          <View style={styles.header}>
+            <View style={styles.searchBar}>
+              <Ionicons name="search" size={20} color={colors.secondary} />
+              <TextInput
+                style={styles.searchInput}
+                placeholder="Buscar películas, géneros..."
+                placeholderTextColor="rgba(255, 255, 255, 0.4)"
+                value={search}
+                onChangeText={setSearch}
+              />
+              {search.length > 0 && (
+                <TouchableOpacity onPress={() => setSearch('')}>
+                  <Ionicons name="close-circle" size={20} color={colors.secondary} />
+                </TouchableOpacity>
+              )}
+            </View>
+          </View>
+        </SafeAreaView>
+      </BlurView>
 
-      <ScrollView showsVerticalScrollIndicator={false}>
+      <ScrollView showsVerticalScrollIndicator={false} contentContainerStyle={styles.scrollContent}>
         <View style={styles.section}>
-          <Text style={styles.sectionTitle}>Categorías</Text>
+          <Text style={[typography.h3, styles.sectionTitle]}>Categorías</Text>
           <ScrollView horizontal showsHorizontalScrollIndicator={false} contentContainerStyle={styles.categoriesScroll}>
             {CATEGORIES.map(cat => (
               <TouchableOpacity
@@ -78,46 +84,47 @@ export const SearchScreen = ({ navigation }: any) => {
                 style={[styles.categoryBtn, selectedCategory === cat && styles.categoryBtnActive]}
                 onPress={() => setSelectedCategory(cat)}
               >
-                <Text style={[styles.categoryText, selectedCategory === cat && styles.categoryTextActive]}>{cat}</Text>
+                <Text style={[typography.labelCaps, styles.categoryText, selectedCategory === cat && styles.categoryTextActive]}>{cat}</Text>
               </TouchableOpacity>
             ))}
           </ScrollView>
         </View>
 
-        <View style={styles.section}>
-          <Text style={styles.sectionTitle}>Resultados para "{selectedCategory}"</Text>
+        <View style={[styles.section, { flex: 1 }]}>
+          <Text style={[typography.h3, styles.sectionTitle]}>Resultados para "{selectedCategory}"</Text>
           {loading ? (
             <View style={styles.centered}>
-              <ActivityIndicator size="large" color={colors.primary} />
+              <ActivityIndicator size="large" color={colors.primaryContainer} />
             </View>
           ) : (
             <FlatList
               data={filteredMovies}
               keyExtractor={(item) => item.id || Math.random().toString()}
               numColumns={2}
+              scrollEnabled={false}
               contentContainerStyle={styles.resultsList}
               columnWrapperStyle={styles.columnWrapper}
               ListEmptyComponent={
                 <View style={styles.emptyContainer}>
-                  <Ionicons name="search-outline" size={48} color={colors.textSecondary} />
-                  <Text style={styles.emptyText}>No se encontraron películas</Text>
+                  <Ionicons name="search-outline" size={48} color={colors.secondary} />
+                  <Text style={[typography.bodyMd, styles.emptyText]}>No se encontraron películas</Text>
                 </View>
               }
               renderItem={({ item }) => (
                 <TouchableOpacity 
                   style={styles.resultCard} 
                   onPress={() => handleMoviePress(item.id || '')}
+                  activeOpacity={0.8}
                 >
-                  <Image source={{ uri: item.posterUrl }} style={styles.resultPoster} />
-                  <View style={styles.resultInfo}>
-                    <Text style={styles.resultTitle} numberOfLines={1}>{item.title}</Text>
-                    <View style={styles.resultMeta}>
-                      <Text style={styles.resultGenre}>{item.genre ? item.genre.split(' ')[0] : ''}</Text>
-                      <View style={styles.ratingRow}>
-                        <Ionicons name="star" size={12} color={colors.primary} />
-                        <Text style={styles.ratingText}>{item.rating}</Text>
-                      </View>
+                  <View style={styles.resultImageContainer}>
+                    <Image source={{ uri: item.posterUrl }} style={styles.resultPoster} />
+                    <View style={styles.ratingBadge}>
+                      <Text style={styles.ratingText}>{item.rating}</Text>
                     </View>
+                  </View>
+                  <View style={styles.resultInfo}>
+                    <Text style={[typography.bodyLg, styles.resultTitle]} numberOfLines={1}>{item.title}</Text>
+                    <Text style={[typography.bodyMd, styles.resultGenre]}>{item.genre ? item.genre.split(' ')[0] : ''}</Text>
                   </View>
                 </TouchableOpacity>
               )}
@@ -125,151 +132,155 @@ export const SearchScreen = ({ navigation }: any) => {
           )}
         </View>
 
-        <View style={styles.section}>
-          <Text style={styles.sectionTitle}>Búsquedas Recientes</Text>
+        <View style={[styles.section, { marginBottom: spacing.xl }]}>
+          <Text style={[typography.h3, styles.sectionTitle]}>Búsquedas Recientes</Text>
           <View style={styles.recentList}>
             <TouchableOpacity style={styles.recentItem}>
-              <Ionicons name="time-outline" size={20} color={colors.textSecondary} />
-              <Text style={styles.recentText}>Avatar: The Way of Water</Text>
-              <Ionicons name="close" size={20} color={colors.textSecondary} />
+              <Ionicons name="time-outline" size={20} color={colors.secondary} />
+              <Text style={[typography.bodyMd, styles.recentText]}>Avatar: The Way of Water</Text>
+              <Ionicons name="close" size={20} color={colors.secondary} />
             </TouchableOpacity>
             <TouchableOpacity style={styles.recentItem}>
-              <Ionicons name="time-outline" size={20} color={colors.textSecondary} />
-              <Text style={styles.recentText}>The Batman</Text>
-              <Ionicons name="close" size={20} color={colors.textSecondary} />
+              <Ionicons name="time-outline" size={20} color={colors.secondary} />
+              <Text style={[typography.bodyMd, styles.recentText]}>The Batman</Text>
+              <Ionicons name="close" size={20} color={colors.secondary} />
             </TouchableOpacity>
           </View>
         </View>
       </ScrollView>
-    </SafeAreaView>
+    </View>
   );
 };
 
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: colors.background,
+    backgroundColor: '#0D0D0D',
+  },
+  headerContainer: {
+    paddingTop: spacing.sm,
+    borderBottomWidth: 1,
+    borderBottomColor: 'rgba(255,255,255,0.05)',
   },
   header: {
-    padding: spacing.m,
-    paddingTop: spacing.s,
+    padding: spacing.md,
   },
   searchBar: {
     flexDirection: 'row',
     alignItems: 'center',
-    backgroundColor: colors.surface,
-    borderRadius: borderRadius.l,
-    paddingHorizontal: spacing.m,
-    height: 50,
+    backgroundColor: 'rgba(71, 71, 70, 0.3)',
+    borderRadius: borderRadius.lg,
+    paddingHorizontal: spacing.md,
+    height: 56,
     borderWidth: 1,
-    borderColor: 'rgba(255,255,255,0.05)',
+    borderColor: 'rgba(255,255,255,0.1)',
   },
   searchInput: {
     flex: 1,
-    color: colors.text,
+    color: colors.onSurface,
     fontSize: 16,
-    marginLeft: spacing.s,
+    fontFamily: 'Inter',
+    marginLeft: spacing.sm,
+  },
+  scrollContent: {
+    paddingBottom: 100, // Space for bottom tab
   },
   section: {
-    marginTop: spacing.l,
-    paddingHorizontal: spacing.m,
+    marginTop: spacing.xl,
+    paddingHorizontal: spacing.containerMargin,
   },
   sectionTitle: {
-    color: colors.text,
-    fontSize: 18,
-    fontWeight: 'bold',
-    marginBottom: spacing.m,
+    color: '#fff',
+    marginBottom: spacing.md,
   },
   categoriesScroll: {
-    gap: spacing.s,
+    gap: spacing.sm,
   },
   categoryBtn: {
-    paddingHorizontal: spacing.m,
-    paddingVertical: spacing.s,
-    borderRadius: borderRadius.m,
-    backgroundColor: colors.surface,
+    paddingHorizontal: spacing.md,
+    paddingVertical: spacing.sm,
+    borderRadius: borderRadius.full,
+    backgroundColor: 'rgba(255,255,255,0.05)',
     borderWidth: 1,
-    borderColor: 'rgba(255,255,255,0.05)',
+    borderColor: 'rgba(255,255,255,0.1)',
   },
   categoryBtnActive: {
-    backgroundColor: colors.primary,
-    borderColor: colors.primary,
+    backgroundColor: colors.primaryContainer,
+    borderColor: colors.primaryContainer,
   },
   categoryText: {
-    color: colors.textSecondary,
-    fontSize: 14,
-    fontWeight: '600',
+    color: colors.secondary,
   },
   categoryTextActive: {
-    color: colors.text,
-  },
-  resultsGrid: {
-    flexDirection: 'row',
-    flexWrap: 'wrap',
-    gap: spacing.m,
+    color: colors.onPrimaryContainer,
   },
   resultsList: {
-    paddingBottom: spacing.xxl,
+    gap: spacing.md,
   },
   columnWrapper: {
     justifyContent: 'space-between',
   },
   resultCard: {
     width: '47%',
-    backgroundColor: colors.surface,
-    borderRadius: borderRadius.l,
+    marginBottom: spacing.md,
+  },
+  resultImageContainer: {
+    width: '100%',
+    aspectRatio: 2 / 3,
+    borderRadius: borderRadius.lg,
     overflow: 'hidden',
     borderWidth: 1,
     borderColor: 'rgba(255,255,255,0.05)',
-    marginBottom: spacing.m,
+    backgroundColor: colors.surfaceContainer,
+    marginBottom: spacing.xs,
+    position: 'relative',
   },
   resultPoster: {
     width: '100%',
-    height: 200,
+    height: '100%',
   },
-  resultInfo: {
-    padding: spacing.s,
-  },
-  resultTitle: {
-    color: colors.text,
-    fontSize: 14,
-    fontWeight: 'bold',
-  },
-  resultMeta: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    alignItems: 'center',
-    marginTop: 4,
-  },
-  resultGenre: {
-    color: colors.textSecondary,
-    fontSize: 12,
-  },
-  ratingRow: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    gap: 2,
+  ratingBadge: {
+    position: 'absolute',
+    top: spacing.xs,
+    right: spacing.xs,
+    backgroundColor: 'rgba(0,0,0,0.6)',
+    paddingHorizontal: spacing.xs,
+    paddingVertical: 2,
+    borderRadius: borderRadius.sm,
+    borderWidth: 1,
+    borderColor: 'rgba(255,255,255,0.1)',
   },
   ratingText: {
-    color: colors.text,
-    fontSize: 12,
-    fontWeight: '600',
+    color: '#fff',
+    fontSize: 10,
+    fontWeight: 'bold',
+  },
+  resultInfo: {
+    paddingHorizontal: 2,
+  },
+  resultTitle: {
+    color: colors.onBackground,
+    marginBottom: 2,
+  },
+  resultGenre: {
+    color: colors.onSurfaceVariant,
   },
   recentList: {
-    gap: spacing.s,
+    gap: spacing.sm,
   },
   recentItem: {
     flexDirection: 'row',
     alignItems: 'center',
-    backgroundColor: 'rgba(255,255,255,0.02)',
-    padding: spacing.m,
-    borderRadius: borderRadius.m,
-    gap: spacing.m,
+    backgroundColor: colors.surfaceContainerLow,
+    padding: spacing.md,
+    borderRadius: borderRadius.lg,
+    borderWidth: 1,
+    borderColor: 'rgba(255,255,255,0.03)',
+    gap: spacing.md,
   },
   recentText: {
     flex: 1,
-    color: colors.textSecondary,
-    fontSize: 14,
+    color: colors.onSurface,
   },
   centered: {
     padding: spacing.xl,
@@ -283,8 +294,7 @@ const styles = StyleSheet.create({
     opacity: 0.5,
   },
   emptyText: {
-    color: colors.textSecondary,
-    fontSize: 16,
-    marginTop: spacing.m,
+    color: colors.secondary,
+    marginTop: spacing.md,
   },
 });

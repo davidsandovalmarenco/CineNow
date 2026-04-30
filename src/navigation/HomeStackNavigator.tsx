@@ -6,6 +6,7 @@ import { ScheduleScreen } from '../screens/ScheduleScreen';
 import { SeatsScreen } from '../screens/SeatsScreen';
 import { SnacksScreen } from '../screens/SnacksScreen';
 import { SummaryScreen } from '../screens/SummaryScreen';
+import { ConfirmationScreen } from '../screens/ConfirmationScreen';
 import { colors } from '../theme/colors';
 
 const Stack = createNativeStackNavigator();
@@ -21,11 +22,12 @@ export const HomeStackNavigator = () => {
       }}
     >
       <Stack.Screen name="HomeMain" component={HomeScreen} options={{ headerShown: false }} />
-      <Stack.Screen name="MovieDetail" component={MovieDetailScreen} options={{ title: '' }} />
-      <Stack.Screen name="Schedule" component={ScheduleScreen} options={{ title: 'Horarios' }} />
-      <Stack.Screen name="Seats" component={SeatsScreen} options={{ title: 'Asientos' }} />
-      <Stack.Screen name="Snacks" component={SnacksScreen} options={{ title: 'Dulcería' }} />
-      <Stack.Screen name="Summary" component={SummaryScreen} options={{ title: 'Resumen de Reserva' }} />
+      <Stack.Screen name="MovieDetail" component={MovieDetailScreen} options={{ headerShown: false }} />
+      <Stack.Screen name="Schedule" component={ScheduleScreen} options={{ headerShown: false }} />
+      <Stack.Screen name="Seats" component={SeatsScreen} options={{ headerShown: false }} />
+      <Stack.Screen name="Snacks" component={SnacksScreen} options={{ headerShown: false }} />
+      <Stack.Screen name="Summary" component={SummaryScreen} options={{ headerShown: false }} />
+      <Stack.Screen name="Confirmation" component={ConfirmationScreen} options={{ headerShown: false, presentation: 'fullScreenModal' }} />
     </Stack.Navigator>
   );
 };

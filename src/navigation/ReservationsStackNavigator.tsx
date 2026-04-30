@@ -1,7 +1,7 @@
 import React from 'react';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import { ReservationsScreen } from '../screens/ReservationsScreen';
-import { TicketDetailScreen } from '../screens/TicketDetailScreen';
+import { ConfirmationScreen } from '../screens/ConfirmationScreen';
 import { colors } from '../theme/colors';
 
 const Stack = createNativeStackNavigator();
@@ -22,9 +22,9 @@ export const ReservationsStackNavigator = () => {
         options={{ headerShown: false }} 
       />
       <Stack.Screen 
-        name="TicketDetail" 
-        component={TicketDetailScreen} 
-        options={{ headerShown: false }} 
+        name="Confirmation" 
+        component={ConfirmationScreen} 
+        options={{ headerShown: false, presentation: 'fullScreenModal' }} 
       />
     </Stack.Navigator>
   );

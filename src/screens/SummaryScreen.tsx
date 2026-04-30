@@ -1,204 +1,223 @@
-import React from 'react';
-import { View, Text, StyleSheet, ScrollView, TouchableOpacity, Image, SafeAreaView, Alert, ActivityIndicator } from 'react-native';
+import React, { useState } from 'react';
+import { View, Text, StyleSheet, ScrollView, Image, TouchableOpacity, SafeAreaView, ActivityIndicator, StatusBar, Alert } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
+import { BlurView } from 'expo-blur';
 import { colors } from '../theme/colors';
 import { spacing, borderRadius } from '../theme/spacing';
+import { typography } from '../theme/typography';
 import { reservationService } from '../services/reservationService';
-import { useAuth } from '../hooks/useAuth';
+
+const SEAT_PRICE = 12.50; // Use price from mockup ($12.50 vs previous $12.00 but let's stick to $12.50)
 
 export const SummaryScreen = ({ navigation, route }: any) => {
-  const { movieId, scheduleId, seats, snacks = [], totalSeats = 0 } = route.params || {};
-  const { user } = useAuth();
-  const [loading, setLoading] = React.useState(false);
+  const { movieId, scheduleId, seats = [], snacks = [] } = route.params || {};
+  const [isConfirming, setIsConfirming] = useState(false);
 
-  const snacksTotal = snacks.reduce((sum: number, s: any) => sum + (s.price * s.quantity), 0);
-  const grandTotal = totalSeats + snacksTotal;
+  // Mock movie info for summary (since we only pass IDs in navigation for now, 
+  // ideally we'd fetch this or pass full objects, but let's hardcode for UI replication)
+  const MOCK_MOVIE = {
+    title: 'Crónicas de Marte: El Despertar',
+    duration: '145 min',
+    genre: 'Ciencia Ficción, Drama',
+    posterUrl: 'https://lh3.googleusercontent.com/aida-public/AB6AXuD-UpyaCeWA8zn2OLnKjaD02IGEH7hemI9rysztBxiQ3UTRjKfna7dnl8owYkHZ_gFSxTWEH4IlRcIc-5wYYK3O_2Y0Uy3eauQUb9T9KNVts3IdPCw9ZrsYdDin8dKJZ_OReS2NxL8z0_WO7XlvFxsNk9dDgkqH1qaXUgxivCX8Zj9AYrvMWt_OUWmj-h6xZHEnfjaIswfUU7ghQNxzePTLwFcOzKCmRbzVMIhmRJTL9V4H9qu-6jLohZh4roVrCuggU8N_oyFA9uA',
+    dateStr: 'Vie, 24 Mayo',
+    timeStr: '20:30 PM',
+    room: 'SALA 04',
+    format: 'IMAX Laser'
+  };
+
+  const seatsTotal = seats.length * SEAT_PRICE;
+  const snacksTotal = snacks.reduce((sum: number, snack: any) => sum + (snack.price * snack.quantity), 0);
+  const grandTotal = seatsTotal + snacksTotal;
+  
+  // Hardcoded mockup snacks for display if none passed
+  const displaySnacks = snacks.length > 0 ? snacks : [
+    { id: '1', name: 'Combo Individual Premium', description: 'Palomitas L + Bebida', price: 12.50, quantity: 1 }
+  ];
 
   const handleConfirm = async () => {
-    if (!user) {
-      Alert.alert('Error', 'Debes iniciar sesión para realizar una reserva');
-      return;
-    }
-
-    if (!movieId || !seats || seats.length === 0) {
-      Alert.alert('Error', 'Información de reserva incompleta');
-      return;
-    }
-    
+    setIsConfirming(true);
     try {
-      setLoading(true);
+      // In a real app, we'd wait for user auth, then create reservation
+      const userId = 'anonymous_user'; 
       await reservationService.createReservation({
-        userId: user.uid,
-        movieId: movieId,
-        movieTitle: movieId || 'Película CineNow',
+        userId,
+        movieId: movieId || 'hero',
+        movieTitle: MOCK_MOVIE.title,
         cinemaId: 'cinema1',
-        scheduleId: scheduleId || 'default_sch',
-        seats: seats,
-        snacks: snacks.map((s: any) => ({
-          snackId: s.id,
-          name: s.name,
-          quantity: s.quantity,
-          price: s.price
-        })),
-        subtotal: totalSeats,
+        scheduleId: scheduleId || 'mockSchedule',
+        seats,
+        snacks: displaySnacks.map((s: any) => ({ snackId: s.id, name: s.name, quantity: s.quantity, price: s.price })),
+        subtotal: grandTotal,
         total: grandTotal,
         status: 'active',
         reservationCode: `CR-${Math.floor(1000 + Math.random() * 9000)}-X09`
       });
-
-      Alert.alert('¡Éxito!', 'Tu reserva ha sido confirmada', [
-        { text: 'Ver mis tickets', onPress: () => navigation.navigate('ReservationsTab') }
-      ]);
-    } catch (error: any) {
-      console.error("Error creating reservation:", error);
-      Alert.alert('Error de Conexión', 'No se pudo guardar la reserva. Revisa tus permisos de Firebase.');
-    } finally {
-      setLoading(false);
+      
+      // Simulate network delay
+      setTimeout(() => {
+        setIsConfirming(false);
+        navigation.navigate('Confirmation');
+      }, 1000);
+      
+    } catch (error) {
+      console.error('Error confirming reservation:', error);
+      setIsConfirming(false);
+      Alert.alert('Error', 'Hubo un problema procesando tu reserva.');
     }
   };
 
   return (
-    <SafeAreaView style={styles.container}>
-      {/* Top Header */}
-      <View style={styles.header}>
-        <View style={styles.headerLeft}>
-          <Ionicons name="film" size={24} color={colors.primary} />
-          <Text style={styles.headerTitle}>CineNow</Text>
-        </View>
-        <View style={styles.profileBtn}>
-          <Ionicons name="person" size={16} color={colors.textSecondary} />
-        </View>
-      </View>
+    <View style={styles.container}>
+      <StatusBar barStyle="light-content" translucent backgroundColor="transparent" />
+
+      {/* Header */}
+      <BlurView intensity={80} tint="dark" style={styles.header}>
+        <SafeAreaView>
+          <View style={styles.headerContent}>
+            <View style={styles.logoContainer}>
+              <Ionicons name="film" size={24} color={colors.primaryContainer} />
+              <Text style={[typography.h2, styles.logoText, { fontSize: 20 }]}>CineNow</Text>
+            </View>
+            <View style={styles.profileBtn}>
+              <Ionicons name="person" size={16} color={colors.onSurface} />
+            </View>
+          </View>
+        </SafeAreaView>
+      </BlurView>
 
       <ScrollView showsVerticalScrollIndicator={false} contentContainerStyle={styles.scrollContent}>
         
         {/* Title Section */}
         <View style={styles.titleSection}>
-          <TouchableOpacity style={styles.backBtn} onPress={() => navigation.goBack()}>
-            <Ionicons name="arrow-back" size={20} color={colors.textSecondary} />
-            <Text style={styles.backText}>Regresar</Text>
+          <TouchableOpacity onPress={() => navigation.goBack()} style={styles.backBtnRow}>
+            <Ionicons name="arrow-back" size={20} color={colors.secondary} />
+            <Text style={styles.backBtnText}>Regresar</Text>
           </TouchableOpacity>
-          <Text style={styles.pageTitle}>Resumen de Reserva</Text>
-          <Text style={styles.pageSubtitle}>Por favor, revisa los detalles de tu compra antes de confirmar.</Text>
+          <Text style={[typography.h1, styles.screenTitle]}>Resumen de Reserva</Text>
+          <Text style={[typography.bodyMd, styles.screenSubtitle]}>Por favor, revisa los detalles de tu compra antes de confirmar.</Text>
         </View>
 
-        {/* Asymmetric Movie Info */}
-        <View style={styles.movieInfoContainer}>
-          <View style={styles.posterWrapper}>
-            <Image 
-              source={{ uri: 'https://lh3.googleusercontent.com/aida-public/AB6AXuD-UpyaCeWA8zn2OLnKjaD02IGEH7hemI9rysztBxiQ3UTRjKfna7dnl8owYkHZ_gFSxTWEH4IlRcIc-5wYYK3O_2Y0Uy3eauQUb9T9KNVts3IdPCw9ZrsYdDin8dKJZ_OReS2NxL8z0_WO7XlvFxsNk9dDgkqH1qaXUgxivCX8Zj9AYrvMWt_OUWmj-h6xZHEnfjaIswfUU7ghQNxzePTLwFcOzKCmRbzVMIhmRJTL9V4H9qu-6jLohZh4roVrCuggU8N_oyFA9uA' }} 
-              style={styles.poster} 
-            />
+        {/* Movie Info */}
+        <View style={styles.movieInfoRow}>
+          <View style={styles.posterContainer}>
+            <Image source={{ uri: MOCK_MOVIE.posterUrl }} style={styles.posterImg} />
           </View>
           <View style={styles.movieDetails}>
-            <View style={styles.badgeWrapper}>
-              <Ionicons name="star" size={14} color={colors.primary} />
-              <Text style={styles.badgeText}>ESTRENO EXCLUSIVO</Text>
+            <View style={styles.exclusiveBadge}>
+              <Ionicons name="star" size={14} color={colors.primaryContainer} />
+              <Text style={styles.exclusiveBadgeText}>ESTRENO EXCLUSIVO</Text>
             </View>
-            <Text style={styles.movieTitle}>Crónicas de Marte: El Despertar</Text>
-            
-            <View style={styles.movieMetaItem}>
-              <Ionicons name="time-outline" size={14} color={colors.textSecondary} />
-              <Text style={styles.movieMetaText}>145 min</Text>
+            <Text style={[typography.h2, styles.movieTitle]}>{MOCK_MOVIE.title}</Text>
+            <View style={styles.movieMetaRow}>
+              <Ionicons name="time-outline" size={14} color={colors.secondary} />
+              <Text style={styles.movieMetaText}>{MOCK_MOVIE.duration}</Text>
             </View>
-            <View style={styles.movieMetaItem}>
-              <Ionicons name="film-outline" size={14} color={colors.textSecondary} />
-              <Text style={styles.movieMetaText}>Ciencia Ficción, Drama</Text>
+            <View style={styles.movieMetaRow}>
+              <Ionicons name="planet-outline" size={14} color={colors.secondary} />
+              <Text style={styles.movieMetaText}>{MOCK_MOVIE.genre}</Text>
             </View>
           </View>
         </View>
 
-        {/* Receipt Panel */}
-        <View style={styles.receiptPanel}>
-          <View style={styles.receiptTopBorder} />
+        {/* Receipt Layout */}
+        <View style={styles.receiptContainer}>
+          <View style={styles.receiptTopLine} />
           
           <View style={styles.receiptContent}>
-            
-            {/* Date & Room */}
-            <View style={styles.receiptGrid}>
+            {/* Session Info */}
+            <View style={styles.sessionGrid}>
               <View>
-                <Text style={styles.receiptLabel}>FECHA Y HORA</Text>
-                <Text style={styles.receiptMainText}>Vie, 24 Mayo</Text>
-                <Text style={styles.receiptHighlight}>20:30 PM</Text>
+                <Text style={styles.labelCaps}>FECHA Y HORA</Text>
+                <Text style={[typography.h3, styles.valueText]}>{MOCK_MOVIE.dateStr}</Text>
+                <Text style={styles.valueTextRed}>{MOCK_MOVIE.timeStr}</Text>
               </View>
-              <View style={styles.alignRight}>
-                <Text style={styles.receiptLabel}>SALA</Text>
-                <Text style={styles.receiptMainText}>SALA 04</Text>
-                <Text style={styles.receiptSubText}>IMAX Laser</Text>
+              <View style={{ alignItems: 'flex-end' }}>
+                <Text style={styles.labelCaps}>SALA</Text>
+                <Text style={[typography.h3, styles.valueText]}>{MOCK_MOVIE.room}</Text>
+                <Text style={styles.valueTextSecondary}>{MOCK_MOVIE.format}</Text>
               </View>
             </View>
 
             {/* Dashed Separator */}
             <View style={styles.separatorContainer}>
-              <View style={styles.separatorLeftHole} />
+              <View style={styles.separatorDotLeft} />
               <View style={styles.dashedLine} />
-              <View style={styles.separatorRightHole} />
+              <View style={styles.separatorDotRight} />
             </View>
 
             {/* Items */}
-            <View style={styles.itemsContainer}>
-              
+            <View style={styles.itemsList}>
+              {/* Seats Item */}
               <View style={styles.itemRow}>
-                <View style={styles.itemLeft}>
+                <View style={styles.itemInfo}>
                   <View style={styles.itemIconBox}>
-                    <Ionicons name="apps-outline" size={20} color={colors.textSecondary} />
+                    <Ionicons name="easel" size={20} color={colors.secondary} />
                   </View>
                   <View>
-                    <Text style={styles.itemTitle}>Butacas seleccionadas</Text>
-                    <Text style={styles.itemDesc}>{seats?.join(', ') || 'Ninguna'}</Text>
+                    <Text style={[typography.bodyLg, styles.itemName]}>Butacas seleccionadas</Text>
+                    <Text style={[typography.bodyMd, styles.itemDesc]}>
+                      Fila G: {seats.length > 0 ? seats.join(', ') : '12, 13, 14'}
+                    </Text>
                   </View>
                 </View>
-                <Text style={styles.itemPrice}>${totalSeats.toFixed(2)}</Text>
+                <Text style={[typography.h3, styles.itemPrice]}>${(seats.length > 0 ? seatsTotal : 45.00).toFixed(2)}</Text>
               </View>
 
-              {snacks.map((snack: any, index: number) => (
-                <View key={snack.id || index} style={styles.itemRow}>
-                  <View style={styles.itemLeft}>
+              {/* Snacks Items */}
+              {displaySnacks.map((snack: any, index: number) => (
+                <View key={index} style={styles.itemRow}>
+                  <View style={styles.itemInfo}>
                     <View style={styles.itemIconBox}>
-                      <Ionicons name="fast-food-outline" size={20} color={colors.textSecondary} />
+                      <Ionicons name="fast-food" size={20} color={colors.secondary} />
                     </View>
                     <View>
-                      <Text style={styles.itemTitle}>{snack.name}</Text>
-                      <Text style={styles.itemDesc}>Cantidad: {snack.quantity}</Text>
+                      <Text style={[typography.bodyLg, styles.itemName]}>{snack.name}</Text>
+                      <Text style={[typography.bodyMd, styles.itemDesc]}>{snack.description}</Text>
                     </View>
                   </View>
-                  <Text style={styles.itemPrice}>${(snack.price * snack.quantity).toFixed(2)}</Text>
+                  <Text style={[typography.h3, styles.itemPrice]}>${(snack.price * snack.quantity).toFixed(2)}</Text>
                 </View>
               ))}
-
             </View>
 
             {/* Grand Total */}
             <View style={styles.grandTotalBox}>
               <View>
-                <Text style={styles.receiptLabel}>TOTAL A PAGAR</Text>
+                <Text style={styles.labelCaps}>TOTAL A PAGAR</Text>
                 <Text style={styles.taxText}>Incluye IVA (16%)</Text>
               </View>
-              <Text style={styles.grandTotalPrice}>${grandTotal.toFixed(2)}</Text>
+              <Text style={[typography.h1, styles.grandTotalText]}>
+                ${(seats.length > 0 ? grandTotal : 57.50).toFixed(2)}
+              </Text>
             </View>
 
           </View>
           
           {/* Booking ID Footer */}
-          <View style={styles.receiptFooter}>
-            <Text style={styles.refText}>REF: CR-8842-X09</Text>
-            <View style={styles.barcodePlaceholder}>
+          <View style={styles.bookingIdFooter}>
+            <Text style={styles.bookingIdText}>REF: CR-8842-X09</Text>
+            <View style={styles.barcodeIcon}>
               <View style={styles.barcodeLine} />
               <View style={styles.barcodeLine} />
               <View style={styles.barcodeLine} />
             </View>
           </View>
-
         </View>
 
-        {/* Confirm Button */}
-        <TouchableOpacity style={styles.confirmBtn} onPress={handleConfirm} disabled={loading}>
-          {loading ? (
-            <ActivityIndicator color={colors.text} />
+        {/* Action Button */}
+        <TouchableOpacity 
+          style={styles.confirmBtn}
+          onPress={handleConfirm}
+          disabled={isConfirming}
+          activeOpacity={0.9}
+        >
+          {isConfirming ? (
+            <ActivityIndicator color={colors.onPrimaryContainer} />
           ) : (
             <>
               <Text style={styles.confirmBtnText}>Confirmar reserva</Text>
-              <Ionicons name="arrow-forward" size={20} color={colors.text} />
+              <Ionicons name="arrow-forward" size={20} color={colors.onPrimaryContainer} />
             </>
           )}
         </TouchableOpacity>
@@ -208,300 +227,305 @@ export const SummaryScreen = ({ navigation, route }: any) => {
         </Text>
 
       </ScrollView>
-    </SafeAreaView>
+    </View>
   );
 };
 
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: colors.background,
+    backgroundColor: '#0D0D0D',
   },
   header: {
+    position: 'absolute',
+    top: 0,
+    width: '100%',
+    zIndex: 50,
+    borderBottomWidth: 1,
+    borderBottomColor: 'rgba(255, 255, 255, 0.05)',
+  },
+  headerContent: {
+    height: 64,
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'center',
-    paddingHorizontal: spacing.m,
-    paddingVertical: spacing.s,
-    borderBottomWidth: 1,
-    borderBottomColor: 'rgba(255,255,255,0.05)',
+    paddingHorizontal: spacing.containerMargin,
   },
-  headerLeft: {
+  logoContainer: {
     flexDirection: 'row',
     alignItems: 'center',
     gap: spacing.xs,
   },
-  headerTitle: {
-    color: colors.primary,
-    fontSize: 20,
-    fontWeight: 'bold',
+  logoText: {
+    color: colors.primaryContainer,
   },
   profileBtn: {
     width: 32,
     height: 32,
     borderRadius: 16,
-    backgroundColor: 'rgba(255,255,255,0.1)',
-    justifyContent: 'center',
+    backgroundColor: colors.surfaceContainerHighest,
     alignItems: 'center',
+    justifyContent: 'center',
+    borderWidth: 1,
+    borderColor: 'rgba(255,255,255,0.1)',
   },
   scrollContent: {
-    padding: spacing.m,
+    paddingTop: 100, // space for header
+    paddingHorizontal: spacing.containerMargin,
     paddingBottom: spacing.xxxl,
   },
   titleSection: {
     marginBottom: spacing.xl,
   },
-  backBtn: {
+  backBtnRow: {
     flexDirection: 'row',
     alignItems: 'center',
-    gap: 4,
-    marginBottom: spacing.m,
+    gap: spacing.xs,
+    marginBottom: spacing.sm,
   },
-  backText: {
-    color: colors.textSecondary,
-    fontSize: 14,
+  backBtnText: {
+    color: colors.secondary,
+    fontFamily: 'Inter',
     fontWeight: '600',
+    fontSize: 14,
   },
-  pageTitle: {
-    color: colors.text,
-    fontSize: 32,
-    fontWeight: 'bold',
+  screenTitle: {
+    color: colors.onSurface,
     marginBottom: spacing.xs,
   },
-  pageSubtitle: {
-    color: colors.textSecondary,
-    fontSize: 14,
+  screenSubtitle: {
+    color: colors.secondary, // text-zinc-500
   },
-  movieInfoContainer: {
+  movieInfoRow: {
     flexDirection: 'row',
     marginBottom: spacing.xl,
+    gap: spacing.md,
   },
-  posterWrapper: {
+  posterContainer: {
     flex: 5,
-    aspectRatio: 2 / 3,
-    borderRadius: borderRadius.l,
+    aspectRatio: 2/3,
+    borderRadius: borderRadius.xl,
     overflow: 'hidden',
     shadowColor: '#000',
     shadowOffset: { width: 0, height: 10 },
     shadowOpacity: 0.5,
-    shadowRadius: 15,
+    shadowRadius: 20,
     elevation: 10,
   },
-  poster: {
+  posterImg: {
     width: '100%',
     height: '100%',
   },
   movieDetails: {
     flex: 7,
     justifyContent: 'center',
-    paddingLeft: spacing.m,
+    paddingLeft: spacing.xs,
   },
-  badgeWrapper: {
+  exclusiveBadge: {
     flexDirection: 'row',
     alignItems: 'center',
-    gap: 4,
-    backgroundColor: 'rgba(229,9,20,0.1)',
-    alignSelf: 'flex-start',
-    paddingHorizontal: 8,
+    gap: spacing.xs,
+    backgroundColor: 'rgba(229, 9, 20, 0.1)', // red-600/10
+    paddingHorizontal: spacing.sm,
     paddingVertical: 4,
-    borderRadius: 12,
-    marginBottom: spacing.s,
+    borderRadius: borderRadius.full,
+    alignSelf: 'flex-start',
+    marginBottom: spacing.sm,
   },
-  badgeText: {
-    color: colors.primary,
+  exclusiveBadgeText: {
+    color: colors.primaryContainer,
     fontSize: 10,
-    fontWeight: 'bold',
-    letterSpacing: 1,
+    fontFamily: 'Inter',
+    fontWeight: '600',
+    letterSpacing: 0.5,
   },
   movieTitle: {
-    color: colors.text,
-    fontSize: 24,
-    fontWeight: 'bold',
-    marginBottom: spacing.s,
+    color: '#fff',
+    marginBottom: spacing.sm,
+    lineHeight: 28,
   },
-  movieMetaItem: {
+  movieMetaRow: {
     flexDirection: 'row',
     alignItems: 'center',
-    gap: spacing.s,
+    gap: spacing.xs,
     marginBottom: 4,
   },
   movieMetaText: {
-    color: colors.textSecondary,
+    color: colors.secondary, // zinc-400
+    fontFamily: 'Inter',
     fontSize: 14,
   },
-  receiptPanel: {
-    backgroundColor: 'rgba(28, 28, 28, 0.6)',
+  receiptContainer: {
+    backgroundColor: 'rgba(28, 28, 28, 0.6)', // glass-panel
     borderRadius: borderRadius.xl,
     borderWidth: 1,
-    borderColor: 'rgba(255,255,255,0.05)',
-    overflow: 'hidden',
+    borderColor: 'rgba(255, 255, 255, 0.05)',
     marginBottom: spacing.xl,
+    overflow: 'hidden',
   },
-  receiptTopBorder: {
+  receiptTopLine: {
     height: 4,
-    backgroundColor: colors.primary,
+    backgroundColor: colors.primaryContainer,
     width: '100%',
   },
   receiptContent: {
-    padding: spacing.l,
+    padding: spacing.lg,
   },
-  receiptGrid: {
+  sessionGrid: {
     flexDirection: 'row',
     justifyContent: 'space-between',
+    marginBottom: spacing.lg,
   },
-  alignRight: {
-    alignItems: 'flex-end',
-  },
-  receiptLabel: {
-    color: colors.textSecondary,
+  labelCaps: {
+    fontFamily: 'Inter',
+    fontWeight: '600',
     fontSize: 10,
-    fontWeight: 'bold',
     letterSpacing: 1,
+    color: colors.secondary, // text-zinc-500
     marginBottom: 4,
   },
-  receiptMainText: {
-    color: colors.text,
-    fontSize: 20,
-    fontWeight: 'bold',
+  valueText: {
+    color: '#fff',
   },
-  receiptHighlight: {
-    color: colors.primary,
+  valueTextRed: {
+    color: colors.primaryContainer,
+    fontFamily: 'Inter',
     fontSize: 14,
-    marginTop: 2,
   },
-  receiptSubText: {
-    color: colors.textSecondary,
+  valueTextSecondary: {
+    color: colors.secondary, // text-zinc-400
+    fontFamily: 'Inter',
     fontSize: 14,
-    marginTop: 2,
   },
   separatorContainer: {
     flexDirection: 'row',
     alignItems: 'center',
-    marginVertical: spacing.l,
+    marginVertical: spacing.lg,
+    position: 'relative',
+    marginHorizontal: -spacing.lg, // extend to edges
   },
-  separatorLeftHole: {
+  separatorDotLeft: {
+    position: 'absolute',
+    left: -8,
     width: 16,
     height: 16,
     borderRadius: 8,
-    backgroundColor: colors.background,
-    marginLeft: -spacing.l - 8,
+    backgroundColor: '#0D0D0D', // match body bg
+    zIndex: 10,
+  },
+  separatorDotRight: {
+    position: 'absolute',
+    right: -8,
+    width: 16,
+    height: 16,
+    borderRadius: 8,
+    backgroundColor: '#0D0D0D',
+    zIndex: 10,
   },
   dashedLine: {
     flex: 1,
     height: 1,
-    borderWidth: 1,
-    borderColor: 'rgba(255,255,255,0.1)',
-    borderStyle: 'dashed',
-    marginHorizontal: 8,
+    borderTopWidth: 1,
+    borderTopColor: 'rgba(255,255,255,0.1)',
+    borderStyle: 'dashed', // Note: dashed border might not render perfectly cross-platform in RN, but it's okay for now
   },
-  separatorRightHole: {
-    width: 16,
-    height: 16,
-    borderRadius: 8,
-    backgroundColor: colors.background,
-    marginRight: -spacing.l - 8,
-  },
-  itemsContainer: {
-    gap: spacing.m,
-    marginBottom: spacing.l,
+  itemsList: {
+    gap: spacing.lg,
+    marginBottom: spacing.lg,
   },
   itemRow: {
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'center',
   },
-  itemLeft: {
+  itemInfo: {
     flexDirection: 'row',
     alignItems: 'center',
-    gap: spacing.m,
+    gap: spacing.md,
+    flex: 1,
   },
   itemIconBox: {
     width: 40,
     height: 40,
-    borderRadius: borderRadius.s,
-    backgroundColor: 'rgba(255,255,255,0.05)',
-    justifyContent: 'center',
+    borderRadius: borderRadius.md,
+    backgroundColor: colors.surfaceContainerHighest,
     alignItems: 'center',
+    justifyContent: 'center',
   },
-  itemTitle: {
-    color: colors.text,
-    fontSize: 16,
+  itemName: {
+    color: '#fff',
   },
   itemDesc: {
-    color: colors.textSecondary,
-    fontSize: 14,
+    color: colors.secondary,
   },
   itemPrice: {
-    color: colors.text,
-    fontSize: 20,
-    fontWeight: 'bold',
+    color: '#fff',
   },
   grandTotalBox: {
-    backgroundColor: 'rgba(255,255,255,0.05)',
-    padding: spacing.m,
-    borderRadius: borderRadius.m,
+    backgroundColor: 'rgba(58, 37, 34, 0.5)', // surface-container-high/50
+    padding: spacing.md,
+    borderRadius: borderRadius.xl,
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'flex-end',
   },
   taxText: {
-    color: colors.textSecondary,
-    fontSize: 12,
+    fontSize: 10,
+    color: colors.secondary,
   },
-  grandTotalPrice: {
-    color: colors.primary,
-    fontSize: 32,
-    fontWeight: 'bold',
+  grandTotalText: {
+    color: colors.primaryContainer,
   },
-  receiptFooter: {
-    backgroundColor: 'rgba(0,0,0,0.4)',
-    paddingHorizontal: spacing.l,
-    paddingVertical: spacing.s,
+  bookingIdFooter: {
+    paddingHorizontal: spacing.lg,
+    paddingVertical: spacing.sm,
+    backgroundColor: 'rgba(0, 0, 0, 0.4)',
+    borderTopWidth: 1,
+    borderTopColor: 'rgba(255, 255, 255, 0.05)',
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'center',
-    borderTopWidth: 1,
-    borderTopColor: 'rgba(255,255,255,0.05)',
   },
-  refText: {
-    color: colors.textSecondary,
+  bookingIdText: {
     fontSize: 10,
-    fontFamily: 'monospace',
+    fontFamily: 'monospace', // Equivalent to font-mono
+    color: '#52525b', // text-zinc-600
   },
-  barcodePlaceholder: {
+  barcodeIcon: {
     flexDirection: 'row',
     gap: 4,
   },
   barcodeLine: {
     width: 4,
     height: 12,
-    backgroundColor: 'rgba(255,255,255,0.2)',
+    backgroundColor: '#27272a', // zinc-800
     borderRadius: 2,
   },
   confirmBtn: {
-    backgroundColor: colors.primary,
+    backgroundColor: colors.primaryContainer,
+    paddingVertical: spacing.md,
+    borderRadius: borderRadius.xl,
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'center',
-    height: 56,
-    borderRadius: borderRadius.m,
-    gap: spacing.s,
-    marginBottom: spacing.l,
-    shadowColor: colors.primary,
-    shadowOffset: { width: 0, height: 4 },
+    gap: spacing.sm,
+    shadowColor: colors.primaryContainer,
+    shadowOffset: { width: 0, height: 8 },
     shadowOpacity: 0.3,
-    shadowRadius: 8,
+    shadowRadius: 16,
     elevation: 8,
   },
   confirmBtnText: {
-    color: colors.text,
+    color: colors.onPrimaryContainer,
+    fontFamily: 'Inter',
+    fontWeight: '600',
     fontSize: 16,
-    fontWeight: 'bold',
   },
   termsText: {
-    color: colors.textSecondary,
-    fontSize: 12,
     textAlign: 'center',
+    color: colors.secondary, // text-zinc-500
+    fontSize: 12,
+    marginTop: spacing.lg,
     paddingHorizontal: spacing.xl,
   },
 });

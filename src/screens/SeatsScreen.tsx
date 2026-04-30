@@ -1,8 +1,12 @@
-import React, { useState } from 'react';
-import { View, Text, StyleSheet, ScrollView, TouchableOpacity, SafeAreaView, Dimensions } from 'react-native';
+import React, { useState, useEffect } from 'react';
+import { View, Text, StyleSheet, ScrollView, TouchableOpacity, SafeAreaView, Dimensions, ImageBackground, StatusBar } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
+import { BlurView } from 'expo-blur';
+import { LinearGradient } from 'expo-linear-gradient';
 import { colors } from '../theme/colors';
 import { spacing, borderRadius } from '../theme/spacing';
+import { typography } from '../theme/typography';
+import { reservationService } from '../services/reservationService';
 
 const SEAT_PRICE = 12.00;
 
@@ -11,15 +15,34 @@ const ROWS = ['A', 'B', 'C', 'D', 'E'];
 const COLS = 10;
 const AISLES = [2, 7];
 
-// Mock occupied seats
-const OCCUPIED_SEATS = ['B3', 'B4', 'D3'];
+const BACKGROUND_URL = 'https://lh3.googleusercontent.com/aida-public/AB6AXuBEVfivRlkUKILHoJDOOKa6mmrTTwrNfotEMujrwAZACJVBB2cPkHqMomSn2Fjp_qgy10KWSwrPfTSnOTYwNd_TiDrdARFDf5rn9CCfifWmooQXEdGm2MP313JOuYw1y-sxtl_J-p2NB6cXNbFoN3XNJfjwBI3IAzuGQwSeoGdbo2bZxlmu3qKM50vWSCxvMN-B8sYXk6NJOMNWlq5aSoWSE0FwQJDra6QhiTVYVNqhE3vA-ceNNLPqQBflZDxIj-iDxcqamYA9PiU';
 
 export const SeatsScreen = ({ navigation, route }: any) => {
   const { movieId, scheduleId } = route.params || {};
   const [selectedSeats, setSelectedSeats] = useState<string[]>([]);
+  const [occupiedSeats, setOccupiedSeats] = useState<string[]>([]);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    const loadOccupiedSeats = async () => {
+      if (!scheduleId) {
+        setLoading(false);
+        return;
+      }
+      try {
+        const seats = await reservationService.getOccupiedSeats(scheduleId);
+        setOccupiedSeats(seats);
+      } catch (error) {
+        console.error('Error loading occupied seats:', error);
+      } finally {
+        setLoading(false);
+      }
+    };
+    loadOccupiedSeats();
+  }, [scheduleId]);
 
   const toggleSeat = (seatId: string) => {
-    if (OCCUPIED_SEATS.includes(seatId)) return;
+    if (occupiedSeats.includes(seatId) || loading) return;
     
     if (selectedSeats.includes(seatId)) {
       setSelectedSeats(selectedSeats.filter(id => id !== seatId));
@@ -50,7 +73,7 @@ export const SeatsScreen = ({ navigation, route }: any) => {
           }
 
           const seatId = `${row}${colIndex}`;
-          const isOccupied = OCCUPIED_SEATS.includes(seatId);
+          const isOccupied = occupiedSeats.includes(seatId);
           const isSelected = selectedSeats.includes(seatId);
 
           let seatStyle = styles.seatAvailable;
@@ -73,138 +96,165 @@ export const SeatsScreen = ({ navigation, route }: any) => {
 
   return (
     <View style={styles.container}>
-      {/* Fake blurred background would go here if we used an Image, but we'll stick to solid dark */}
+      <StatusBar barStyle="light-content" translucent backgroundColor="transparent" />
       
-      <SafeAreaView style={styles.header}>
-        <TouchableOpacity style={styles.backBtn} onPress={() => navigation.goBack()}>
-          <Ionicons name="arrow-back" size={24} color={colors.text} />
-        </TouchableOpacity>
-        <Text style={styles.headerTitle}>CineNow</Text>
-        <View style={styles.headerRight} />
-      </SafeAreaView>
-
-      <ScrollView showsVerticalScrollIndicator={false} contentContainerStyle={styles.scrollContent}>
+      <ImageBackground 
+        source={{ uri: BACKGROUND_URL }} 
+        style={styles.backgroundImage}
+        imageStyle={{ opacity: 0.2 }}
+        blurRadius={40}
+      >
         
-        <View style={styles.infoSection}>
-          <Text style={styles.screenTitle}>Selecciona tus Asientos</Text>
-          <View style={styles.metaInfo}>
-            <Ionicons name="time-outline" size={16} color={colors.textSecondary} />
-            <Text style={styles.metaText}>19:45 • Sala 4 • IMAX</Text>
-          </View>
-        </View>
-
-        <View style={styles.cinemaContainer}>
-          {/* Screen Curve */}
-          <View style={styles.screenCurveContainer}>
-            <View style={styles.screenCurve} />
-            <Text style={styles.screenLabel}>PANTALLA</Text>
-          </View>
-
-          {/* Seats */}
-          <View style={styles.gridContainer}>
-            {renderSeatGrid()}
-          </View>
-
-          {/* Legend */}
-          <View style={styles.legendContainer}>
-            <View style={styles.legendItem}>
-              <View style={[styles.legendBox, styles.seatAvailable]} />
-              <Text style={styles.legendText}>Disponible</Text>
+        {/* Header */}
+        <BlurView intensity={80} tint="dark" style={styles.header}>
+          <SafeAreaView>
+            <View style={styles.headerContent}>
+              <View style={styles.logoContainer}>
+                <TouchableOpacity onPress={() => navigation.goBack()} style={{ marginRight: spacing.sm }}>
+                  <Ionicons name="arrow-back" size={24} color={colors.onSurface} />
+                </TouchableOpacity>
+                <Ionicons name="film" size={24} color={colors.primaryContainer} />
+                <Text style={[typography.h2, styles.logoText, { fontSize: 20 }]}>CineNow</Text>
+              </View>
             </View>
-            <View style={styles.legendItem}>
-              <View style={[styles.legendBox, styles.seatOccupied]} />
-              <Text style={styles.legendText}>Ocupado</Text>
-            </View>
-            <View style={styles.legendItem}>
-              <View style={[styles.legendBox, styles.seatSelected]} />
-              <Text style={styles.legendText}>Seleccionado</Text>
-            </View>
-          </View>
-        </View>
+          </SafeAreaView>
+        </BlurView>
 
-      </ScrollView>
-
-      {/* Bottom Action Bar */}
-      <View style={styles.bottomBar}>
-        <View style={styles.summaryContainer}>
-          <View style={styles.summaryItem}>
-            <Text style={styles.summaryLabel}>Boletos</Text>
-            <View style={styles.summaryValueRow}>
-              <Text style={styles.summaryValueMain}>{selectedSeats.length}</Text>
-              {selectedSeats.length > 0 && (
-                <Text style={styles.summaryValueSub}>
-                  ({selectedSeats.join(', ')})
-                </Text>
-              )}
-            </View>
-          </View>
+        <ScrollView showsVerticalScrollIndicator={false} contentContainerStyle={styles.scrollContent}>
           
-          <View style={styles.divider} />
-          
-          <View style={styles.summaryItem}>
-            <Text style={styles.summaryLabel}>Precio Total</Text>
-            <Text style={styles.summaryPrice}>${totalPrice.toFixed(2)}</Text>
+          <View style={styles.infoSection}>
+            <Text style={[typography.h1, styles.screenTitle]}>Selecciona tus Asientos</Text>
+            <View style={styles.metaInfo}>
+              <Ionicons name="time-outline" size={16} color={colors.onSurfaceVariant} />
+              <Text style={styles.metaText}>19:45 • Sala 4 • IMAX</Text>
+            </View>
           </View>
-        </View>
 
-        <TouchableOpacity 
-          style={[styles.continueBtn, selectedSeats.length === 0 && styles.continueBtnDisabled]}
-          disabled={selectedSeats.length === 0}
-          onPress={handleContinue}
-        >
-          <Text style={styles.continueBtnText}>Continuar</Text>
-          <Ionicons name="chevron-forward" size={20} color={colors.text} />
-        </TouchableOpacity>
-      </View>
+          <View style={styles.cinemaContainer}>
+            {/* Screen Curve */}
+            <View style={styles.screenCurveContainer}>
+              <LinearGradient
+                colors={[colors.primaryContainer, 'transparent']}
+                style={styles.screenCurve}
+              />
+              <Text style={[typography.labelCaps, styles.screenLabel]}>PANTALLA</Text>
+            </View>
 
+            {/* Seats */}
+            <View style={styles.gridContainer}>
+              {renderSeatGrid()}
+            </View>
+
+            {/* Legend */}
+            <BlurView intensity={20} tint="dark" style={styles.legendContainer}>
+              <View style={styles.legendItem}>
+                <View style={[styles.legendBox, styles.seatAvailable]} />
+                <Text style={styles.legendText}>Disponible</Text>
+              </View>
+              <View style={styles.legendItem}>
+                <View style={[styles.legendBox, styles.seatOccupied]} />
+                <Text style={styles.legendText}>Ocupado</Text>
+              </View>
+              <View style={styles.legendItem}>
+                <View style={[styles.legendBox, styles.seatSelected]} />
+                <Text style={styles.legendText}>Seleccionado</Text>
+              </View>
+            </BlurView>
+          </View>
+
+        </ScrollView>
+
+        {/* Bottom Action Bar */}
+        <BlurView intensity={80} tint="dark" style={styles.bottomBar}>
+        <SafeAreaView>
+            <View style={styles.bottomBarContent}>
+              <View style={styles.summaryInfo}>
+                <View style={styles.summaryColumn}>
+                  <Text style={[typography.labelCaps, styles.summaryLabel]}>Boletos</Text>
+                  <View style={styles.summaryValueRow}>
+                    <Text style={[typography.h2, styles.summaryValueMain]}>{selectedSeats.length}</Text>
+                    {selectedSeats.length > 0 && (
+                      <Text style={[typography.bodyMd, styles.summaryValueSub]}>
+                        ({selectedSeats.join(', ')})
+                      </Text>
+                    )}
+                  </View>
+                </View>
+
+                <View style={styles.divider} />
+
+                <View style={styles.summaryColumn}>
+                  <Text style={[typography.labelCaps, styles.summaryLabel]}>Precio Total</Text>
+                  <Text style={[typography.h2, styles.summaryPrice]}>${totalPrice.toFixed(2)}</Text>
+                </View>
+              </View>
+
+              <TouchableOpacity 
+                style={[styles.continueBtn, selectedSeats.length === 0 && styles.continueBtnDisabled]}
+                disabled={selectedSeats.length === 0}
+                onPress={handleContinue}
+                activeOpacity={0.9}
+              >
+                <Text style={styles.continueBtnText}>Continuar</Text>
+                <Ionicons name="chevron-forward" size={20} color={colors.onPrimaryContainer} />
+              </TouchableOpacity>
+            </View>
+          </SafeAreaView>
+        </BlurView>
+
+      </ImageBackground>
     </View>
   );
 };
 
 const { width } = Dimensions.get('window');
-const SEAT_SIZE = (width - spacing.xxl * 2 - spacing.s * 7 - spacing.xl * 2) / 8; // Calc relative seat size
+const SEAT_SIZE = Math.min((width - spacing.containerMargin * 2 - spacing.s * 7 - spacing.xl * 2) / 8, 32);
 
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: colors.background,
+    backgroundColor: '#0D0D0D',
   },
-  scrollContent: {
-    paddingBottom: 160, // Space for large bottom bar
+  backgroundImage: {
+    flex: 1,
+    width: '100%',
+    height: '100%',
   },
   header: {
+    position: 'absolute',
+    top: 0,
+    width: '100%',
+    zIndex: 50,
+    borderBottomWidth: 1,
+    borderBottomColor: 'rgba(255, 255, 255, 0.05)',
+  },
+  headerContent: {
+    height: 64,
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'center',
-    paddingHorizontal: spacing.m,
-    paddingTop: spacing.m,
-    paddingBottom: spacing.s,
-    borderBottomWidth: 1,
-    borderBottomColor: 'rgba(255,255,255,0.05)',
+    paddingHorizontal: spacing.containerMargin,
   },
-  backBtn: {
-    width: 40,
-    height: 40,
-    justifyContent: 'center',
+  logoContainer: {
+    flexDirection: 'row',
     alignItems: 'center',
+    gap: spacing.xs,
   },
-  headerTitle: {
-    color: colors.primary,
-    fontSize: 20,
-    fontWeight: 'bold',
+  logoText: {
+    color: colors.primaryContainer,
   },
-  headerRight: {
-    width: 40,
+  scrollContent: {
+    paddingTop: 100, // space for header
+    paddingBottom: 180, // space for large bottom bar
   },
   infoSection: {
     alignItems: 'center',
-    paddingVertical: spacing.xl,
+    paddingBottom: spacing.xl,
+    paddingHorizontal: spacing.containerMargin,
   },
   screenTitle: {
-    color: colors.text,
-    fontSize: 28,
-    fontWeight: 'bold',
-    marginBottom: spacing.xs,
+    color: colors.onSurface,
+    textAlign: 'center',
   },
   metaInfo: {
     flexDirection: 'row',
@@ -212,85 +262,76 @@ const styles = StyleSheet.create({
     gap: spacing.xs,
   },
   metaText: {
-    color: colors.textSecondary,
+    color: colors.onSurfaceVariant,
     fontSize: 14,
+    fontFamily: 'Inter',
   },
   cinemaContainer: {
     alignItems: 'center',
-    paddingHorizontal: spacing.m,
+    paddingHorizontal: spacing.containerMargin,
   },
   screenCurveContainer: {
     width: '100%',
     alignItems: 'center',
-    marginBottom: spacing.xxl,
+    marginBottom: spacing.xl,
   },
   screenCurve: {
-    width: '80%',
+    width: '100%',
     height: 4,
-    backgroundColor: colors.primary,
     borderTopLeftRadius: 100,
     borderTopRightRadius: 100,
-    shadowColor: colors.primary,
-    shadowOffset: { width: 0, height: 4 },
-    shadowOpacity: 0.8,
-    shadowRadius: 10,
-    elevation: 10,
-    marginBottom: spacing.l,
+    marginBottom: spacing.md,
   },
   screenLabel: {
-    color: colors.textSecondary,
-    fontSize: 10,
-    fontWeight: 'bold',
-    letterSpacing: 4,
+    color: colors.onSurfaceVariant,
     opacity: 0.5,
+    letterSpacing: 4,
   },
   gridContainer: {
     width: '100%',
     alignItems: 'center',
-    gap: spacing.m,
+    gap: spacing.s,
   },
   row: {
     flexDirection: 'row',
-    gap: spacing.s,
+    gap: spacing.xs,
   },
   aisle: {
-    width: spacing.xl,
+    width: spacing.md,
   },
   seat: {
-    width: Math.max(SEAT_SIZE, 24),
-    height: Math.max(SEAT_SIZE, 24),
+    width: SEAT_SIZE,
+    height: SEAT_SIZE,
     borderTopLeftRadius: 8,
     borderTopRightRadius: 8,
     borderWidth: 1,
   },
   seatAvailable: {
-    backgroundColor: 'rgba(42, 22, 20, 0.5)',
-    borderColor: 'rgba(94, 63, 59, 0.8)',
+    backgroundColor: colors.surfaceContainerLow,
+    borderColor: colors.outlineVariant,
   },
   seatOccupied: {
-    backgroundColor: colors.primary,
-    borderColor: 'rgba(147, 0, 10, 0.8)',
-    borderBottomWidth: 3,
-    borderBottomColor: '#690005',
+    backgroundColor: colors.primaryContainer,
+    borderColor: '#991b1b', // dark red border
+    borderBottomWidth: 2,
   },
   seatSelected: {
     backgroundColor: '#22c55e', // Green
     borderColor: '#16a34a',
     shadowColor: '#22c55e',
     shadowOffset: { width: 0, height: 0 },
-    shadowOpacity: 0.6,
-    shadowRadius: 8,
+    shadowOpacity: 0.4,
+    shadowRadius: 10,
     elevation: 4,
   },
   legendContainer: {
     flexDirection: 'row',
     flexWrap: 'wrap',
     justifyContent: 'center',
-    gap: spacing.l,
+    gap: spacing.lg,
     marginTop: spacing.xxxl,
-    backgroundColor: 'rgba(28, 28, 28, 0.7)',
-    paddingVertical: spacing.s,
-    paddingHorizontal: spacing.l,
+    paddingVertical: spacing.sm,
+    paddingHorizontal: spacing.lg,
     borderRadius: 100,
     borderWidth: 1,
     borderColor: 'rgba(255,255,255,0.05)',
@@ -307,87 +348,91 @@ const styles = StyleSheet.create({
     borderWidth: 1,
   },
   legendText: {
-    color: colors.textSecondary,
+    color: colors.onSurfaceVariant,
     fontSize: 12,
     fontWeight: '600',
+    fontFamily: 'Inter',
   },
   bottomBar: {
     position: 'absolute',
     bottom: 0,
     left: 0,
     right: 0,
-    backgroundColor: 'rgba(28,28,28,0.95)',
     borderTopWidth: 1,
     borderTopColor: 'rgba(255,255,255,0.1)',
     borderTopLeftRadius: 24,
     borderTopRightRadius: 24,
-    paddingHorizontal: spacing.l,
-    paddingTop: spacing.m,
-    paddingBottom: spacing.xxl,
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: -8 },
+    shadowOpacity: 0.6,
+    shadowRadius: 32,
+    elevation: 20,
+    overflow: 'hidden', // to round corners with blur
   },
-  summaryContainer: {
+  bottomBarContent: {
     flexDirection: 'row',
-    justifyContent: 'space-between',
     alignItems: 'center',
-    marginBottom: spacing.l,
+    justifyContent: 'space-between',
+    paddingHorizontal: spacing.containerMargin,
+    paddingTop: spacing.sm,
+    paddingBottom: spacing.lg,
+    gap: spacing.md,
   },
-  summaryItem: {
+  summaryInfo: {
+    flex: 1,
+    flexDirection: 'row',
+    alignItems: 'center',
+  },
+  summaryColumn: {
+    flexDirection: 'column',
     flex: 1,
   },
   divider: {
     width: 1,
     height: 40,
     backgroundColor: 'rgba(255,255,255,0.1)',
-    marginHorizontal: spacing.m,
+    marginHorizontal: spacing.sm,
   },
   summaryLabel: {
-    color: colors.textSecondary,
-    fontSize: 12,
-    fontWeight: '600',
+    color: colors.onSurfaceVariant,
     marginBottom: 4,
   },
   summaryValueRow: {
     flexDirection: 'row',
-    alignItems: 'baseline',
-    gap: spacing.s,
+    alignItems: 'center',
+    gap: spacing.xs,
   },
   summaryValueMain: {
-    color: colors.text,
-    fontSize: 24,
-    fontWeight: 'bold',
+    color: colors.onSurface,
   },
   summaryValueSub: {
-    color: colors.textSecondary,
-    fontSize: 14,
+    color: colors.onSurfaceVariant,
   },
   summaryPrice: {
-    color: colors.primary,
-    fontSize: 24,
-    fontWeight: 'bold',
+    color: colors.primaryContainer, // text-red-600
   },
   continueBtn: {
-    backgroundColor: colors.primary,
+    backgroundColor: colors.primaryContainer,
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'center',
-    height: 56,
-    borderRadius: borderRadius.m,
-    gap: spacing.s,
-    shadowColor: colors.primary,
+    paddingVertical: spacing.md,
+    paddingHorizontal: spacing.xl,
+    borderRadius: borderRadius.lg,
+    gap: spacing.xs,
+    shadowColor: colors.primaryContainer,
     shadowOffset: { width: 0, height: 4 },
-    shadowOpacity: 0.3,
-    shadowRadius: 8,
+    shadowOpacity: 0.2,
+    shadowRadius: 10,
     elevation: 8,
   },
   continueBtnDisabled: {
-    backgroundColor: colors.surface,
-    shadowOpacity: 0,
-    elevation: 0,
     opacity: 0.5,
   },
   continueBtnText: {
-    color: colors.text,
+    color: colors.onPrimaryContainer,
+    fontFamily: 'Inter',
+    fontWeight: '600',
     fontSize: 16,
-    fontWeight: 'bold',
   },
 });
