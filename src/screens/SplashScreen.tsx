@@ -4,6 +4,7 @@ import { Ionicons } from '@expo/vector-icons';
 import { colors } from '../theme/colors';
 import { typography } from '../theme/typography';
 import { spacing } from '../theme/spacing';
+import { APP_NAME } from '../config/locale';
 
 export const SplashScreen = ({ navigation }: any) => {
   const fadeAnim = React.useRef(new Animated.Value(0)).current;
@@ -30,7 +31,7 @@ export const SplashScreen = ({ navigation }: any) => {
           <Ionicons name="film" size={48} color={colors.onPrimaryContainer} />
         </View>
         <Animated.Text style={[typography.h1, styles.title]}>
-          CineNow
+          {APP_NAME}
         </Animated.Text>
       </Animated.View>
     </View>

@@ -1,5 +1,6 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { View, Text, StyleSheet, ScrollView, TextInput, TouchableOpacity, Image, ActivityIndicator, Alert, StatusBar } from 'react-native';
+import * as ImagePicker from 'expo-image-picker';
 import { Ionicons } from '@expo/vector-icons';
 import { BlurView } from 'expo-blur';
 import { colors } from '../theme/colors';
@@ -7,18 +8,75 @@ import { spacing, borderRadius } from '../theme/spacing';
 import { typography } from '../theme/typography';
 import { useAuth } from '../hooks/useAuth';
 import { userService } from '../services/userService';
+import { storageService } from '../services/storageService';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 export const EditProfileScreen = ({ navigation }: any) => {
   const { user } = useAuth();
   const [loading, setLoading] = useState(false);
+  const [uploadingPhoto, setUploadingPhoto] = useState(false);
   const insets = useSafeAreaInsets();
-  
   const [formData, setFormData] = useState({
-    fullName: user?.displayName || 'Alejandro Martínez',
-    phone: '', 
-    photoURL: user?.photoURL || 'https://lh3.googleusercontent.com/aida-public/AB6AXuAGBhUMDOv567pyGr2JSHYx1KR4Usx5xXCiBFJtCLWky_EtSlb-TXIf7jTGrZwBmGj6RuhP54LeKIFT1Il-KNnyCoofr_1LmhnGFe2Cvg5Kkpm7TyYxupv2rUeu6Z7slv--bm6B6eJc0nQWEg52ulL7XboURZlMfItf2PqVAq0CXXS3kXqiF3oX1LDQ_w9p6Y06qbhlRPUmYqss-Ut4D6lDcnu_lpzpxDZuyUTjHMEtEGqfL7DQuOan2zvuK9r-Nze3B6u3B_f4AFA',
+    fullName: user?.displayName || '',
+    phone: '',
+    photoURL: user?.photoURL || '',
   });
+
+  const fallbackPhoto = `https://ui-avatars.com/api/?name=${encodeURIComponent(formData.fullName || 'CineNow')}&background=1f1f1f&color=ffffff&bold=true&size=256`;
+
+  useEffect(() => {
+    const loadProfile = async () => {
+      if (!user?.uid) return;
+      try {
+        const profile = await userService.getUser(user.uid);
+        setFormData({
+          fullName: profile?.fullName || user.displayName || '',
+          phone: profile?.phone || '',
+          photoURL: profile?.photoURL || user.photoURL || '',
+        });
+      } catch (error) {
+        console.error('Error loading profile:', error);
+      }
+    };
+
+    loadProfile();
+  }, [user]);
+
+  const handleChangePhoto = async () => {
+    if (!user) return;
+
+    const permission = await ImagePicker.requestMediaLibraryPermissionsAsync();
+    if (!permission.granted) {
+      Alert.alert('Permiso requerido', 'Necesitamos acceso a tus fotos para cambiar la foto de perfil.');
+      return;
+    }
+
+    const result = await ImagePicker.launchImageLibraryAsync({
+      mediaTypes: ImagePicker.MediaTypeOptions.Images,
+      allowsEditing: true,
+      aspect: [1, 1],
+      quality: 0.8,
+    });
+
+    if (result.canceled || !result.assets?.[0]?.uri) return;
+
+    setUploadingPhoto(true);
+    try {
+      const downloadURL = await storageService.uploadProfilePhoto(user.uid, result.assets[0].uri);
+      setFormData((current) => ({ ...current, photoURL: downloadURL }));
+      await userService.updateUserProfile(user, {
+        fullName: formData.fullName.trim() || user.displayName || 'Usuario CineNow',
+        phone: formData.phone.trim(),
+        photoURL: downloadURL,
+      });
+      await user.reload();
+      Alert.alert('Listo', 'Foto de perfil actualizada.');
+    } catch (error: any) {
+      Alert.alert('Error', error.message || 'No se pudo subir la foto de perfil');
+    } finally {
+      setUploadingPhoto(false);
+    }
+  };
 
   const handleSave = async () => {
     if (!user) return;
@@ -29,14 +87,15 @@ export const EditProfileScreen = ({ navigation }: any) => {
 
     setLoading(true);
     try {
-      await userService.updateUser(user.uid, {
-        fullName: formData.fullName,
-        phone: formData.phone,
-        photoURL: formData.photoURL,
+      await userService.updateUserProfile(user, {
+        fullName: formData.fullName.trim(),
+        phone: formData.phone.trim(),
+        photoURL: formData.photoURL.trim(),
       });
 
+      await user.reload();
       Alert.alert('Éxito', 'Perfil actualizado correctamente', [
-        { text: 'OK', onPress: () => navigation.goBack() }
+        { text: 'OK', onPress: () => navigation.goBack() },
       ]);
     } catch (error: any) {
       Alert.alert('Error', error.message || 'No se pudo actualizar el perfil');
@@ -54,7 +113,7 @@ export const EditProfileScreen = ({ navigation }: any) => {
           <TouchableOpacity onPress={() => navigation.goBack()} style={styles.backBtn} activeOpacity={0.8}>
             <Ionicons name="arrow-back" size={24} color={colors.onSurface} />
           </TouchableOpacity>
-          <Text style={[typography.h2, styles.headerTitle]}>Editar Perfil</Text>
+          <Text style={[typography.h2, styles.headerTitle]}>Editar perfil</Text>
           <View style={{ width: 40 }} />
         </View>
       </BlurView>
@@ -62,15 +121,21 @@ export const EditProfileScreen = ({ navigation }: any) => {
       <ScrollView showsVerticalScrollIndicator={false} contentContainerStyle={[styles.scrollContent, { paddingTop: insets.top + 80, paddingBottom: insets.bottom + 90 }]}>
         <View style={styles.avatarSection}>
           <View style={styles.avatarWrapper}>
-            <Image 
-              source={{ uri: formData.photoURL }} 
-              style={styles.avatar} 
-            />
-            <TouchableOpacity style={styles.changePhotoBtn} activeOpacity={0.8}>
-              <Ionicons name="camera" size={20} color={colors.onPrimaryContainer} />
+            <Image source={{ uri: formData.photoURL || fallbackPhoto }} style={styles.avatar} />
+            <TouchableOpacity
+              style={styles.changePhotoBtn}
+              onPress={handleChangePhoto}
+              disabled={uploadingPhoto}
+              activeOpacity={0.8}
+            >
+              {uploadingPhoto ? (
+                <ActivityIndicator size="small" color={colors.onPrimaryContainer} />
+              ) : (
+                <Ionicons name="camera" size={20} color={colors.onPrimaryContainer} />
+              )}
             </TouchableOpacity>
           </View>
-          <Text style={[typography.bodyMd, styles.avatarHint]}>Toca la cámara para cambiar foto (vía URL)</Text>
+          <Text style={[typography.bodyMd, styles.avatarHint]}>Toca la cámara para elegir una foto.</Text>
         </View>
 
         <View style={styles.form}>
@@ -97,43 +162,20 @@ export const EditProfileScreen = ({ navigation }: any) => {
                 style={[typography.bodyLg, styles.input]}
                 value={formData.phone}
                 onChangeText={(text) => setFormData({ ...formData, phone: text })}
-                placeholder="+51 987 654 321"
+                placeholder="+505 8888 8888"
                 placeholderTextColor={colors.secondary}
                 keyboardType="phone-pad"
                 selectionColor={colors.primaryContainer}
               />
             </View>
           </View>
-
-          <View style={styles.inputGroup}>
-            <Text style={[typography.labelCaps, styles.label]}>URL DE FOTO DE PERFIL</Text>
-            <View style={styles.inputWrapper}>
-              <Ionicons name="image" size={20} color={colors.secondary} />
-              <TextInput
-                style={[typography.bodyLg, styles.input]}
-                value={formData.photoURL}
-                onChangeText={(text) => setFormData({ ...formData, photoURL: text })}
-                placeholder="https://ejemplo.com/foto.jpg"
-                placeholderTextColor={colors.secondary}
-                autoCapitalize="none"
-                selectionColor={colors.primaryContainer}
-              />
-            </View>
-          </View>
         </View>
 
-        <TouchableOpacity 
-          style={styles.saveBtn} 
-          onPress={handleSave}
-          disabled={loading}
-          activeOpacity={0.8}
-        >
+        <TouchableOpacity style={styles.saveBtn} onPress={handleSave} disabled={loading} activeOpacity={0.8}>
           {loading ? (
             <ActivityIndicator color={colors.onPrimaryContainer} />
           ) : (
-            <>
-              <Text style={styles.saveBtnText}>Guardar Cambios</Text>
-            </>
+            <Text style={styles.saveBtnText}>Guardar cambios</Text>
           )}
         </TouchableOpacity>
       </ScrollView>
@@ -142,10 +184,7 @@ export const EditProfileScreen = ({ navigation }: any) => {
 };
 
 const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    backgroundColor: '#0D0D0D',
-  },
+  container: { flex: 1, backgroundColor: '#0D0D0D' },
   header: {
     position: 'absolute',
     top: 0,
@@ -161,23 +200,10 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     paddingHorizontal: spacing.containerMargin,
   },
-  backBtn: {
-    width: 40,
-    height: 40,
-    justifyContent: 'center',
-    alignItems: 'flex-start',
-  },
-  headerTitle: {
-    color: '#fff',
-    fontSize: 20,
-  },
-  scrollContent: {
-    paddingHorizontal: spacing.containerMargin,
-  },
-  avatarSection: {
-    alignItems: 'center',
-    marginBottom: spacing.xxxl,
-  },
+  backBtn: { width: 40, height: 40, justifyContent: 'center', alignItems: 'flex-start' },
+  headerTitle: { color: '#fff', fontSize: 20 },
+  scrollContent: { paddingHorizontal: spacing.containerMargin },
+  avatarSection: { alignItems: 'center', marginBottom: spacing.xxxl },
   avatarWrapper: {
     width: 128,
     height: 128,
@@ -188,11 +214,7 @@ const styles = StyleSheet.create({
     padding: 4,
     backgroundColor: '#1C1C1C',
   },
-  avatar: {
-    width: '100%',
-    height: '100%',
-    borderRadius: 60,
-  },
+  avatar: { width: '100%', height: '100%', borderRadius: 60 },
   changePhotoBtn: {
     position: 'absolute',
     bottom: 0,
@@ -203,31 +225,15 @@ const styles = StyleSheet.create({
     borderRadius: 20,
     justifyContent: 'center',
     alignItems: 'center',
-    shadowColor: colors.primaryContainer,
-    shadowOffset: { width: 0, height: 4 },
-    shadowOpacity: 0.3,
-    shadowRadius: 8,
-    elevation: 8,
   },
-  avatarHint: {
-    color: colors.secondary,
-    marginTop: spacing.md,
-  },
-  form: {
-    gap: spacing.lg,
-    marginBottom: spacing.xxl,
-  },
-  inputGroup: {
-    gap: spacing.xs,
-  },
-  label: {
-    color: colors.secondary,
-    marginLeft: 4,
-  },
+  avatarHint: { color: colors.secondary, marginTop: spacing.md, textAlign: 'center' },
+  form: { gap: spacing.lg, marginBottom: spacing.xxl },
+  inputGroup: { gap: spacing.xs },
+  label: { color: colors.secondary, marginLeft: 4 },
   inputWrapper: {
     flexDirection: 'row',
     alignItems: 'center',
-    backgroundColor: 'rgba(28, 28, 28, 0.6)', // glass-panel
+    backgroundColor: 'rgba(28, 28, 28, 0.6)',
     borderRadius: borderRadius.lg,
     paddingHorizontal: spacing.md,
     height: 56,
@@ -235,10 +241,7 @@ const styles = StyleSheet.create({
     borderColor: 'rgba(255,255,255,0.05)',
     gap: spacing.sm,
   },
-  input: {
-    flex: 1,
-    color: '#fff',
-  },
+  input: { flex: 1, color: '#fff' },
   saveBtn: {
     backgroundColor: colors.primaryContainer,
     flexDirection: 'row',
@@ -246,12 +249,6 @@ const styles = StyleSheet.create({
     borderRadius: borderRadius.lg,
     justifyContent: 'center',
     alignItems: 'center',
-    gap: spacing.s,
-    shadowColor: colors.primaryContainer,
-    shadowOffset: { width: 0, height: 4 },
-    shadowOpacity: 0.2,
-    shadowRadius: 10,
-    elevation: 8,
   },
   saveBtnText: {
     color: colors.onPrimaryContainer,

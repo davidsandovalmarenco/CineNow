@@ -16,9 +16,9 @@ const MOVIES = RECENT_MOVIE_LIST.map((movie, index) => ({
 }));
 
 const SNACKS = [
-  { id: 'combo-individual', name: 'Combo Individual', price: 12.50, description: 'Popcorn Mediana + Soda 500ml', imageUrl: 'https://images.unsplash.com/photo-1572177191856-3cde6403ec1b?q=80&w=200&auto=format&fit=crop', available: true },
-  { id: 'combo-pareja', name: 'Combo Pareja', price: 22.00, description: 'Popcorn Grande + 2 Sodas 500ml + Nachos', imageUrl: 'https://images.unsplash.com/photo-1585647347384-2593bc35786b?q=80&w=200&auto=format&fit=crop', available: true },
-  { id: 'hot-dog-premium', name: 'Hot Dog Premium', price: 8.50, description: 'Salchicha de res con salsas especiales', imageUrl: 'https://images.unsplash.com/photo-1612392062631-94dd858cba88?q=80&w=200&auto=format&fit=crop', available: true },
+  { id: 'combo-individual', name: 'Combo individual', price: 185, description: 'Palomitas medianas + soda 500 ml', imageUrl: 'https://images.unsplash.com/photo-1572177191856-3cde6403ec1b?q=80&w=200&auto=format&fit=crop', available: true },
+  { id: 'combo-pareja', name: 'Combo pareja', price: 320, description: 'Palomitas grandes + 2 sodas 500 ml + nachos', imageUrl: 'https://images.unsplash.com/photo-1585647347384-2593bc35786b?q=80&w=200&auto=format&fit=crop', available: true },
+  { id: 'hot-dog-premium', name: 'Hot dog premium', price: 145, description: 'Salchicha de res con salsas especiales', imageUrl: 'https://images.unsplash.com/photo-1612392062631-94dd858cba88?q=80&w=200&auto=format&fit=crop', available: true },
 ];
 
 export const seedService = {

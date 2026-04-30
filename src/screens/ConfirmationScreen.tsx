@@ -6,7 +6,8 @@ import { colors } from '../theme/colors';
 import { spacing, borderRadius } from '../theme/spacing';
 import { typography } from '../theme/typography';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
-import { RECENT_MOVIES } from '../data/recentMovies';
+import { findRecentMovieByReservation, RECENT_MOVIES } from '../data/recentMovies';
+import { APP_NAME, DEFAULT_ROOM } from '../config/locale';
 
 export const ConfirmationScreen = ({ navigation, route }: any) => {
   const { ticket } = route.params || {};
@@ -14,15 +15,20 @@ export const ConfirmationScreen = ({ navigation, route }: any) => {
 
   // Mock date format
   const formatMockDate = (createdAtSeconds?: number) => {
-    if (!createdAtSeconds) return '24 Mayo, 20:30 PM';
+    if (!createdAtSeconds) return `24 de mayo, ${ticket?.showtimeLabel || '20:30'}`;
     const d = new Date(createdAtSeconds * 1000);
-    return d.toLocaleDateString('es-ES', { month: 'short', day: 'numeric' }) + ', 20:30 PM';
+    return d.toLocaleDateString('es-NI', { month: 'short', day: 'numeric' }) + `, ${ticket?.showtimeLabel || '20:30'}`;
   };
 
   const movieTitle = ticket?.movieTitle || RECENT_MOVIES.superman.title;
-  const moviePosterUrl = ticket?.moviePosterUrl || RECENT_MOVIES.superman.posterUrl;
+  const moviePosterUrl =
+    ticket?.moviePosterUrl ||
+    findRecentMovieByReservation(ticket?.movieId, ticket?.movieTitle)?.posterUrl ||
+    RECENT_MOVIES.superman.posterUrl;
   const seats = ticket?.seats?.join(', ') || 'G12, G13, G14';
   const reservationCode = ticket?.reservationCode || `CR-${Math.floor(1000 + Math.random() * 9000)}-X09`;
+  const movieFormat = ticket?.movieFormat || 'IMAX 3D';
+  const room = ticket?.room || DEFAULT_ROOM;
 
   const [isDownloading, setIsDownloading] = React.useState(false);
 
@@ -37,7 +43,7 @@ export const ConfirmationScreen = ({ navigation, route }: any) => {
     setIsDownloading(true);
     setTimeout(() => {
       setIsDownloading(false);
-      Alert.alert('¡Descarga Exitosa!', 'Tu boleto digital ha sido guardado en tu galería.');
+      Alert.alert('¡Descarga exitosa!', 'Tu boleto digital ha sido guardado en tu galería.');
     }, 1500);
   };
 
@@ -50,7 +56,7 @@ export const ConfirmationScreen = ({ navigation, route }: any) => {
         <View style={styles.headerContent}>
           <View style={styles.logoContainer}>
             <Ionicons name="film" size={24} color={colors.primaryContainer} />
-            <Text style={[typography.h2, styles.logoText, { fontSize: 20 }]}>CineNow</Text>
+            <Text style={[typography.h2, styles.logoText, { fontSize: 20 }]}>{APP_NAME}</Text>
           </View>
           <TouchableOpacity onPress={handleGoHome} style={styles.closeBtn}>
             <Ionicons name="close" size={24} color={colors.onSurface} />
@@ -64,7 +70,7 @@ export const ConfirmationScreen = ({ navigation, route }: any) => {
           <View style={styles.iconCircle}>
             <Ionicons name="checkmark" size={32} color={colors.onPrimaryContainer} />
           </View>
-          <Text style={[typography.h1, styles.successTitle]}>¡Reserva Confirmada!</Text>
+          <Text style={[typography.h1, styles.successTitle]}>¡Reserva confirmada!</Text>
           <Text style={[typography.bodyMd, styles.successSubtitle]}>Tu compra se ha realizado con éxito. Presenta este boleto al ingresar.</Text>
         </View>
 
@@ -78,7 +84,7 @@ export const ConfirmationScreen = ({ navigation, route }: any) => {
             />
             <View style={styles.movieInfoOverlay}>
               <View style={styles.badgeWrapper}>
-                <Text style={styles.badgeText}>IMAX LASER</Text>
+                <Text style={styles.badgeText}>{movieFormat}</Text>
               </View>
               <Text style={[typography.h2, styles.movieTitle]} numberOfLines={2}>{movieTitle}</Text>
             </View>
@@ -100,7 +106,7 @@ export const ConfirmationScreen = ({ navigation, route }: any) => {
               </View>
               <View style={styles.detailItem}>
                 <Text style={styles.detailLabel}>SALA</Text>
-                <Text style={[typography.bodyLg, styles.detailValue]}>04</Text>
+                <Text style={[typography.bodyLg, styles.detailValue]}>{room}</Text>
               </View>
               <View style={styles.detailItem}>
                 <Text style={styles.detailLabel}>ASIENTOS</Text>
@@ -134,7 +140,7 @@ export const ConfirmationScreen = ({ navigation, route }: any) => {
           ) : (
             <>
               <Ionicons name="download-outline" size={20} color={colors.onSurface} />
-              <Text style={styles.downloadBtnText}>Descargar Boleto</Text>
+              <Text style={styles.downloadBtnText}>Descargar boleto</Text>
             </>
           )}
         </TouchableOpacity>

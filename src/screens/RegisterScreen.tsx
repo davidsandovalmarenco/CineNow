@@ -9,6 +9,7 @@ import { typography } from '../theme/typography';
 import { AppInput } from '../components/AppInput';
 import { AppButton } from '../components/AppButton';
 import { useAuth } from '../hooks/useAuth';
+import { APP_NAME, CINEMA_LOCATION } from '../config/locale';
 
 const REGISTER_BG_URL = 'https://lh3.googleusercontent.com/aida-public/AB6AXuD6Fz9LlWbzqy0yjWrmT8hxICNJdvntknaR1Fr3bL1cd7OfcWAnJKuCVaPdb_70UyssqLkBfQEnOw8wGdphasEwiPIuYGUBHh_PKOmRqsikZ1aVfCtJh1UtYcYNDLCbB6142hdNoulZ7L5tN9UCjOGUJOzCwtsI_XwHNEI-feMUrj5hfptviWR7BoUweb-pza5Xrpow3xF59jZk9AtWYPnHXDPWxXKShr3HDupR5Rsd20C8qWFnMIY-Oh3rakEpPsBPZMsyBYXZuTE';
 
@@ -57,7 +58,7 @@ export const RegisterScreen = ({ navigation }: any) => {
               <View style={styles.topBar}>
                 <View style={styles.logoContainer}>
                   <Ionicons name="film" size={24} color={colors.primaryContainer} />
-                  <Text style={[typography.h2, styles.logoText]}>CineNow</Text>
+                  <Text style={[typography.h2, styles.logoText]}>{APP_NAME}</Text>
                 </View>
                 <View style={styles.userIconBox}>
                   <Ionicons name="person" size={16} color={colors.secondary} />
@@ -67,7 +68,7 @@ export const RegisterScreen = ({ navigation }: any) => {
               <View style={styles.headerContainer}>
                 <Text style={[typography.h1, styles.title]}>Crear cuenta</Text>
                 <Text style={[typography.bodyMd, styles.subtitle]}>
-                  Únete a la experiencia cinematográfica más exclusiva.
+                  Crea tu cuenta para reservar en {CINEMA_LOCATION}.
                 </Text>
               </View>
 
@@ -125,7 +126,7 @@ export const RegisterScreen = ({ navigation }: any) => {
                       {acceptedTerms && <Ionicons name="checkmark" size={14} color={colors.onPrimaryContainer} />}
                     </View>
                     <Text style={styles.termsText}>
-                      Acepto los <Text style={styles.termsLink}>Términos de Servicio</Text> y la <Text style={styles.termsLink}>Política de Privacidad</Text> de CineNow.
+                      Acepto los <Text style={styles.termsLink}>Términos de servicio</Text> y la <Text style={styles.termsLink}>Política de privacidad</Text> de {APP_NAME}.
                     </Text>
                   </TouchableOpacity>
 

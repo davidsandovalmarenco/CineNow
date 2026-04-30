@@ -8,9 +8,10 @@ import { typography } from '../theme/typography';
 import { snackService } from '../services/snackService';
 import { SnackData } from '../services/types';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
+import { APP_NAME, formatCurrency } from '../config/locale';
 
 export const SnacksScreen = ({ navigation, route }: any) => {
-  const { movie, movieId, scheduleId, seats } = route.params || {};
+  const { movie, movieId, scheduleId, selectedFormat, showtime, seats } = route.params || {};
   const [snacks, setSnacks] = useState<SnackData[]>([]);
   const [cart, setCart] = useState<{ [key: string]: number }>({});
   const [isLoading, setIsLoading] = useState(true);
@@ -54,6 +55,8 @@ export const SnacksScreen = ({ navigation, route }: any) => {
       movieId, 
       movie,
       scheduleId, 
+      selectedFormat,
+      showtime,
       seats, 
       snacks: selectedSnacks 
     });
@@ -79,7 +82,7 @@ export const SnacksScreen = ({ navigation, route }: any) => {
               <Ionicons name="arrow-back" size={24} color={colors.onSurface} />
             </TouchableOpacity>
             <Ionicons name="film" size={24} color={colors.primaryContainer} />
-            <Text style={[typography.h2, styles.logoText, { fontSize: 20 }]}>CineNow</Text>
+            <Text style={[typography.h2, styles.logoText, { fontSize: 20 }]}>{APP_NAME}</Text>
           </View>
         </View>
       </BlurView>
@@ -87,7 +90,7 @@ export const SnacksScreen = ({ navigation, route }: any) => {
       <ScrollView showsVerticalScrollIndicator={false} contentContainerStyle={[styles.scrollContent, { paddingTop: insets.top + 80 }]}>
         <View style={styles.promoSection}>
           <Text style={[typography.h1, styles.promoTitle]}>¿Algo para picar?</Text>
-          <Text style={[typography.bodyMd, styles.promoSubtitle]}>Completa tu experiencia con nuestros mejores combos</Text>
+          <Text style={[typography.bodyMd, styles.promoSubtitle]}>Completa tu experiencia con la dulcería de Centro Plaza Chinandega.</Text>
         </View>
 
         {snacks.map((snack) => {
@@ -98,7 +101,7 @@ export const SnacksScreen = ({ navigation, route }: any) => {
               <View style={styles.snackInfo}>
                 <Text style={[typography.h3, styles.snackName]}>{snack.name}</Text>
                 <Text style={[typography.bodyMd, styles.snackDesc]} numberOfLines={2}>{snack.description}</Text>
-                <Text style={styles.snackPrice}>${snack.price.toFixed(2)}</Text>
+                <Text style={styles.snackPrice}>{formatCurrency(snack.price)}</Text>
               </View>
               <View style={styles.counter}>
                 <TouchableOpacity 
@@ -125,7 +128,7 @@ export const SnacksScreen = ({ navigation, route }: any) => {
         <View style={styles.footerContent}>
           <View style={styles.totalContainer}>
             <Text style={[typography.labelCaps, styles.totalLabel]}>TOTAL DULCERÍA</Text>
-            <Text style={[typography.h2, styles.totalValue]}>${calculateTotal().toFixed(2)}</Text>
+            <Text style={[typography.h2, styles.totalValue]}>{formatCurrency(calculateTotal())}</Text>
           </View>
           <TouchableOpacity 
             style={styles.continueBtn} 

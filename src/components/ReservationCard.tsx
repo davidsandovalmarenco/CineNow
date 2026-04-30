@@ -29,7 +29,7 @@ export const ReservationCard: React.FC<ReservationCardProps> = ({ reservation })
         
         <View style={styles.detailRow}>
           <Text style={styles.detailLabel}>Fecha:</Text>
-          <Text style={styles.detailValue}>{reservation.date} • {reservation.time}</Text>
+          <Text style={styles.detailValue}>{reservation.date} - {reservation.time}</Text>
         </View>
         
         <View style={styles.detailRow}>
@@ -38,7 +38,7 @@ export const ReservationCard: React.FC<ReservationCardProps> = ({ reservation })
         </View>
         
         <View style={styles.detailRow}>
-          <Text style={styles.detailLabel}>Asientos:</Text>
+          <Text style={styles.detailLabel}>Butacas:</Text>
           <Text style={styles.detailValue}>{reservation.seats.join(', ')}</Text>
         </View>
 

@@ -9,6 +9,7 @@ import { typography } from '../theme/typography';
 import { AppInput } from '../components/AppInput';
 import { AppButton } from '../components/AppButton';
 import { useAuth } from '../hooks/useAuth';
+import { APP_NAME, CINEMA_LOCATION } from '../config/locale';
 
 const LOGIN_BG_URL = 'https://lh3.googleusercontent.com/aida-public/AB6AXuCUm40hUHGjdHQG4CgTyuFPWt4jC3gXmfxzFIQBBxF9S4myd02h6EIFkA89DXjq1SIgvfawtCC7Wn0wEto7J38uUbbKFiCQPChC6EHf7Ieyp6Koi6riW_6JFcJo9vdHJICg8ypOTZwuTPUhS0fRq8LzXPtLjroSNJrZko8XEG8UTApf53UvCuOnGp4MkP6QO7NEU_aDlZ4uSireuUFxE5XQrkkftU5P_iYdWZZ5ipJ7vzzENmEXuZI72JcN4lLiv3tKhgTCLQWI8ZA';
 
@@ -55,9 +56,9 @@ export const LoginScreen = ({ navigation }: any) => {
                 <View style={styles.iconBox}>
                   <Ionicons name="film" size={32} color={colors.onPrimaryContainer} />
                 </View>
-                <Text style={[typography.h1, styles.title]}>CineNow</Text>
+                <Text style={[typography.h1, styles.title]}>{APP_NAME}</Text>
                 <Text style={[typography.bodyMd, styles.subtitle]}>
-                  Disfruta de la mejor experiencia cinematográfica de la ciudad.
+                  Disfruta la cartelera de {CINEMA_LOCATION}.
                 </Text>
               </View>
 
