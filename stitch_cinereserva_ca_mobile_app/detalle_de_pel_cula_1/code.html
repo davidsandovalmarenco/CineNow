@@ -1,0 +1,274 @@
+<!DOCTYPE html>
+
+<html class="dark" lang="es">
+
+<head>
+  <meta charset="utf-8" />
+  <meta content="width=device-width, initial-scale=1.0" name="viewport" />
+  <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+  <link
+    href="https://fonts.googleapis.com/css2?family=Be+Vietnam+Pro:wght@400;500;600;700;800&amp;family=Inter:wght@400;600&amp;display=swap"
+    rel="stylesheet" />
+  <link
+    href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap"
+    rel="stylesheet" />
+  <link
+    href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap"
+    rel="stylesheet" />
+  <script id="tailwind-config">
+    tailwind.config = {
+      darkMode: "class",
+      theme: {
+        extend: {
+          "colors": {
+            "on-error-container": "#ffdad6",
+            "secondary-fixed": "#e5e2e1",
+            "secondary": "#c8c6c5",
+            "on-primary": "#690003",
+            "primary-container": "#e50914",
+            "background": "#200e0c",
+            "surface-container-low": "#2a1614",
+            "primary": "#ffb4aa",
+            "inverse-primary": "#c0000c",
+            "surface-container": "#2e1a18",
+            "surface-container-highest": "#462f2c",
+            "on-tertiary-container": "#f8f9ff",
+            "inverse-surface": "#ffdad5",
+            "surface-variant": "#462f2c",
+            "primary-fixed": "#ffdad5",
+            "on-tertiary-fixed": "#001b3c",
+            "surface-dim": "#200e0c",
+            "inverse-on-surface": "#412b28",
+            "primary-fixed-dim": "#ffb4aa",
+            "on-error": "#690005",
+            "on-secondary-fixed": "#1b1b1b",
+            "error-container": "#93000a",
+            "outline-variant": "#5e3f3b",
+            "secondary-container": "#474746",
+            "on-surface": "#ffdad5",
+            "tertiary-fixed": "#d5e3ff",
+            "on-background": "#ffdad5",
+            "error": "#ffb4ab",
+            "on-secondary": "#313030",
+            "surface-tint": "#ffb4aa",
+            "on-tertiary": "#003061",
+            "tertiary-container": "#0072d7",
+            "surface": "#200e0c",
+            "on-secondary-fixed-variant": "#474746",
+            "on-secondary-container": "#b7b5b4",
+            "on-primary-fixed-variant": "#930007",
+            "on-primary-fixed": "#410001",
+            "on-primary-container": "#fff7f6",
+            "surface-bright": "#4a3330",
+            "surface-container-lowest": "#1a0908",
+            "surface-container-high": "#3a2522",
+            "tertiary": "#a7c8ff",
+            "secondary-fixed-dim": "#c8c6c5",
+            "outline": "#af8782",
+            "on-surface-variant": "#e9bcb6",
+            "on-tertiary-fixed-variant": "#004689",
+            "tertiary-fixed-dim": "#a7c8ff"
+          },
+          "borderRadius": {
+            "DEFAULT": "0.25rem",
+            "lg": "0.5rem",
+            "xl": "0.75rem",
+            "full": "9999px"
+          },
+          "spacing": {
+            "sm": "12px",
+            "container_margin": "20px",
+            "md": "16px",
+            "lg": "24px",
+            "xl": "32px",
+            "xs": "8px",
+            "gutter": "12px",
+            "base": "4px"
+          },
+          "fontFamily": {
+            "button": ["Inter"],
+            "h3": ["Be Vietnam Pro"],
+            "body-lg": ["Inter"],
+            "label-caps": ["Inter"],
+            "h1": ["Be Vietnam Pro"],
+            "h2": ["Be Vietnam Pro"],
+            "body-md": ["Inter"]
+          },
+          "fontSize": {
+            "button": ["16px", { "lineHeight": "20px", "fontWeight": "600" }],
+            "h3": ["20px", { "lineHeight": "28px", "fontWeight": "600" }],
+            "body-lg": ["16px", { "lineHeight": "24px", "fontWeight": "400" }],
+            "label-caps": ["12px", { "lineHeight": "16px", "letterSpacing": "0.05em", "fontWeight": "600" }],
+            "h1": ["32px", { "lineHeight": "40px", "letterSpacing": "-0.02em", "fontWeight": "700" }],
+            "h2": ["24px", { "lineHeight": "32px", "letterSpacing": "-0.01em", "fontWeight": "600" }],
+            "body-md": ["14px", { "lineHeight": "20px", "fontWeight": "400" }]
+          }
+        },
+      },
+    }
+  </script>
+  <style>
+    body {
+      background-color: #0D0D0D;
+      color: #ffdad5;
+    }
+
+    .glass-panel {
+      background: rgba(28, 28, 28, 0.6);
+      backdrop-filter: blur(20px);
+      -webkit-backdrop-filter: blur(20px);
+      border: 1px solid rgba(255, 255, 255, 0.05);
+    }
+
+    .material-symbols-outlined {
+      font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+    }
+  </style>
+  <style>
+    body {
+      min-height: max(884px, 100dvh);
+    }
+  </style>
+</head>
+
+<body class="font-body-md text-body-md overflow-x-hidden pb-32">
+  <!-- Top Navigation Shell -->
+  <nav
+    class="bg-black/90 backdrop-blur-md text-zinc-400 fixed top-0 w-full z-50 border-b border-white/5 flex justify-between items-center px-5 h-16 w-full font-['Be_Vietnam_Pro'] font-medium">
+    <div class="flex items-center gap-2">
+      <span class="material-symbols-outlined text-red-600" data-icon="movie">movie</span>
+      <span class="text-xl font-bold tracking-tight text-red-600">CineReserva CA</span>
+    </div>
+    <div class="w-8 h-8 rounded-full overflow-hidden border border-white/10">
+      <img alt="User Profile"
+        data-alt="A close-up professional headshot of a user with soft cinematic lighting against a dark, moody background. The image maintains the high-end, exclusive aesthetic of CineReserva CA, featuring deep blacks and a subtle red glow in the periphery. The overall look is modern, minimalist, and high-fidelity, matching a premium movie booking application's interface."
+        src="https://lh3.googleusercontent.com/aida-public/AB6AXuDyqsXrEAufNu9Okb3d4A1sMwB0Q6YYptCZXTIH2oZf0AeemEZzpPxQq5pFzczC06D7orN9xeLxdVGGDEUVNBv6D-J-LYM1ihdM0cXEFgHOCTrD30OXQ51ZFQM3Hc_WVrtVoym7b3qQhGISoWH1x44mWWCRcnumnSzWZgGPF7v-oW8MZYfRx9_rrIFxz1ILMUVCdlZ3F7KfwIVVhMf1GiELmUakF_Mm7NRwXdJiETT1GJyp96ZtS_jfPtEz2yYRnefVAw8yqeMrZQQ" />
+    </div>
+  </nav>
+  <!-- Hero Backdrop -->
+  <header class="relative w-full h-[530px] overflow-hidden">
+    <div class="absolute inset-0">
+      <img class="w-full h-full object-cover"
+        data-alt="A sweeping, cinematic movie backdrop featuring a high-stakes action scene in a futuristic city at night. Intense neon highlights in vibrant red and deep blue cut through the dark, moody atmosphere. The shot is wide and immersive, with high-fidelity textures and professional cinematic grading that evokes a sense of epic scale and exclusivity."
+        src="https://lh3.googleusercontent.com/aida-public/AB6AXuDAM7IP4qpMfMDXjQkDe_x4RArQFst_xvZhXTDKFjdrGL7ONUxhY-_cNtGa_0mFwONrQc_67TFgnZdwvGXOHRJfebss_kNWZ2nU-U2KQUUHSnVzajVv6Q71kNWIPsaCHVbLvH_QXVPmTyHBihOOyJK9GxDJqFqSEXuraqUzA7PWU2HedT46ei-C33rjoNouJO-G6Vl3u2OeaXqko2u-7F4WStrrd7Grn-uTy3ZEEFGfC9pEkdaThinics9ISB-8ldg5ZSbtnkNyMpw" />
+      <!-- Gradient Overlay -->
+      <div class="absolute inset-0 bg-gradient-to-t from-[#0D0D0D] via-[#0D0D0D]/40 to-transparent"></div>
+    </div>
+    <!-- Back Button Overlay -->
+    <button
+      class="absolute top-20 left-container_margin w-10 h-10 rounded-full glass-panel flex items-center justify-center text-on-surface transition-transform active:scale-90">
+      <span class="material-symbols-outlined" data-icon="arrow_back">arrow_back</span>
+    </button>
+    <!-- Hero Content -->
+    <div class="absolute bottom-0 left-0 w-full px-container_margin pb-lg">
+      <div class="flex flex-wrap gap-xs mb-md">
+        <span
+          class="bg-primary-container text-on-primary-container px-3 py-1 rounded-full font-label-caps text-label-caps">IMAX</span>
+        <span
+          class="bg-surface-container-highest text-on-surface px-3 py-1 rounded-full font-label-caps text-label-caps">4K
+          ULTRA HD</span>
+      </div>
+      <h1 class="font-h1 text-h1 text-on-surface mb-xs">El Legado de las Sombras</h1>
+      <div class="flex items-center gap-md text-secondary">
+        <div class="flex items-center gap-1">
+          <span class="material-symbols-outlined text-red-600 text-[18px]" data-icon="schedule">schedule</span>
+          <span class="font-body-md text-body-md">2h 45min</span>
+        </div>
+        <div class="flex items-center gap-1">
+          <span class="material-symbols-outlined text-red-600 text-[18px]" data-weight="fill"
+            style="font-variation-settings: 'FILL' 1;">star</span>
+          <span class="font-body-md text-body-md">4.9 (2.4k)</span>
+        </div>
+        <div class="flex items-center gap-1">
+          <span class="material-symbols-outlined text-red-600 text-[18px]"
+            data-icon="theater_comedy">theater_comedy</span>
+          <span class="font-body-md text-body-md">Ciencia Ficción</span>
+        </div>
+      </div>
+    </div>
+  </header>
+  <!-- Detailed Content Section -->
+  <main class="px-container_margin mt-lg max-w-4xl mx-auto">
+    <section class="mb-xl">
+      <h2 class="font-h2 text-h2 text-on-surface mb-md">Sinopsis</h2>
+      <p class="font-body-lg text-body-lg text-secondary leading-relaxed">
+        En un futuro distópico donde la luz es el recurso más valioso, un ex-ingeniero de sistemas descubre un secreto
+        enterrado en las profundidades de la infraestructura de la ciudad que podría cambiar el destino de la humanidad
+        para siempre. Acompaña a nuestros protagonistas en una carrera contra el tiempo mientras navegan por traiciones
+        corporativas y dilemas morales en la película más aclamada de la temporada.
+      </p>
+    </section>
+    <!-- Bento Cast Grid -->
+    <section class="mb-xl">
+      <div class="flex justify-between items-end mb-md">
+        <h2 class="font-h2 text-h2 text-on-surface">Reparto Principal</h2>
+        <span class="text-red-600 font-label-caps text-label-caps">VER TODO</span>
+      </div>
+      <div class="grid grid-cols-2 md:grid-cols-4 gap-gutter">
+        <div class="glass-panel p-md rounded-xl flex flex-col items-center text-center">
+          <img class="w-16 h-16 rounded-full mb-xs border border-white/10"
+            data-alt="A portrait of a male lead actor with a focused, intense expression for a cinematic film profile. The lighting is dramatic and moody, utilizing deep shadows and a soft rim light that aligns with the CineReserva CA dark aesthetic. The background is a textured deep gray, emphasizing a premium and serious tone for the movie cast list."
+            src="https://lh3.googleusercontent.com/aida-public/AB6AXuDDHn9udIE_nbyOxVXx487ZH_D6p1kXTy-W5t0mmg7_zmaq86XwUBhtcPztEUsl0Vw4V1081xpcfLOVHo7kxD-qgSmCWqSn0z7lemY_Ps6hRkaDzqoDnJZH_D3ihdjUkVRZkrB5p1q_BW50OnbFoYrUB3gLlMORVIsMZGB_ZoRNq1d0Fx3ntwk3MCB-cOmGfSGvT1LF47ZrmeQ5gq-ljoql-AUKJqNwREEuXjYOMWRC0TAmrf6dj4rECa4z-3bBvqiC7uzqLPp7WKA" />
+          <span class="font-button text-body-md text-on-surface">Julian Drake</span>
+          <span class="font-body-md text-[12px] text-zinc-500">Protagonista</span>
+        </div>
+        <div class="glass-panel p-md rounded-xl flex flex-col items-center text-center">
+          <img class="w-16 h-16 rounded-full mb-xs border border-white/10"
+            data-alt="A portrait of a female lead actress with an elegant yet determined look, photographed with professional cinematic lighting. The image features a shallow depth of field against a dark background, with subtle warm tones that complement the red primary accents of the CineReserva CA brand. High-fidelity textures in the skin and hair highlight the premium quality of the production."
+            src="https://lh3.googleusercontent.com/aida-public/AB6AXuDA3TLaFfYZIQAF_jpiUWIp7kFe-vBCjTee1vR36QsyHf3cavoYNq23CTulybbaRGKBbr5XvWXvVsi1tGWRbKSsNFKGUNPBdzL1dqMVE3q0eyIlrxorRYTbTQEkx3lpCxZO6E6fJBNl6XtEaKaemx-7zKU8BDKXe2DhSn6X_EE0JMY_nvVXanXB_5aVrJZ8K7NwxGtj_S0hptuoJjoQPm9KKMdzvF8NFrbW9diH-FF2xBxKrAZFz3FeRY56r5mY2oOLrpsgvIn2hNk" />
+          <span class="font-button text-body-md text-on-surface">Elena Mars</span>
+          <span class="font-body-md text-[12px] text-zinc-500">Antagonista</span>
+        </div>
+        <div class="glass-panel p-md rounded-xl flex flex-col items-center text-center">
+          <img class="w-16 h-16 rounded-full mb-xs border border-white/10"
+            data-alt="A character portrait of a seasoned veteran actor for a high-end film production. The lighting is high-contrast and dramatic, capturing the depth of character needed for an epic cinematic experience. The color palette is restricted to deep blacks and subtle grays, maintaining the dark-mode aesthetic of CineReserva CA."
+            src="https://lh3.googleusercontent.com/aida-public/AB6AXuACPdbot-_sfPEWvN_3V25aopM9xz8sFxilyyxvwHlXH_Sn6OUuZpHbRKHy1s3oOpW-Dc3hEuc7kAPdyORB35Rr2PHMF_rCmjPAJORNgm9dFhqPr93FFX58c9HbkB3S3FcQWNVqhc09_hc9vcFiXeF_yR8Q-fpTzo7FCnIKm7mzsPwwR83MMnGaA740wWir9fT-Z1ALivaxwkfM_AC2Gg--Hb40zqGjfn8aQuTwFliFHSQMmigovAAqUUP3W5ZhFLnBRwE-CCS_N20" />
+          <span class="font-button text-body-md text-on-surface">Robert Smith</span>
+          <span class="font-body-md text-[12px] text-zinc-500">Secundario</span>
+        </div>
+        <div class="glass-panel p-md rounded-xl flex flex-col items-center text-center">
+          <img class="w-16 h-16 rounded-full mb-xs border border-white/10"
+            data-alt="A portrait of a rising star actress with a sophisticated and modern appearance. The visual style is minimalist and clean, with soft cinematic lighting that creates a professional, high-end feel. The image is designed to integrate seamlessly into a luxury movie booking application's interface, using dark tones and high-fidelity detail."
+            src="https://lh3.googleusercontent.com/aida-public/AB6AXuD8JPWu4eQqKFRKN2_eYR8bBO8yE3evCxph-dyJ2FKfsmC3wI_47iZ70KgDADgibmSWClSWTa3k9ldKcddQQnA3ciMGpLaY_0KcIi5P3BUxvrGEfFMT-CEN54L0N3mUhKI1vHDZwxsRD5pu6j4oJhLMCyKBk-njgJDAY8EeuVdywDqnHaiU00ikkayyOSPU1-8Cq_BIdcLYbELeChSxYc8XD5L4VGCkZByDKuVXMH1pNEMxlxE_zvoHr8KbWGE7kNlTx9IwJWAObso" />
+          <span class="font-button text-body-md text-on-surface">Aria Luna</span>
+          <span class="font-body-md text-[12px] text-zinc-500">Secundario</span>
+        </div>
+      </div>
+    </section>
+    <!-- Experience Options -->
+    <section class="mb-xl">
+      <h2 class="font-h2 text-h2 text-on-surface mb-md">Formatos disponibles</h2>
+      <div class="flex gap-md overflow-x-auto pb-4 scrollbar-hide">
+        <div class="min-w-[140px] glass-panel p-lg rounded-xl flex flex-col items-center gap-xs">
+          <span class="material-symbols-outlined text-on-surface text-xl" data-icon="waves">waves</span>
+          <span class="font-button text-on-surface">4DX</span>
+        </div>
+        <div
+          class="min-w-[140px] glass-panel p-lg rounded-xl border-red-600/30 flex flex-col items-center gap-xs bg-red-600/5">
+          <span class="material-symbols-outlined text-red-600 text-xl" data-icon="camera_video">camera_video</span>
+          <span class="font-button text-red-600">IMAX 3D</span>
+        </div>
+        <div class="min-w-[140px] glass-panel p-lg rounded-xl flex flex-col items-center gap-xs">
+          <span class="material-symbols-outlined text-on-surface text-xl" data-icon="speaker">speaker</span>
+          <span class="font-button text-on-surface">Dolby Atmos</span>
+        </div>
+      </div>
+    </section>
+  </main>
+  <!-- Sticky Bottom CTA -->
+  <div class="fixed bottom-0 left-0 w-full p-container_margin glass-panel z-50 rounded-t-2xl">
+    <div class="flex items-center justify-between max-w-4xl mx-auto gap-lg">
+      <div class="hidden md:block">
+        <p class="text-zinc-500 font-label-caps text-label-caps">PRECIO DESDE</p>
+        <p class="text-on-surface font-h2 text-h2">$12.50</p>
+      </div>
+      <button
+        class="flex-1 bg-primary-container text-on-primary-container h-14 rounded-xl flex items-center justify-center gap-2 font-button text-button active:scale-[0.98] transition-transform shadow-[0_8px_32px_rgba(229,9,20,0.3)]">
+        <span class="material-symbols-outlined" data-icon="confirmation_number">confirmation_number</span>
+        Ver horarios
+      </button>
+    </div>
+  </div>
+</body>
+
+</html>

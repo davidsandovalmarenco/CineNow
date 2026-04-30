@@ -1,0 +1,278 @@
+<!DOCTYPE html>
+
+<html class="dark" lang="es"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Be+Vietnam+Pro:wght@400;500;600;700;800&amp;family=Inter:wght@400;600&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+      tailwind.config = {
+        darkMode: "class",
+        theme: {
+          extend: {
+            "colors": {
+                    "on-error-container": "#ffdad6",
+                    "secondary-fixed": "#e5e2e1",
+                    "secondary": "#c8c6c5",
+                    "on-primary": "#690003",
+                    "primary-container": "#e50914",
+                    "background": "#200e0c",
+                    "surface-container-low": "#2a1614",
+                    "primary": "#ffb4aa",
+                    "inverse-primary": "#c0000c",
+                    "surface-container": "#2e1a18",
+                    "surface-container-highest": "#462f2c",
+                    "on-tertiary-container": "#f8f9ff",
+                    "inverse-surface": "#ffdad5",
+                    "surface-variant": "#462f2c",
+                    "primary-fixed": "#ffdad5",
+                    "on-tertiary-fixed": "#001b3c",
+                    "surface-dim": "#200e0c",
+                    "inverse-on-surface": "#412b28",
+                    "primary-fixed-dim": "#ffb4aa",
+                    "on-error": "#690005",
+                    "on-secondary-fixed": "#1b1b1b",
+                    "error-container": "#93000a",
+                    "outline-variant": "#5e3f3b",
+                    "secondary-container": "#474746",
+                    "on-surface": "#ffdad5",
+                    "tertiary-fixed": "#d5e3ff",
+                    "on-background": "#ffdad5",
+                    "error": "#ffb4ab",
+                    "on-secondary": "#313030",
+                    "surface-tint": "#ffb4aa",
+                    "on-tertiary": "#003061",
+                    "tertiary-container": "#0072d7",
+                    "surface": "#200e0c",
+                    "on-secondary-fixed-variant": "#474746",
+                    "on-secondary-container": "#b7b5b4",
+                    "on-primary-fixed-variant": "#930007",
+                    "on-primary-fixed": "#410001",
+                    "on-primary-container": "#fff7f6",
+                    "surface-bright": "#4a3330",
+                    "surface-container-lowest": "#1a0908",
+                    "surface-container-high": "#3a2522",
+                    "tertiary": "#a7c8ff",
+                    "secondary-fixed-dim": "#c8c6c5",
+                    "outline": "#af8782",
+                    "on-surface-variant": "#e9bcb6",
+                    "on-tertiary-fixed-variant": "#004689",
+                    "tertiary-fixed-dim": "#a7c8ff"
+            },
+            "borderRadius": {
+                    "DEFAULT": "0.25rem",
+                    "lg": "0.5rem",
+                    "xl": "0.75rem",
+                    "full": "9999px"
+            },
+            "spacing": {
+                    "sm": "12px",
+                    "container_margin": "20px",
+                    "md": "16px",
+                    "lg": "24px",
+                    "xl": "32px",
+                    "xs": "8px",
+                    "gutter": "12px",
+                    "base": "4px"
+            },
+            "fontFamily": {
+                    "button": ["Inter"],
+                    "h3": ["Be Vietnam Pro"],
+                    "body-lg": ["Inter"],
+                    "label-caps": ["Inter"],
+                    "h1": ["Be Vietnam Pro"],
+                    "h2": ["Be Vietnam Pro"],
+                    "body-md": ["Inter"]
+            },
+            "fontSize": {
+                    "button": ["16px", {"lineHeight": "20px", "fontWeight": "600"}],
+                    "h3": ["20px", {"lineHeight": "28px", "fontWeight": "600"}],
+                    "body-lg": ["16px", {"lineHeight": "24px", "fontWeight": "400"}],
+                    "label-caps": ["12px", {"lineHeight": "16px", "letterSpacing": "0.05em", "fontWeight": "600"}],
+                    "h1": ["32px", {"lineHeight": "40px", "letterSpacing": "-0.02em", "fontWeight": "700"}],
+                    "h2": ["24px", {"lineHeight": "32px", "letterSpacing": "-0.01em", "fontWeight": "600"}],
+                    "body-md": ["14px", {"lineHeight": "20px", "fontWeight": "400"}]
+            }
+          },
+        },
+      }
+    </script>
+<style>
+      .material-symbols-outlined {
+        font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+      }
+      .glass {
+        background: rgba(28, 28, 28, 0.7);
+        backdrop-filter: blur(20px);
+        -webkit-backdrop-filter: blur(20px);
+        border: 1px solid rgba(255, 255, 255, 0.05);
+      }
+      .screen-curve {
+        height: 4px;
+        width: 100%;
+        background: linear-gradient(to bottom, #e50914, transparent);
+        border-radius: 50% / 100% 100% 0 0;
+        filter: blur(4px);
+        margin-bottom: 40px;
+      }
+    </style>
+<style>
+    body {
+      min-height: max(884px, 100dvh);
+    }
+  </style>
+  </head>
+<body class="bg-[#0D0D0D] text-on-surface font-body-md selection:bg-primary-container selection:text-white">
+<!-- Top Navigation Anchor -->
+<header class="bg-black/90 backdrop-blur-md fixed top-0 w-full z-50 border-b border-white/5 flex justify-between items-center px-5 h-16">
+<div class="flex items-center gap-2">
+<span class="material-symbols-outlined text-red-600">movie</span>
+<span class="text-xl font-bold tracking-tight text-red-600 font-['Be_Vietnam_Pro']">CineReserva CA</span>
+</div>
+<div class="w-8 h-8 rounded-full bg-surface-container-highest overflow-hidden border border-white/10">
+<img alt="User profile" class="w-full h-full object-cover" src="https://lh3.googleusercontent.com/aida-public/AB6AXuAPdA9vl20imvGCkqfXCrpSlwbWhJAZ3aE0zexFt2U2GVuW0m76gRkIxzIzaLgtKnpcsej3NAyScDlIUKHpb5-xsvISW3K3s9NA3Nk9krw8t1p8T51-naXWhZBCUmH9X_Vvra5DDwsn5iphyN5tqOMcpkmZJfXuANl7biXdcVmKT4qblAQvnx79Vw5BWwNKfUcbf1A_0wuzvZ4YB6b_v2tJ22xaimK7RoyXFy8OEHLEd1--4xUnHrkQQReKh4tFCmqq21zp3STEv3A"/>
+</div>
+</header>
+<main class="pt-24 pb-32 px-container_margin min-h-screen flex flex-col items-center">
+<!-- Movie Brief Header -->
+<section class="w-full max-w-2xl mb-xl text-center">
+<h1 class="font-h1 text-h1 text-on-surface mb-xs">Selecciona tus Asientos</h1>
+<p class="font-body-md text-on-surface-variant flex items-center justify-center gap-2">
+<span class="material-symbols-outlined text-sm">schedule</span> 19:45 • Sala 4 • IMAX
+            </p>
+</section>
+<!-- Seat Grid Area -->
+<div class="w-full max-w-4xl flex flex-col items-center gap-lg">
+<!-- Cinema Screen Representation -->
+<div class="w-full px-xl">
+<div class="screen-curve"></div>
+<p class="text-center font-label-caps text-on-surface-variant opacity-50 uppercase tracking-[0.3em] -mt-6">Pantalla</p>
+</div>
+<!-- Seat Layout -->
+<div class="grid grid-cols-10 gap-2 sm:gap-4">
+<!-- Row A -->
+<div class="w-6 h-6 sm:w-8 sm:h-8 border border-outline-variant rounded-t-lg bg-surface-container-low"></div>
+<div class="w-6 h-6 sm:w-8 sm:h-8 border border-outline-variant rounded-t-lg bg-surface-container-low"></div>
+<div class="w-6 h-6 sm:w-8 sm:h-8"></div> <!-- Aisle -->
+<div class="w-6 h-6 sm:w-8 sm:h-8 border border-outline-variant rounded-t-lg bg-surface-container-low"></div>
+<div class="w-6 h-6 sm:w-8 sm:h-8 border border-outline-variant rounded-t-lg bg-surface-container-low"></div>
+<div class="w-6 h-6 sm:w-8 sm:h-8 border border-outline-variant rounded-t-lg bg-surface-container-low"></div>
+<div class="w-6 h-6 sm:w-8 sm:h-8 border border-outline-variant rounded-t-lg bg-surface-container-low"></div>
+<div class="w-6 h-6 sm:w-8 sm:h-8"></div> <!-- Aisle -->
+<div class="w-6 h-6 sm:w-8 sm:h-8 border border-outline-variant rounded-t-lg bg-surface-container-low"></div>
+<div class="w-6 h-6 sm:w-8 sm:h-8 border border-outline-variant rounded-t-lg bg-surface-container-low"></div>
+<!-- Row B -->
+<div class="w-6 h-6 sm:w-8 sm:h-8 border border-outline-variant rounded-t-lg bg-surface-container-low"></div>
+<div class="w-6 h-6 sm:w-8 sm:h-8 border border-outline-variant rounded-t-lg bg-surface-container-low"></div>
+<div class="w-6 h-6 sm:w-8 sm:h-8"></div>
+<div class="w-6 h-6 sm:w-8 sm:h-8 bg-primary-container rounded-t-lg border-b-2 border-red-800"></div>
+<div class="w-6 h-6 sm:w-8 sm:h-8 bg-primary-container rounded-t-lg border-b-2 border-red-800"></div>
+<div class="w-6 h-6 sm:w-8 sm:h-8 border border-outline-variant rounded-t-lg bg-surface-container-low"></div>
+<div class="w-6 h-6 sm:w-8 sm:h-8 border border-outline-variant rounded-t-lg bg-surface-container-low"></div>
+<div class="w-6 h-6 sm:w-8 sm:h-8"></div>
+<div class="w-6 h-6 sm:w-8 sm:h-8 border border-outline-variant rounded-t-lg bg-surface-container-low"></div>
+<div class="w-6 h-6 sm:w-8 sm:h-8 border border-outline-variant rounded-t-lg bg-surface-container-low"></div>
+<!-- Row C (Selection) -->
+<div class="w-6 h-6 sm:w-8 sm:h-8 border border-outline-variant rounded-t-lg bg-surface-container-low"></div>
+<div class="w-6 h-6 sm:w-8 sm:h-8 border border-outline-variant rounded-t-lg bg-surface-container-low"></div>
+<div class="w-6 h-6 sm:w-8 sm:h-8"></div>
+<div class="w-6 h-6 sm:w-8 sm:h-8 border border-outline-variant rounded-t-lg bg-surface-container-low"></div>
+<div class="w-6 h-6 sm:w-8 sm:h-8 bg-green-500 rounded-t-lg shadow-[0_0_10px_rgba(34,197,94,0.4)]"></div>
+<div class="w-6 h-6 sm:w-8 sm:h-8 bg-green-500 rounded-t-lg shadow-[0_0_10px_rgba(34,197,94,0.4)]"></div>
+<div class="w-6 h-6 sm:w-8 sm:h-8 border border-outline-variant rounded-t-lg bg-surface-container-low"></div>
+<div class="w-6 h-6 sm:w-8 sm:h-8"></div>
+<div class="w-6 h-6 sm:w-8 sm:h-8 border border-outline-variant rounded-t-lg bg-surface-container-low"></div>
+<div class="w-6 h-6 sm:w-8 sm:h-8 border border-outline-variant rounded-t-lg bg-surface-container-low"></div>
+<!-- Row D -->
+<div class="w-6 h-6 sm:w-8 sm:h-8 border border-outline-variant rounded-t-lg bg-surface-container-low"></div>
+<div class="w-6 h-6 sm:w-8 sm:h-8 border border-outline-variant rounded-t-lg bg-surface-container-low"></div>
+<div class="w-6 h-6 sm:w-8 sm:h-8"></div>
+<div class="w-6 h-6 sm:w-8 sm:h-8 bg-primary-container rounded-t-lg border-b-2 border-red-800"></div>
+<div class="w-6 h-6 sm:w-8 sm:h-8 border border-outline-variant rounded-t-lg bg-surface-container-low"></div>
+<div class="w-6 h-6 sm:w-8 sm:h-8 border border-outline-variant rounded-t-lg bg-surface-container-low"></div>
+<div class="w-6 h-6 sm:w-8 sm:h-8 border border-outline-variant rounded-t-lg bg-surface-container-low"></div>
+<div class="w-6 h-6 sm:w-8 sm:h-8"></div>
+<div class="w-6 h-6 sm:w-8 sm:h-8 border border-outline-variant rounded-t-lg bg-surface-container-low"></div>
+<div class="w-6 h-6 sm:w-8 sm:h-8 border border-outline-variant rounded-t-lg bg-surface-container-low"></div>
+<!-- Row E -->
+<div class="w-6 h-6 sm:w-8 sm:h-8 border border-outline-variant rounded-t-lg bg-surface-container-low"></div>
+<div class="w-6 h-6 sm:w-8 sm:h-8 border border-outline-variant rounded-t-lg bg-surface-container-low"></div>
+<div class="w-6 h-6 sm:w-8 sm:h-8"></div>
+<div class="w-6 h-6 sm:w-8 sm:h-8 border border-outline-variant rounded-t-lg bg-surface-container-low"></div>
+<div class="w-6 h-6 sm:w-8 sm:h-8 border border-outline-variant rounded-t-lg bg-surface-container-low"></div>
+<div class="w-6 h-6 sm:w-8 sm:h-8 border border-outline-variant rounded-t-lg bg-surface-container-low"></div>
+<div class="w-6 h-6 sm:w-8 sm:h-8 border border-outline-variant rounded-t-lg bg-surface-container-low"></div>
+<div class="w-6 h-6 sm:w-8 sm:h-8"></div>
+<div class="w-6 h-6 sm:w-8 sm:h-8 border border-outline-variant rounded-t-lg bg-surface-container-low"></div>
+<div class="w-6 h-6 sm:w-8 sm:h-8 border border-outline-variant rounded-t-lg bg-surface-container-low"></div>
+</div>
+<!-- Legend -->
+<div class="flex flex-wrap justify-center gap-lg mt-xl glass py-sm px-lg rounded-full">
+<div class="flex items-center gap-2">
+<div class="w-4 h-4 rounded-sm border border-outline-variant bg-surface-container-low"></div>
+<span class="font-label-caps text-on-surface-variant">Disponible</span>
+</div>
+<div class="flex items-center gap-2">
+<div class="w-4 h-4 rounded-sm bg-primary-container"></div>
+<span class="font-label-caps text-on-surface-variant">Ocupado</span>
+</div>
+<div class="flex items-center gap-2">
+<div class="w-4 h-4 rounded-sm bg-green-500"></div>
+<span class="font-label-caps text-on-surface-variant">Seleccionado</span>
+</div>
+</div>
+</div>
+</main>
+<!-- Bottom Action Bar / Summary -->
+<footer class="fixed bottom-0 left-0 w-full z-50">
+<div class="glass border-t border-white/10 px-container_margin pt-sm pb-8 rounded-t-3xl shadow-[0_-8px_32px_rgba(0,0,0,0.6)]">
+<div class="max-w-4xl mx-auto flex flex-col md:flex-row md:items-center justify-between gap-md">
+<!-- Ticket Info -->
+<div class="flex items-center gap-lg">
+<div class="flex flex-col">
+<span class="font-label-caps text-on-surface-variant mb-1">Boletos</span>
+<div class="flex items-center gap-2">
+<span class="font-h2 text-h2 text-on-surface">2</span>
+<span class="font-body-md text-on-surface-variant">(C12, C13)</span>
+</div>
+</div>
+<div class="w-px h-10 bg-white/10"></div>
+<div class="flex flex-col">
+<span class="font-label-caps text-on-surface-variant mb-1">Precio Total</span>
+<span class="font-h2 text-h2 text-red-600">$24.00</span>
+</div>
+</div>
+<!-- Action Button -->
+<button class="bg-primary-container text-white font-button text-button py-md px-xl rounded-xl shadow-lg shadow-red-900/20 active:scale-95 transition-all duration-200 flex items-center justify-center gap-2">
+                    Continuar
+                    <span class="material-symbols-outlined">chevron_right</span>
+</button>
+</div>
+</div>
+</footer>
+<!-- Movie Backdrop (Blurred) -->
+<div class="fixed inset-0 -z-10 pointer-events-none opacity-20">
+<img class="w-full h-full object-cover blur-3xl" data-alt="A cinematic, high-contrast close-up of a futuristic movie theater screen glowing with deep red and indigo light. The atmosphere is moody and immersive, with soft lens flares and atmospheric dust particles dancing in the light. Dark silhouettes of empty theater seats are visible in the foreground, creating a sense of depth and anticipation. The aesthetic is clean, modern, and ultra-high-definition." src="https://lh3.googleusercontent.com/aida-public/AB6AXuBEVfivRlkUKILHoJDOOKa6mmrTTwrNfotEMujrwAZACJVBB2cPkHqMomSn2Fjp_qgy10KWSwrPfTSnOTYwNd_TiDrdARFDf5rn9CCfifWmooQXEdGm2MP313JOuYw1y-sxtl_J-p2NB6cXNbFoN3XNJfjwBI3IAzuGQwSeoGdbo2bZxlmu3qKM50vWSCxvMN-B8sYXk6NJOMNWlq5aSoWSE0FwQJDra6QhiTVYVNqhE3vA-ceNNLPqQBflZDxIj-iDxcqamYA9PiU"/>
+</div>
+<!-- Navigation Shell (Bottom Mobile/Desktop Context) -->
+<nav class="md:hidden fixed bottom-0 left-0 w-full h-20 bg-[#0D0D0D]/80 backdrop-blur-lg border-t border-white/10 flex justify-around items-center px-4 pb-safe z-40">
+<a class="flex flex-col items-center justify-center text-zinc-500 hover:text-zinc-200 transition-all duration-200 active:scale-95" href="#">
+<span class="material-symbols-outlined">home</span>
+<span class="font-['Be_Vietnam_Pro'] text-[10px] font-semibold">Home</span>
+</a>
+<a class="flex flex-col items-center justify-center text-zinc-500 hover:text-zinc-200 transition-all duration-200 active:scale-95" href="#">
+<span class="material-symbols-outlined">search</span>
+<span class="font-['Be_Vietnam_Pro'] text-[10px] font-semibold">Search</span>
+</a>
+<a class="flex flex-col items-center justify-center text-red-600 after:content-[''] after:w-1 after:h-1 after:bg-red-600 after:rounded-full after:mt-1 transition-all duration-200 active:scale-95" href="#">
+<span class="material-symbols-outlined">confirmation_number</span>
+<span class="font-['Be_Vietnam_Pro'] text-[10px] font-semibold">Bookings</span>
+</a>
+<a class="flex flex-col items-center justify-center text-zinc-500 hover:text-zinc-200 transition-all duration-200 active:scale-95" href="#">
+<span class="material-symbols-outlined">person</span>
+<span class="font-['Be_Vietnam_Pro'] text-[10px] font-semibold">Profile</span>
+</a>
+</nav>
+</body></html>

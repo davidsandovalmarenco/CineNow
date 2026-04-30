@@ -1,0 +1,272 @@
+<!DOCTYPE html>
+
+<html class="dark" lang="es"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Be+Vietnam+Pro:wght@400;500;600;700;800&amp;family=Inter:wght@400;500;600;700&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+      tailwind.config = {
+        darkMode: "class",
+        theme: {
+          extend: {
+            "colors": {
+                    "on-error-container": "#ffdad6",
+                    "secondary-fixed": "#e5e2e1",
+                    "secondary": "#c8c6c5",
+                    "on-primary": "#690003",
+                    "primary-container": "#e50914",
+                    "background": "#200e0c",
+                    "surface-container-low": "#2a1614",
+                    "primary": "#ffb4aa",
+                    "inverse-primary": "#c0000c",
+                    "surface-container": "#2e1a18",
+                    "surface-container-highest": "#462f2c",
+                    "on-tertiary-container": "#f8f9ff",
+                    "inverse-surface": "#ffdad5",
+                    "surface-variant": "#462f2c",
+                    "primary-fixed": "#ffdad5",
+                    "on-tertiary-fixed": "#001b3c",
+                    "surface-dim": "#200e0c",
+                    "inverse-on-surface": "#412b28",
+                    "primary-fixed-dim": "#ffb4aa",
+                    "on-error": "#690005",
+                    "on-secondary-fixed": "#1b1b1b",
+                    "error-container": "#93000a",
+                    "outline-variant": "#5e3f3b",
+                    "secondary-container": "#474746",
+                    "on-surface": "#ffdad5",
+                    "tertiary-fixed": "#d5e3ff",
+                    "on-background": "#ffdad5",
+                    "error": "#ffb4ab",
+                    "on-secondary": "#313030",
+                    "surface-tint": "#ffb4aa",
+                    "on-tertiary": "#003061",
+                    "tertiary-container": "#0072d7",
+                    "surface": "#200e0c",
+                    "on-secondary-fixed-variant": "#474746",
+                    "on-secondary-container": "#b7b5b4",
+                    "on-primary-fixed-variant": "#930007",
+                    "on-primary-fixed": "#410001",
+                    "on-primary-container": "#fff7f6",
+                    "surface-bright": "#4a3330",
+                    "surface-container-lowest": "#1a0908",
+                    "surface-container-high": "#3a2522",
+                    "tertiary": "#a7c8ff",
+                    "secondary-fixed-dim": "#c8c6c5",
+                    "outline": "#af8782",
+                    "on-surface-variant": "#e9bcb6",
+                    "on-tertiary-fixed-variant": "#004689",
+                    "tertiary-fixed-dim": "#a7c8ff"
+            },
+            "borderRadius": {
+                    "DEFAULT": "0.25rem",
+                    "lg": "0.5rem",
+                    "xl": "0.75rem",
+                    "full": "9999px"
+            },
+            "spacing": {
+                    "sm": "12px",
+                    "container_margin": "20px",
+                    "md": "16px",
+                    "lg": "24px",
+                    "xl": "32px",
+                    "xs": "8px",
+                    "gutter": "12px",
+                    "base": "4px"
+            },
+            "fontFamily": {
+                    "button": ["Inter"],
+                    "h3": ["Be Vietnam Pro"],
+                    "body-lg": ["Inter"],
+                    "label-caps": ["Inter"],
+                    "h1": ["Be Vietnam Pro"],
+                    "h2": ["Be Vietnam Pro"],
+                    "body-md": ["Inter"]
+            },
+            "fontSize": {
+                    "button": ["16px", {"lineHeight": "20px", "fontWeight": "600"}],
+                    "h3": ["20px", {"lineHeight": "28px", "fontWeight": "600"}],
+                    "body-lg": ["16px", {"lineHeight": "24px", "fontWeight": "400"}],
+                    "label-caps": ["12px", {"lineHeight": "16px", "letterSpacing": "0.05em", "fontWeight": "600"}],
+                    "h1": ["32px", {"lineHeight": "40px", "letterSpacing": "-0.02em", "fontWeight": "700"}],
+                    "h2": ["24px", {"lineHeight": "32px", "letterSpacing": "-0.01em", "fontWeight": "600"}],
+                    "body-md": ["14px", {"lineHeight": "20px", "fontWeight": "400"}]
+            }
+          },
+        },
+      }
+    </script>
+<style>
+        body {
+            background-color: #0D0D0D;
+        }
+        .glass-panel {
+            background: rgba(28, 28, 28, 0.6);
+            backdrop-filter: blur(20px);
+            border: 1px solid rgba(255, 255, 255, 0.05);
+        }
+        .receipt-edge {
+            background-image: radial-gradient(circle at 10px 0, transparent 10px, #1C1C1C 10.5px);
+            background-size: 20px 10px;
+            background-position: bottom;
+            background-repeat: repeat-x;
+        }
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+        }
+    </style>
+<style>
+    body {
+      min-height: max(884px, 100dvh);
+    }
+  </style>
+  </head>
+<body class="text-on-surface font-body-md overflow-x-hidden pb-24">
+<!-- TopAppBar -->
+<header class="bg-black/90 backdrop-blur-md fixed top-0 w-full z-50 flex justify-between items-center px-5 h-16 w-full border-b border-white/5">
+<div class="flex items-center gap-3">
+<span class="material-symbols-outlined text-red-600">movie</span>
+<h1 class="text-xl font-bold tracking-tight text-red-600 font-['Be_Vietnam_Pro']">CineReserva CA</h1>
+</div>
+<div class="w-8 h-8 rounded-full bg-surface-container-highest flex items-center justify-center overflow-hidden border border-white/10">
+<span class="material-symbols-outlined text-xs">person</span>
+</div>
+</header>
+<main class="mt-20 px-container_margin max-w-2xl mx-auto">
+<!-- Header Section -->
+<div class="mb-lg">
+<button class="flex items-center gap-2 text-zinc-400 hover:text-white transition-colors mb-sm">
+<span class="material-symbols-outlined">arrow_back</span>
+<span class="font-button text-sm">Regresar</span>
+</button>
+<h2 class="font-h1 text-h1 text-on-surface mb-xs">Resumen de Reserva</h2>
+<p class="text-zinc-500 font-body-md">Por favor, revisa los detalles de tu compra antes de confirmar.</p>
+</div>
+<!-- Movie Poster & Quick Info Asymmetric Layout -->
+<div class="grid grid-cols-12 gap-gutter mb-xl">
+<div class="col-span-5 aspect-[2/3] rounded-xl overflow-hidden shadow-2xl">
+<img class="w-full h-full object-cover" data-alt="A cinematic movie poster of a space odyssey featuring a lonely astronaut standing on a crimson Martian landscape with a giant gas giant planet looming in the dark velvet sky. The lighting is dramatic and high-contrast, with deep shadows and vibrant red glows reflecting the CineReserva brand aesthetic. Minimalist typography accents the edges, conveying a high-end, exclusive cinematic feel in a dark mode setting." src="https://lh3.googleusercontent.com/aida-public/AB6AXuD-UpyaCeWA8zn2OLnKjaD02IGEH7hemI9rysztBxiQ3UTRjKfna7dnl8owYkHZ_gFSxTWEH4IlRcIc-5wYYK3O_2Y0Uy3eauQUb9T9KNVts3IdPCw9ZrsYdDin8dKJZ_OReS2NxL8z0_WO7XlvFxsNk9dDgkqH1qaXUgxivCX8Zj9AYrvMWt_OUWmj-h6xZHEnfjaIswfUU7ghQNxzePTLwFcOzKCmRbzVMIhmRJTL9V4H9qu-6jLohZh4roVrCuggU8N_oyFA9uA"/>
+</div>
+<div class="col-span-7 flex flex-col justify-center pl-sm">
+<div class="inline-flex items-center gap-2 bg-red-600/10 text-red-600 px-3 py-1 rounded-full mb-sm self-start">
+<span class="material-symbols-outlined text-[14px]">stars</span>
+<span class="text-label-caps font-label-caps">ESTRENO EXCLUSIVO</span>
+</div>
+<h3 class="font-h2 text-h2 text-white mb-2 leading-tight">Crónicas de Marte: El Despertar</h3>
+<div class="space-y-2">
+<div class="flex items-center gap-2 text-zinc-400">
+<span class="material-symbols-outlined text-sm">schedule</span>
+<span class="font-body-md">145 min</span>
+</div>
+<div class="flex items-center gap-2 text-zinc-400">
+<span class="material-symbols-outlined text-sm">theater_comedy</span>
+<span class="font-body-md">Ciencia Ficción, Drama</span>
+</div>
+</div>
+</div>
+</div>
+<!-- Professional Receipt Layout -->
+<div class="glass-panel rounded-2xl overflow-hidden relative mb-xl">
+<!-- Receipt Top Decoration -->
+<div class="h-1 bg-red-600 w-full"></div>
+<div class="p-lg">
+<!-- Session Details -->
+<div class="grid grid-cols-2 gap-lg mb-lg">
+<div>
+<p class="text-label-caps font-label-caps text-zinc-500 mb-1">FECHA Y HORA</p>
+<p class="font-h3 text-h3 text-white">Vie, 24 Mayo</p>
+<p class="font-body-md text-red-600">20:30 PM</p>
+</div>
+<div class="text-right">
+<p class="text-label-caps font-label-caps text-zinc-500 mb-1">SALA</p>
+<p class="font-h3 text-h3 text-white">SALA 04</p>
+<p class="font-body-md text-zinc-400">IMAX Laser</p>
+</div>
+</div>
+<!-- Separator -->
+<div class="border-t border-dashed border-white/10 my-lg relative">
+<div class="absolute -left-12 -top-2 w-4 h-4 rounded-full bg-[#0D0D0D]"></div>
+<div class="absolute -right-12 -top-2 w-4 h-4 rounded-full bg-[#0D0D0D]"></div>
+</div>
+<!-- Seats & Pricing -->
+<div class="space-y-md mb-lg">
+<div class="flex justify-between items-center">
+<div class="flex items-center gap-3">
+<div class="w-10 h-10 rounded-lg bg-surface-container-highest flex items-center justify-center">
+<span class="material-symbols-outlined text-zinc-400">event_seat</span>
+</div>
+<div>
+<p class="font-body-lg text-white">Butacas seleccionadas</p>
+<p class="font-body-md text-zinc-400">Fila G: 12, 13, 14</p>
+</div>
+</div>
+<p class="font-h3 text-white">$45.00</p>
+</div>
+<div class="flex justify-between items-center">
+<div class="flex items-center gap-3">
+<div class="w-10 h-10 rounded-lg bg-surface-container-highest flex items-center justify-center">
+<span class="material-symbols-outlined text-zinc-400">fastfood</span>
+</div>
+<div>
+<p class="font-body-lg text-white">Combo Individual Premium</p>
+<p class="font-body-md text-zinc-400">Palomitas L + Bebida</p>
+</div>
+</div>
+<p class="font-h3 text-white">$12.50</p>
+</div>
+</div>
+<!-- Grand Total -->
+<div class="bg-surface-container-high/50 p-md rounded-xl">
+<div class="flex justify-between items-end">
+<div>
+<p class="text-label-caps font-label-caps text-zinc-400">TOTAL A PAGAR</p>
+<p class="text-xs text-zinc-500">Incluye IVA (16%)</p>
+</div>
+<div class="text-right">
+<span class="text-h1 font-h1 text-red-600">$57.50</span>
+</div>
+</div>
+</div>
+</div>
+<!-- Booking ID Footer -->
+<div class="px-lg py-sm bg-black/40 flex justify-between items-center border-t border-white/5">
+<span class="text-[10px] font-mono text-zinc-600">REF: CR-8842-X09</span>
+<div class="flex gap-1">
+<div class="w-1 h-3 bg-zinc-800 rounded-full"></div>
+<div class="w-1 h-3 bg-zinc-800 rounded-full"></div>
+<div class="w-1 h-3 bg-zinc-800 rounded-full"></div>
+</div>
+</div>
+</div>
+<!-- Action Button -->
+<button class="w-full bg-red-600 text-white font-button text-button py-4 rounded-xl shadow-[0_8px_32px_rgba(229,9,20,0.3)] hover:bg-red-700 active:scale-95 transition-all duration-200 flex items-center justify-center gap-3">
+<span>Confirmar reserva</span>
+<span class="material-symbols-outlined">arrow_forward</span>
+</button>
+<p class="text-center text-zinc-500 text-xs mt-lg max-w-xs mx-auto">
+            Al confirmar, aceptas nuestros términos de servicio y políticas de cancelación.
+        </p>
+</main>
+<!-- BottomNavBar -->
+<nav class="fixed bottom-0 left-0 w-full h-20 bg-[#0D0D0D]/80 backdrop-blur-lg flex justify-around items-center px-4 pb-safe border-t border-white/10 z-50 rounded-t-2xl shadow-[0_-4px_24px_rgba(0,0,0,0.5)]">
+<button class="flex flex-col items-center justify-center text-zinc-500 active:scale-95 transition-all duration-200 hover:text-zinc-200">
+<span class="material-symbols-outlined">home</span>
+<span class="font-['Be_Vietnam_Pro'] text-[10px] font-semibold">Home</span>
+</button>
+<button class="flex flex-col items-center justify-center text-zinc-500 active:scale-95 transition-all duration-200 hover:text-zinc-200">
+<span class="material-symbols-outlined">search</span>
+<span class="font-['Be_Vietnam_Pro'] text-[10px] font-semibold">Search</span>
+</button>
+<button class="flex flex-col items-center justify-center text-red-600 after:content-[''] after:w-1 after:h-1 after:bg-red-600 after:rounded-full after:mt-1 active:scale-95 transition-all duration-200">
+<span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 1;">confirmation_number</span>
+<span class="font-['Be_Vietnam_Pro'] text-[10px] font-semibold">Bookings</span>
+</button>
+<button class="flex flex-col items-center justify-center text-zinc-500 active:scale-95 transition-all duration-200 hover:text-zinc-200">
+<span class="material-symbols-outlined">person</span>
+<span class="font-['Be_Vietnam_Pro'] text-[10px] font-semibold">Profile</span>
+</button>
+</nav>
+</body></html>

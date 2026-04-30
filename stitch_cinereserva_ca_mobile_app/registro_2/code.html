@@ -1,0 +1,221 @@
+<!DOCTYPE html>
+
+<html class="dark" lang="es"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Registro - CineNow</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Be+Vietnam+Pro:wght@400;500;600;700;800&amp;family=Inter:wght@400;500;600;700&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+        tailwind.config = {
+          darkMode: "class",
+          theme: {
+            extend: {
+              "colors": {
+                      "on-error-container": "#ffdad6",
+                      "secondary-fixed": "#e5e2e1",
+                      "secondary": "#c8c6c5",
+                      "on-primary": "#690003",
+                      "primary-container": "#e50914",
+                      "background": "#200e0c",
+                      "surface-container-low": "#2a1614",
+                      "primary": "#ffb4aa",
+                      "inverse-primary": "#c0000c",
+                      "surface-container": "#2e1a18",
+                      "surface-container-highest": "#462f2c",
+                      "on-tertiary-container": "#f8f9ff",
+                      "inverse-surface": "#ffdad5",
+                      "surface-variant": "#462f2c",
+                      "primary-fixed": "#ffdad5",
+                      "on-tertiary-fixed": "#001b3c",
+                      "surface-dim": "#200e0c",
+                      "inverse-on-surface": "#412b28",
+                      "primary-fixed-dim": "#ffb4aa",
+                      "on-error": "#690005",
+                      "on-secondary-fixed": "#1b1b1b",
+                      "error-container": "#93000a",
+                      "outline-variant": "#5e3f3b",
+                      "secondary-container": "#474746",
+                      "on-surface": "#ffdad5",
+                      "tertiary-fixed": "#d5e3ff",
+                      "on-background": "#ffdad5",
+                      "error": "#ffb4ab",
+                      "on-secondary": "#313030",
+                      "surface-tint": "#ffb4aa",
+                      "on-tertiary": "#003061",
+                      "tertiary-container": "#0072d7",
+                      "surface": "#200e0c",
+                      "on-secondary-fixed-variant": "#474746",
+                      "on-secondary-container": "#b7b5b4",
+                      "on-primary-fixed-variant": "#930007",
+                      "on-primary-fixed": "#410001",
+                      "on-primary-container": "#fff7f6",
+                      "surface-bright": "#4a3330",
+                      "surface-container-lowest": "#1a0908",
+                      "surface-container-high": "#3a2522",
+                      "tertiary": "#a7c8ff",
+                      "secondary-fixed-dim": "#c8c6c5",
+                      "outline": "#af8782",
+                      "on-surface-variant": "#e9bcb6",
+                      "on-tertiary-fixed-variant": "#004689",
+                      "tertiary-fixed-dim": "#a7c8ff"
+              },
+              "borderRadius": {
+                      "DEFAULT": "0.25rem",
+                      "lg": "0.5rem",
+                      "xl": "0.75rem",
+                      "full": "9999px"
+              },
+              "spacing": {
+                      "sm": "12px",
+                      "container_margin": "20px",
+                      "md": "16px",
+                      "lg": "24px",
+                      "xl": "32px",
+                      "xs": "8px",
+                      "gutter": "12px",
+                      "base": "4px"
+              },
+              "fontFamily": {
+                      "button": ["Inter"],
+                      "h3": ["Be Vietnam Pro"],
+                      "body-lg": ["Inter"],
+                      "label-caps": ["Inter"],
+                      "h1": ["Be Vietnam Pro"],
+                      "h2": ["Be Vietnam Pro"],
+                      "body-md": ["Inter"]
+              },
+              "fontSize": {
+                      "button": ["16px", {"lineHeight": "20px", "fontWeight": "600"}],
+                      "h3": ["20px", {"lineHeight": "28px", "fontWeight": "600"}],
+                      "body-lg": ["16px", {"lineHeight": "24px", "fontWeight": "400"}],
+                      "label-caps": ["12px", {"lineHeight": "16px", "letterSpacing": "0.05em", "fontWeight": "600"}],
+                      "h1": ["32px", {"lineHeight": "40px", "letterSpacing": "-0.02em", "fontWeight": "700"}],
+                      "h2": ["24px", {"lineHeight": "32px", "letterSpacing": "-0.01em", "fontWeight": "600"}],
+                      "body-md": ["14px", {"lineHeight": "20px", "fontWeight": "400"}]
+              }
+            },
+          },
+        }
+    </script>
+<style>
+        .glass-panel {
+            background: rgba(28, 28, 28, 0.7);
+            backdrop-filter: blur(20px);
+            border: 1px solid rgba(255, 255, 255, 0.05);
+        }
+        .bg-cinema-gradient {
+            background: radial-gradient(circle at top right, rgba(229, 9, 20, 0.15), transparent 40%),
+                        radial-gradient(circle at bottom left, rgba(229, 9, 20, 0.05), transparent 40%),
+                        #0D0D0D;
+        }
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+        }
+    </style>
+<style>
+    body {
+      min-height: max(884px, 100dvh);
+    }
+  </style>
+</head>
+<body class="bg-cinema-gradient text-on-surface min-h-screen selection:bg-primary-container selection:text-on-primary-container">
+<!-- TopAppBar -->
+<header class="bg-black/90 backdrop-blur-md fixed top-0 w-full z-50 border-b border-white/5 flex justify-between items-center px-5 h-16 w-full">
+<div class="flex items-center gap-2">
+<span class="material-symbols-outlined text-red-600" data-icon="movie">movie</span>
+<h1 class="font-['Be_Vietnam_Pro'] font-medium text-xl font-bold tracking-tight text-red-600">CineNow</h1>
+</div>
+<div class="w-8 h-8 rounded-full bg-surface-container-highest border border-white/10 flex items-center justify-center">
+<span class="material-symbols-outlined text-xs text-zinc-400" data-icon="person">person</span>
+</div>
+</header>
+<main class="pt-24 pb-12 px-container_margin flex flex-col items-center justify-center min-h-screen">
+<div class="w-full max-w-md">
+<!-- Hero Registration Section -->
+<div class="mb-lg text-center">
+<h2 class="font-h1 text-h1 text-on-surface mb-xs">Crear cuenta</h2>
+<p class="font-body-md text-body-md text-zinc-400">Únete a la experiencia cinematográfica más exclusiva.</p>
+</div>
+<section class="glass-panel rounded-xl p-lg shadow-2xl">
+<form class="space-y-md">
+<!-- Full Name -->
+<div class="space-y-base">
+<label class="font-label-caps text-label-caps text-zinc-400 ml-1" for="fullname">Nombre completo</label>
+<div class="relative group">
+<span class="material-symbols-outlined absolute left-4 top-1/2 -translate-y-1/2 text-zinc-500 group-focus-within:text-red-600 transition-colors" data-icon="badge">badge</span>
+<input class="w-full bg-[#1C1C1C] border border-white/10 rounded-xl py-3 pl-12 pr-4 text-on-surface placeholder:text-zinc-600 focus:outline-none focus:border-red-600 focus:ring-1 focus:ring-red-600 transition-all font-body-md" id="fullname" placeholder="Ej. Juan Pérez" type="text"/>
+<span class="material-symbols-outlined absolute right-4 top-1/2 -translate-y-1/2 text-emerald-500 opacity-0 group-focus-within:opacity-100 transition-opacity" data-icon="check_circle" style="font-variation-settings: 'FILL' 1;">check_circle</span>
+</div>
+</div>
+<!-- Email -->
+<div class="space-y-base">
+<label class="font-label-caps text-label-caps text-zinc-400 ml-1" for="email">Correo electrónico</label>
+<div class="relative group">
+<span class="material-symbols-outlined absolute left-4 top-1/2 -translate-y-1/2 text-zinc-500 group-focus-within:text-red-600 transition-colors" data-icon="mail">mail</span>
+<input class="w-full bg-[#1C1C1C] border border-white/10 rounded-xl py-3 pl-12 pr-4 text-on-surface placeholder:text-zinc-600 focus:outline-none focus:border-red-600 focus:ring-1 focus:ring-red-600 transition-all font-body-md" id="email" placeholder="nombre@ejemplo.com" type="email"/>
+</div>
+</div>
+<!-- Password -->
+<div class="space-y-base">
+<label class="font-label-caps text-label-caps text-zinc-400 ml-1" for="password">Contraseña</label>
+<div class="relative group">
+<span class="material-symbols-outlined absolute left-4 top-1/2 -translate-y-1/2 text-zinc-500 group-focus-within:text-red-600 transition-colors" data-icon="lock">lock</span>
+<input class="w-full bg-[#1C1C1C] border border-white/10 rounded-xl py-3 pl-12 pr-12 text-on-surface placeholder:text-zinc-600 focus:outline-none focus:border-red-600 focus:ring-1 focus:ring-red-600 transition-all font-body-md" id="password" placeholder="••••••••" type="password"/>
+<button class="absolute right-4 top-1/2 -translate-y-1/2 text-zinc-500 hover:text-white transition-colors" type="button">
+<span class="material-symbols-outlined" data-icon="visibility">visibility</span>
+</button>
+</div>
+</div>
+<!-- Confirm Password -->
+<div class="space-y-base">
+<label class="font-label-caps text-label-caps text-zinc-400 ml-1" for="confirm-password">Confirmar contraseña</label>
+<div class="relative group">
+<span class="material-symbols-outlined absolute left-4 top-1/2 -translate-y-1/2 text-zinc-500 group-focus-within:text-red-600 transition-colors" data-icon="enhanced_encryption">enhanced_encryption</span>
+<input class="w-full bg-[#1C1C1C] border border-white/10 rounded-xl py-3 pl-12 pr-4 text-on-surface placeholder:text-zinc-600 focus:outline-none focus:border-red-600 focus:ring-1 focus:ring-red-600 transition-all font-body-md" id="confirm-password" placeholder="••••••••" type="password"/>
+</div>
+</div>
+<!-- Terms & Conditions -->
+<div class="flex items-start gap-3 py-2">
+<div class="mt-1">
+<input class="rounded border-white/20 bg-zinc-800 text-red-600 focus:ring-red-600 focus:ring-offset-black" id="terms" type="checkbox"/>
+</div>
+<label class="font-body-md text-zinc-400 text-xs" for="terms">Acepto los <a class="text-red-600 hover:underline" href="#">Términos de Servicio</a> y la <a class="text-red-600 hover:underline" href="#">Política de Privacidad</a> de CineNow.</label>
+</div>
+<!-- Action Button -->
+<button class="w-full bg-primary-container text-white py-4 rounded-xl font-button text-button active:scale-95 transition-all duration-200 shadow-lg shadow-red-900/20 mt-lg" type="submit">
+                        Crear cuenta
+                    </button>
+</form>
+<!-- Divider -->
+<div class="relative flex items-center justify-center my-lg">
+<div class="border-t border-white/5 w-full"></div>
+<span class="absolute bg-[#1C1C1C] px-3 font-label-caps text-zinc-600 text-[10px]">O REGÍSTRATE CON</span>
+</div>
+<!-- Social Options -->
+<div class="grid grid-cols-2 gap-md">
+<button class="flex items-center justify-center gap-2 py-3 rounded-xl border border-white/10 hover:bg-white/5 transition-colors font-body-md text-on-surface">
+<img alt="" class="w-4 h-4" data-alt="The iconic Google G logo rendered in its classic four colors of red, yellow, green, and blue, presented in a clean, minimalist digital vector style against a dark, high-contrast cinema-themed interface background. The lighting is soft, emphasizing a high-end app aesthetic with dark tones and vibrant color pops." g\"_logo.svg"="" src="https://lh3.googleusercontent.com/aida-public/AB6AXuCF4KLjXfbnnjgJABMjWXXRMVrZ-yaLL-sWP5t52l5aVm4mYcyG0rIYsxQsVbjq7B0nXEyYaekWb9fPKkxnCf3As9y2ctajUM3k0arWzMtIRAdu-bxe1IrJIho-4XxmU5ZFvsJAaAH4tIBvJcXJYev17wcRPgo_3r5RlUDXeQO55gnW1PqHhqE77cRq6VQE3E66aqYmMn59-lMQPOsPQtSKaw83b1qqbii5s6MamRV9aa6kHrzgxlf1A4qxT9W6_yK4hnyNMOpxyDs"/>
+                        Google
+                    </button>
+<button class="flex items-center justify-center gap-2 py-3 rounded-xl border border-white/10 hover:bg-white/5 transition-colors font-body-md text-on-surface">
+<span class="material-symbols-outlined text-sm" data-icon="apple" style="font-variation-settings: 'FILL' 1;">ios</span>
+                        Apple
+                    </button>
+</div>
+</section>
+<!-- Footer Link -->
+<p class="mt-xl text-center font-body-md text-zinc-400">
+                ¿Ya tienes una cuenta? <a class="text-red-600 font-semibold hover:text-red-500 transition-colors" href="#">Inicia sesión</a>
+</p>
+</div>
+</main>
+<!-- Visual Decorative Element (Backdrop) -->
+<div class="fixed inset-0 -z-10 overflow-hidden pointer-events-none">
+<div class="absolute -bottom-1/4 -right-1/4 w-[600px] h-[600px] bg-red-600/5 rounded-full blur-[120px]"></div>
+<div class="absolute top-1/4 -left-1/4 w-[400px] h-[400px] bg-red-600/5 rounded-full blur-[100px]"></div>
+<img alt="" class="absolute inset-0 w-full h-full object-cover opacity-10 mix-blend-overlay" data-alt="A cinematic wide shot of an empty, high-end luxury cinema theater with plush red velvet seats stretching into the shadows. The atmosphere is quiet and expectant, with subtle, dramatic floor lighting that highlights the textures of the fabric and the deep black surroundings. The overall visual style is premium and minimalist, echoing a modern digital entertainment platform." src="https://lh3.googleusercontent.com/aida-public/AB6AXuD6Fz9LlWbzqy0yjWrmT8hxICNJdvntknaR1Fr3bL1cd7OfcWAnJKuCVaPdb_70UyssqLkBfQEnOw8wGdphasEwiPIuYGUBHh_PKOmRqsikZ1aVfCtJh1UtYcYNDLCbB6142hdNoulZ7L5tN9UCjOGUJOzCwtsI_XwHNEI-feMUrj5hfptviWR7BoUweb-pza5Xrpow3xF59jZk9AtWYPnHXDPWxXKShr3HDupR5Rsd20C8qWFnMIY-Oh3rakEpPsBPZMsyBYXZuTE"/>
+</div>
+</body></html>

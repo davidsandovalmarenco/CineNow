@@ -1,0 +1,279 @@
+<!DOCTYPE html>
+
+<html class="dark" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<link href="https://fonts.googleapis.com/css2?family=Be+Vietnam+Pro:wght@400;500;600;700;800&amp;family=Inter:wght@400;600&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<script id="tailwind-config">
+      tailwind.config = {
+        darkMode: "class",
+        theme: {
+          extend: {
+            "colors": {
+                    "on-error-container": "#ffdad6",
+                    "secondary-fixed": "#e5e2e1",
+                    "secondary": "#c8c6c5",
+                    "on-primary": "#690003",
+                    "primary-container": "#e50914",
+                    "background": "#200e0c",
+                    "surface-container-low": "#2a1614",
+                    "primary": "#ffb4aa",
+                    "inverse-primary": "#c0000c",
+                    "surface-container": "#2e1a18",
+                    "surface-container-highest": "#462f2c",
+                    "on-tertiary-container": "#f8f9ff",
+                    "inverse-surface": "#ffdad5",
+                    "surface-variant": "#462f2c",
+                    "primary-fixed": "#ffdad5",
+                    "on-tertiary-fixed": "#001b3c",
+                    "surface-dim": "#200e0c",
+                    "inverse-on-surface": "#412b28",
+                    "primary-fixed-dim": "#ffb4aa",
+                    "on-error": "#690005",
+                    "on-secondary-fixed": "#1b1b1b",
+                    "error-container": "#93000a",
+                    "outline-variant": "#5e3f3b",
+                    "secondary-container": "#474746",
+                    "on-surface": "#ffdad5",
+                    "tertiary-fixed": "#d5e3ff",
+                    "on-background": "#ffdad5",
+                    "error": "#ffb4ab",
+                    "on-secondary": "#313030",
+                    "surface-tint": "#ffb4aa",
+                    "on-tertiary": "#003061",
+                    "tertiary-container": "#0072d7",
+                    "surface": "#200e0c",
+                    "on-secondary-fixed-variant": "#474746",
+                    "on-secondary-container": "#b7b5b4",
+                    "on-primary-fixed-variant": "#930007",
+                    "on-primary-fixed": "#410001",
+                    "on-primary-container": "#fff7f6",
+                    "surface-bright": "#4a3330",
+                    "surface-container-lowest": "#1a0908",
+                    "surface-container-high": "#3a2522",
+                    "tertiary": "#a7c8ff",
+                    "secondary-fixed-dim": "#c8c6c5",
+                    "outline": "#af8782",
+                    "on-surface-variant": "#e9bcb6",
+                    "on-tertiary-fixed-variant": "#004689",
+                    "tertiary-fixed-dim": "#a7c8ff"
+            },
+            "borderRadius": {
+                    "DEFAULT": "0.25rem",
+                    "lg": "0.5rem",
+                    "xl": "0.75rem",
+                    "full": "9999px"
+            },
+            "spacing": {
+                    "sm": "12px",
+                    "container_margin": "20px",
+                    "md": "16px",
+                    "lg": "24px",
+                    "xl": "32px",
+                    "xs": "8px",
+                    "gutter": "12px",
+                    "base": "4px"
+            },
+            "fontFamily": {
+                    "button": ["Inter"],
+                    "h3": ["Be Vietnam Pro"],
+                    "body-lg": ["Inter"],
+                    "label-caps": ["Inter"],
+                    "h1": ["Be Vietnam Pro"],
+                    "h2": ["Be Vietnam Pro"],
+                    "body-md": ["Inter"]
+            },
+            "fontSize": {
+                    "button": ["16px", {"lineHeight": "20px", "fontWeight": "600"}],
+                    "h3": ["20px", {"lineHeight": "28px", "fontWeight": "600"}],
+                    "body-lg": ["16px", {"lineHeight": "24px", "fontWeight": "400"}],
+                    "label-caps": ["12px", {"lineHeight": "16px", "letterSpacing": "0.05em", "fontWeight": "600"}],
+                    "h1": ["32px", {"lineHeight": "40px", "letterSpacing": "-0.02em", "fontWeight": "700"}],
+                    "h2": ["24px", {"lineHeight": "32px", "letterSpacing": "-0.01em", "fontWeight": "600"}],
+                    "body-md": ["14px", {"lineHeight": "20px", "fontWeight": "400"}]
+            }
+          }
+        }
+      }
+    </script>
+<style>
+        body { background-color: #0D0D0D; color: #ffdad5; }
+        .glass-panel {
+            background: rgba(28, 28, 28, 0.6);
+            backdrop-filter: blur(20px);
+            border: 1px solid rgba(255, 255, 255, 0.05);
+        }
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+        }
+    </style>
+<style>
+    body {
+      min-height: max(884px, 100dvh);
+    }
+  </style>
+</head>
+<body class="font-body-md text-body-md min-h-screen pb-32">
+<!-- TopAppBar -->
+<header class="fixed top-0 w-full z-50 bg-black/90 backdrop-blur-md border-b border-white/5 flex justify-between items-center px-5 h-16 w-full">
+<div class="flex items-center gap-xs">
+<span class="material-symbols-outlined text-red-600" data-icon="movie">movie</span>
+<h1 class="text-xl font-bold tracking-tight text-red-600 font-['Be_Vietnam_Pro']">CineNow</h1>
+</div>
+<div class="w-8 h-8 rounded-full bg-surface-container-highest border border-white/10 overflow-hidden scale-95 active:scale-90 transition-transform cursor-pointer">
+<img alt="User profile" class="w-full h-full object-cover" data-alt="A professional studio portrait of a young adult with a clean, modern aesthetic. The lighting is soft and cinematic, with a dark, moody background that fits a high-end dark-themed application interface. The color palette is muted with subtle warm tones on the skin, maintaining a premium and sophisticated look." src="https://lh3.googleusercontent.com/aida-public/AB6AXuAXDempXFfJ0PB5o4oVOqjnCO2fKREH3lMHCiIVmyEHNLYpOWpwjTSbwN1et3bQg900uyNiVII6F3O4tCDQIvxIHcTLWTQfvtdPrE7j_-U-OxUtMosDjGr9m9IpHU--0XVER6OEuX4836l1U6KtlYcGTPejfrA00x3CMDZpOk088z6MguESD1CU6r0CdD2RUAfHBOKEtuzILCE_ubmtetrsLXxCY6tUZbWmGoGLnLfSTB9XGOTuTVwx43Gx-TSddSNkwNOx3HWgeG8"/>
+</div>
+</header>
+<main class="mt-20 px-container_margin">
+<!-- Screen Header -->
+<div class="mb-lg">
+<h2 class="font-h1 text-h1 text-on-surface">My Bookings</h2>
+<p class="text-zinc-500 font-body-md">Manage your cinema experiences</p>
+</div>
+<!-- Section: Upcoming -->
+<section class="mb-xl">
+<div class="flex items-center justify-between mb-md">
+<h3 class="font-h2 text-h2 text-on-surface">Upcoming</h3>
+<span class="bg-primary-container text-on-primary-container px-sm py-1 rounded-full font-label-caps text-label-caps">2 ACTIVE</span>
+</div>
+<!-- Booking Card 1: Active -->
+<div class="glass-panel rounded-xl p-md flex gap-md mb-md relative overflow-hidden group active:scale-[0.98] transition-transform">
+<div class="w-24 h-36 flex-shrink-0 rounded-lg overflow-hidden border border-white/5 shadow-xl">
+<img alt="Dune: Part Two poster" class="w-full h-full object-cover" data-alt="A cinematic vertical movie poster for a science fiction epic, featuring orange desert sands and a deep blue sky. The visual style is grand and minimalist, with sharp focus and high contrast. The image is designed to stand out against a dark black UI background, utilizing warm desert tones as the primary visual accent." src="https://lh3.googleusercontent.com/aida-public/AB6AXuCiOwmGY366APgoqfZBqHVRkgsEt770852of4ifU5DLQ6sW2qq141mStouFsAuUf4IKj5pQGfVe3VX-7TaAcm7ZwnbMmFL5Xx5k_7vwYDy1WIS1UgRo4xK-dVgBS796FNx2W757YF4rtXewgfKRCuC4JlqzjPOgCPHKlt8K9d1HqdPHC43-NbZj8KkYE0Yoyc1tuokmFl39gqj80ytINYmnUv9-MV2WpHTtaTPk2EGORxAJHWyxrqymjNvxid6GX532omjxJcL3r-I"/>
+</div>
+<div class="flex flex-col justify-between py-1 flex-grow">
+<div>
+<div class="flex justify-between items-start">
+<h4 class="font-h3 text-h3 text-white leading-tight">Dune: Part Two</h4>
+<span class="text-red-600 font-label-caps text-label-caps">ACTIVE</span>
+</div>
+<div class="mt-xs space-y-1">
+<div class="flex items-center gap-xs text-zinc-400">
+<span class="material-symbols-outlined text-[16px]" data-icon="calendar_today">calendar_today</span>
+<span class="font-body-md">Friday, Oct 24</span>
+</div>
+<div class="flex items-center gap-xs text-zinc-400">
+<span class="material-symbols-outlined text-[16px]" data-icon="schedule">schedule</span>
+<span class="font-body-md">19:30 • IMAX 4K</span>
+</div>
+<div class="flex items-center gap-xs text-zinc-400">
+<span class="material-symbols-outlined text-[16px]" data-icon="event_seat">event_seat</span>
+<span class="font-body-md">Row H, Seats 12, 13</span>
+</div>
+</div>
+</div>
+<div class="flex items-center gap-sm mt-sm">
+<button class="bg-red-600 text-white px-md py-2 rounded-lg font-button text-button flex items-center gap-xs hover:bg-red-700 transition-colors">
+<span class="material-symbols-outlined text-[18px]" data-icon="qr_code_2">qr_code_2</span>
+                            View Ticket
+                        </button>
+</div>
+</div>
+</div>
+<!-- Booking Card 2: Active -->
+<div class="glass-panel rounded-xl p-md flex gap-md mb-md relative overflow-hidden group active:scale-[0.98] transition-transform">
+<div class="w-24 h-36 flex-shrink-0 rounded-lg overflow-hidden border border-white/5 shadow-xl">
+<img alt="Interstellar poster" class="w-full h-full object-cover" data-alt="A stunning movie poster featuring a lone astronaut walking on an alien ice planet. The colors are deep indigo, cyan, and stark white. The composition is epic and atmospheric, with a sense of cosmic isolation. The high-fidelity imagery is tailored for a premium dark-mode cinema booking application." src="https://lh3.googleusercontent.com/aida-public/AB6AXuBy-07fV5cuSb6GSWLYjpfwelz85nBk5KzWYIEJbxY7gCD4KbAOvrJNAvI1yriULqklHppK6K59p19M-yEGtb3aL5J8WKXPMGe3YBGPoR1bhfFXzio94zhLZifr1tEXxzoE_50nZHJfiZMFYhm8fogP1CN57UXFxbLP_4r_L8-FpGB8U9RJHw9KXCJskGFxnCaRPEQPFUFYRFjvcMD3W22D37bBUM98zY9ZGaXEiDuHeH9HCrErwfMZpTygORb6TlocUm263K8MpeQ"/>
+</div>
+<div class="flex flex-col justify-between py-1 flex-grow">
+<div>
+<div class="flex justify-between items-start">
+<h4 class="font-h3 text-h3 text-white leading-tight">Interstellar</h4>
+<span class="text-red-600 font-label-caps text-label-caps">ACTIVE</span>
+</div>
+<div class="mt-xs space-y-1">
+<div class="flex items-center gap-xs text-zinc-400">
+<span class="material-symbols-outlined text-[16px]" data-icon="calendar_today">calendar_today</span>
+<span class="font-body-md">Sunday, Oct 26</span>
+</div>
+<div class="flex items-center gap-xs text-zinc-400">
+<span class="material-symbols-outlined text-[16px]" data-icon="schedule">schedule</span>
+<span class="font-body-md">21:00 • Hall 4</span>
+</div>
+<div class="flex items-center gap-xs text-zinc-400">
+<span class="material-symbols-outlined text-[16px]" data-icon="event_seat">event_seat</span>
+<span class="font-body-md">Row B, Seat 05</span>
+</div>
+</div>
+</div>
+<div class="flex items-center gap-sm mt-sm">
+<button class="bg-red-600 text-white px-md py-2 rounded-lg font-button text-button flex items-center gap-xs hover:bg-red-700 transition-colors">
+<span class="material-symbols-outlined text-[18px]" data-icon="qr_code_2">qr_code_2</span>
+                            View Ticket
+                        </button>
+</div>
+</div>
+</div>
+</section>
+<!-- Section: Past History -->
+<section>
+<h3 class="font-h2 text-h2 text-on-surface mb-md">Past Visits</h3>
+<div class="space-y-sm">
+<!-- History Item 1 -->
+<div class="glass-panel rounded-xl p-sm flex items-center gap-md opacity-70 grayscale-[0.5]">
+<div class="w-14 h-20 flex-shrink-0 rounded-md overflow-hidden border border-white/5">
+<img alt="The Batman poster" class="w-full h-full object-cover" data-alt="A dark and moody movie poster featuring a silhouette of a masked hero in the rain, illuminated by deep red neon lights. The aesthetic is gritty and cinematic, perfectly matching the dark theater theme. The color palette is dominated by blacks and saturated reds, reinforcing the brand identity of the cinema booking app." src="https://lh3.googleusercontent.com/aida-public/AB6AXuDbnkm_-U3Dggc9Ir2VlNhPRdVnhE9dZegTkHxrgeNanV81UkU3bPrrQYJUHLpmhHhu8UV1MXs61fW9wPEQODsKDVEDLhS7qs4xXza6gvPQ5AUMK-nA1UhSUCiidQPavT4WVB0O4GirlZfZ4NRuKzTmQ8f2ERhAulpdfROaIhMbOwwxY2J_uezUP-1RZWIqtFZOKLKnONdCS9XLj0r35Zlrm8rj8Wc5C6-hT9Xtv2QV7Hmc47yd8Pl0ydlpAyOxPgkKyrVhZQXrtMk"/>
+</div>
+<div class="flex-grow">
+<h4 class="font-body-lg font-semibold text-white">The Batman</h4>
+<p class="text-zinc-500 text-body-md">Oct 12, 2023 • 2 Seats</p>
+</div>
+<div class="text-right">
+<span class="text-zinc-500 font-label-caps text-label-caps">USED</span>
+</div>
+</div>
+<!-- History Item 2 -->
+<div class="glass-panel rounded-xl p-sm flex items-center gap-md opacity-70 grayscale-[0.5]">
+<div class="w-14 h-20 flex-shrink-0 rounded-md overflow-hidden border border-white/5">
+<img alt="Oppenheimer poster" class="w-full h-full object-cover" data-alt="A high-contrast movie poster depicting a dramatic explosion in shades of orange and black. The lighting is intense and focused, creating a powerful cinematic atmosphere. The visual style is premium and artistic, designed to evoke the intensity of a major theatrical release within a sleek digital interface." src="https://lh3.googleusercontent.com/aida-public/AB6AXuBoedp4B2Md2J4tRTvmhpzEkN9d7cijbFCn6Se30r-3or1OTk6KeYCfGoUzhUgQFKwSoBuZZ_c3yfliWCFGqUbnHBwGAjfljyOEvztyLgyMsSkY8pCuxn9X9k0WB1D3eO5ONkMtDcdDIbO9VeQ5SQAG90seiky7iosugOaRu48ShjfR2rc0Z6zEFdVoHLu5bP3j8FzQLygqtgwXeWC9O6u7yPUuUS3faCF_7Qw03lh5eKYKXffim27V7Xuv_nus08D-RfQ8AMXD3Rk"/>
+</div>
+<div class="flex-grow">
+<h4 class="font-body-lg font-semibold text-white">Oppenheimer</h4>
+<p class="text-zinc-500 text-body-md">Sep 30, 2023 • 1 Seat</p>
+</div>
+<div class="text-right">
+<span class="text-zinc-500 font-label-caps text-label-caps">USED</span>
+</div>
+</div>
+<!-- History Item 3 -->
+<div class="glass-panel rounded-xl p-sm flex items-center gap-md opacity-70 grayscale-[0.5]">
+<div class="w-14 h-20 flex-shrink-0 rounded-md overflow-hidden border border-white/5">
+<img alt="Movie poster" class="w-full h-full object-cover" data-alt="A dynamic movie poster with vibrant colors and sharp action photography. The mood is energetic and modern. It utilizes a deep black background to highlight the central subject, which is rendered in high fidelity with cinematic lighting effects. This visual aligns with the sophisticated minimalist aesthetic of the CineNow brand." src="https://lh3.googleusercontent.com/aida-public/AB6AXuBf7Z-B7956lDk4AAx2HEUshh8vVX_tvFeM9JoRNlBceAZOxUaBR3J_KzNCPbtxhdFDyIddhp-EKyLQc5qNi1XH2rOxWFFaleXsNFvEXapBJ-yS2ccNlNIuE9HGzYbPqFPEklYne-yT0fAlVqPCt-HN0IvtEPlk700e0Va8ZNnXHgmDmjoXy_xYDUNrcmLGs-_XuAUF5YxRO1mta6pnbIoh7l8Wc_2_rQ07eg-kb6_n3RXxy61AvfRhX_i-NoNt9dDIwf3M1zpql6Q"/>
+</div>
+<div class="flex-grow">
+<h4 class="font-body-lg font-semibold text-white">Spider-Man</h4>
+<p class="text-zinc-500 text-body-md">Aug 15, 2023 • 4 Seats</p>
+</div>
+<div class="text-right">
+<span class="text-zinc-500 font-label-caps text-label-caps">USED</span>
+</div>
+</div>
+</div>
+<button class="w-full mt-lg py-md border border-white/10 rounded-xl text-zinc-400 font-button hover:bg-white/5 transition-colors">
+                Load More History
+            </button>
+</section>
+</main>
+<!-- BottomNavBar -->
+<nav class="fixed bottom-0 left-0 w-full h-20 bg-[#0D0D0D]/80 backdrop-blur-lg border-t border-white/10 flex justify-around items-center px-4 pb-safe z-50 rounded-t-2xl shadow-[0_-4px_24px_rgba(0,0,0,0.5)]">
+<a class="flex flex-col items-center justify-center text-zinc-500 active:scale-95 transition-all duration-200 hover:text-zinc-200" href="#">
+<span class="material-symbols-outlined" data-icon="home">home</span>
+<span class="font-['Be_Vietnam_Pro'] text-[10px] font-semibold">Home</span>
+</a>
+<a class="flex flex-col items-center justify-center text-zinc-500 active:scale-95 transition-all duration-200 hover:text-zinc-200" href="#">
+<span class="material-symbols-outlined" data-icon="search">search</span>
+<span class="font-['Be_Vietnam_Pro'] text-[10px] font-semibold">Search</span>
+</a>
+<a class="flex flex-col items-center justify-center text-red-600 after:content-[''] after:w-1 after:h-1 after:bg-red-600 after:rounded-full after:mt-1 active:scale-95 transition-all duration-200" href="#">
+<span class="material-symbols-outlined" data-icon="confirmation_number" data-weight="fill">confirmation_number</span>
+<span class="font-['Be_Vietnam_Pro'] text-[10px] font-semibold">Bookings</span>
+</a>
+<a class="flex flex-col items-center justify-center text-zinc-500 active:scale-95 transition-all duration-200 hover:text-zinc-200" href="#">
+<span class="material-symbols-outlined" data-icon="person">person</span>
+<span class="font-['Be_Vietnam_Pro'] text-[10px] font-semibold">Profile</span>
+</a>
+</nav>
+</body></html>

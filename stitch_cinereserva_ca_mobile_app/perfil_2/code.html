@@ -1,0 +1,235 @@
+<!DOCTYPE html>
+
+<html class="dark" lang="es"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Be+Vietnam+Pro:wght@400;500;600;700&amp;family=Inter:wght@400;600&amp;family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    "colors": {
+                        "on-error-container": "#ffdad6",
+                        "secondary-fixed": "#e5e2e1",
+                        "secondary": "#c8c6c5",
+                        "on-primary": "#690003",
+                        "primary-container": "#e50914",
+                        "background": "#200e0c",
+                        "surface-container-low": "#2a1614",
+                        "primary": "#ffb4aa",
+                        "inverse-primary": "#c0000c",
+                        "surface-container": "#2e1a18",
+                        "surface-container-highest": "#462f2c",
+                        "on-tertiary-container": "#f8f9ff",
+                        "inverse-surface": "#ffdad5",
+                        "surface-variant": "#462f2c",
+                        "primary-fixed": "#ffdad5",
+                        "on-tertiary-fixed": "#001b3c",
+                        "surface-dim": "#200e0c",
+                        "inverse-on-surface": "#412b28",
+                        "primary-fixed-dim": "#ffb4aa",
+                        "on-error": "#690005",
+                        "on-secondary-fixed": "#1b1b1b",
+                        "error-container": "#93000a",
+                        "outline-variant": "#5e3f3b",
+                        "secondary-container": "#474746",
+                        "on-surface": "#ffdad5",
+                        "tertiary-fixed": "#d5e3ff",
+                        "on-background": "#ffdad5",
+                        "error": "#ffb4ab",
+                        "on-secondary": "#313030",
+                        "surface-tint": "#ffb4aa",
+                        "on-tertiary": "#003061",
+                        "tertiary-container": "#0072d7",
+                        "surface": "#200e0c",
+                        "on-secondary-fixed-variant": "#474746",
+                        "on-secondary-container": "#b7b5b4",
+                        "on-primary-fixed-variant": "#930007",
+                        "on-primary-fixed": "#410001",
+                        "on-primary-container": "#fff7f6",
+                        "surface-bright": "#4a3330",
+                        "surface-container-lowest": "#1a0908",
+                        "surface-container-high": "#3a2522",
+                        "tertiary": "#a7c8ff",
+                        "secondary-fixed-dim": "#c8c6c5",
+                        "outline": "#af8782",
+                        "on-surface-variant": "#e9bcb6",
+                        "on-tertiary-fixed-variant": "#004689",
+                        "tertiary-fixed-dim": "#a7c8ff"
+                    },
+                    "borderRadius": {
+                        "DEFAULT": "0.25rem",
+                        "lg": "0.5rem",
+                        "xl": "0.75rem",
+                        "full": "9999px"
+                    },
+                    "spacing": {
+                        "sm": "12px",
+                        "container_margin": "20px",
+                        "md": "16px",
+                        "lg": "24px",
+                        "xl": "32px",
+                        "xs": "8px",
+                        "gutter": "12px",
+                        "base": "4px"
+                    },
+                    "fontFamily": {
+                        "button": ["Inter"],
+                        "h3": ["Be Vietnam Pro"],
+                        "body-lg": ["Inter"],
+                        "label-caps": ["Inter"],
+                        "h1": ["Be Vietnam Pro"],
+                        "h2": ["Be Vietnam Pro"],
+                        "body-md": ["Inter"]
+                    },
+                    "fontSize": {
+                        "button": ["16px", {"lineHeight": "20px", "fontWeight": "600"}],
+                        "h3": ["20px", {"lineHeight": "28px", "fontWeight": "600"}],
+                        "body-lg": ["16px", {"lineHeight": "24px", "fontWeight": "400"}],
+                        "label-caps": ["12px", {"lineHeight": "16px", "letterSpacing": "0.05em", "fontWeight": "600"}],
+                        "h1": ["32px", {"lineHeight": "40px", "letterSpacing": "-0.02em", "fontWeight": "700"}],
+                        "h2": ["24px", {"lineHeight": "32px", "letterSpacing": "-0.01em", "fontWeight": "600"}],
+                        "body-md": ["14px", {"lineHeight": "20px", "fontWeight": "400"}]
+                    }
+                },
+            },
+        }
+    </script>
+<style>
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+        }
+        body {
+            background-color: #0D0D0D;
+        }
+    </style>
+<style>
+    body {
+      min-height: max(884px, 100dvh);
+    }
+  </style>
+</head>
+<body class="font-body-md text-on-surface">
+<!-- TopAppBar Component -->
+<header class="bg-black/90 backdrop-blur-md border-b border-white/5 fixed top-0 w-full z-50 flex justify-between items-center px-5 h-16 w-full">
+<div class="flex items-center gap-3">
+<span class="material-symbols-outlined text-red-600" data-icon="movie">movie</span>
+<h1 class="text-xl font-bold tracking-tight text-red-600 font-['Be_Vietnam_Pro']">CineNow</h1>
+</div>
+<div class="w-10 h-10 rounded-full overflow-hidden border border-white/10">
+<img alt="User profile" class="w-full h-full object-cover" data-alt="A professional studio headshot of a person with friendly features, captured in low-key cinematic lighting. The portrait features deep shadows and sharp highlights, mirroring the premium dark-mode aesthetic of a luxury cinema interface. The background is a soft, blurred charcoal gray, maintaining a sophisticated and exclusive visual tone consistent with a high-end booking application." src="https://lh3.googleusercontent.com/aida-public/AB6AXuAL-0xxE4axeMmU7z-P5Weaxieip5I8LTGui3TcyWEJyYwiefyDv71Ia_bu9bTUAItfSd6SPyNpyRxvMivzBkwcCpe1nkZc3Th5pDsKzBuWXWg1dHNgwja-7UM36FVwjVM7-fgCzd1hP5Zs9BUV2sGzapohm-3a0eenn6HWwRmgCq28BZ4QMh3Nwui4Lu8Eu8ZYj33ZDfnpqgXYSrdNzoq5TSk2D7F4ryw8nmAtYdS2YMIrwSJUfgAT9z52jG5YNrxl_LicSdsD-uU"/>
+</div>
+</header>
+<main class="pt-24 pb-32 px-container_margin max-w-4xl mx-auto">
+<!-- Profile Header Section -->
+<section class="flex flex-col items-center mb-xl">
+<div class="relative group">
+<div class="w-32 h-32 rounded-full overflow-hidden border-2 border-primary-container p-1 bg-[#1C1C1C]">
+<img alt="User profile large" class="w-full h-full rounded-full object-cover" data-alt="Close up profile picture of a young professional in a modern setting. The image is styled with high contrast and deep blacks to match a premium dark UI theme. Soft red ambient lighting reflects on the subject's face, creating a connection with the cinema-inspired brand palette. The overall mood is sophisticated, sleek, and high-fidelity." src="https://lh3.googleusercontent.com/aida-public/AB6AXuAGBhUMDOv567pyGr2JSHYx1KR4Usx5xXCiBFJtCLWky_EtSlb-TXIf7jTGrZwBmGj6RuhP54LeKIFT1Il-KNnyCoofr_1LmhnGFe2Cvg5Kkpm7TyYxupv2rUeu6Z7slv--bm6B6eJc0nQWEg52ulL7XboURZlMfItf2PqVAq0CXXS3kXqiF3oX1LDQ_w9p6Y06qbhlRPUmYqss-Ut4D6lDcnu_lpzpxDZuyUTjHMEtEGqfL7DQuOan2zvuK9r-Nze3B6u3B_f4AFA"/>
+</div>
+<button class="absolute bottom-1 right-1 bg-primary-container text-on-primary-container p-2 rounded-full shadow-lg active:scale-95 transition-transform">
+<span class="material-symbols-outlined text-[20px]" data-icon="edit">edit</span>
+</button>
+</div>
+<div class="text-center mt-md">
+<h2 class="font-h2 text-h2 text-on-surface">Alejandro Martínez</h2>
+<p class="text-zinc-500 font-body-md">amartinez@cinenow.ca</p>
+</div>
+</section>
+<!-- Settings List Section (Glassmorphism Cards) -->
+<section class="mb-xl">
+<h3 class="font-h3 text-h3 mb-md px-1">Ajustes</h3>
+<div class="bg-[#1C1C1C] rounded-xl overflow-hidden border border-white/5">
+<div class="flex items-center justify-between p-md border-b border-white/5 active:bg-white/5 transition-colors cursor-pointer group">
+<div class="flex items-center gap-md">
+<div class="w-10 h-10 rounded-lg bg-surface-container flex items-center justify-center">
+<span class="material-symbols-outlined text-zinc-400 group-hover:text-red-600 transition-colors" data-icon="person">person</span>
+</div>
+<span class="font-body-lg text-secondary-fixed">Account</span>
+</div>
+<span class="material-symbols-outlined text-zinc-600" data-icon="chevron_right">chevron_right</span>
+</div>
+<div class="flex items-center justify-between p-md border-b border-white/5 active:bg-white/5 transition-colors cursor-pointer group">
+<div class="flex items-center gap-md">
+<div class="w-10 h-10 rounded-lg bg-surface-container flex items-center justify-center">
+<span class="material-symbols-outlined text-zinc-400 group-hover:text-red-600 transition-colors" data-icon="notifications">notifications</span>
+</div>
+<span class="font-body-lg text-secondary-fixed">Notifications</span>
+</div>
+<span class="material-symbols-outlined text-zinc-600" data-icon="chevron_right">chevron_right</span>
+</div>
+<div class="flex items-center justify-between p-md active:bg-white/5 transition-colors cursor-pointer group">
+<div class="flex items-center gap-md">
+<div class="w-10 h-10 rounded-lg bg-surface-container flex items-center justify-center">
+<span class="material-symbols-outlined text-zinc-400 group-hover:text-red-600 transition-colors" data-icon="payments">payments</span>
+</div>
+<span class="font-body-lg text-secondary-fixed">Payment Methods</span>
+</div>
+<span class="material-symbols-outlined text-zinc-600" data-icon="chevron_right">chevron_right</span>
+</div>
+</div>
+</section>
+<!-- History Overview Section -->
+<section class="mb-xl">
+<div class="flex items-center justify-between mb-md px-1">
+<h3 class="font-h3 text-h3">History overview</h3>
+<button class="text-primary-container text-button font-button hover:underline">Ver todo</button>
+</div>
+<div class="grid grid-cols-1 md:grid-cols-2 gap-md">
+<div class="bg-[#1C1C1C] p-md rounded-xl border border-white/5 flex gap-md">
+<div class="w-20 aspect-[2/3] rounded-lg overflow-hidden flex-shrink-0">
+<img alt="Movie poster" class="w-full h-full object-cover" data-alt="Cinematic movie poster of a neo-noir cityscape at night, featuring neon lights reflecting on wet streets. The aesthetic is moody and high-contrast, with deep crimson and obsidian tones that align with the CineReserva brand. The lighting is dramatic, emphasizing the mysterious and high-stakes atmosphere of a modern blockbuster." src="https://lh3.googleusercontent.com/aida-public/AB6AXuACFmgFTZiRAGqZK-gLdLcFOochG61PWmxZarZXlgQpN_QA7lYQ9vEHoxfNCjJ1I9uNjvgXmFa7HeYOQ9XszR-xkSFiwqGuY5rqM9vMvtfNvNSFTB_X5x472HYlgR_Cf2xKXJos_7CcZxJW-NfLgHg0YEZ4sd-h8NIvck61VyXAJtftKmrj6nP-IxtJhov978Zr_LmRUDkNLSpcG5CblqE-V8K-5qflLLb4RjYDJpeOq_rEqAoNWTSgFo_5xHEDkj1zWZKRG4m3luY"/>
+</div>
+<div class="flex flex-col justify-between">
+<div>
+<h4 class="font-h3 text-body-lg line-clamp-1">Neon Genesis: Origin</h4>
+<p class="text-zinc-500 text-sm mt-1">14 Oct, 2023 • Sala 4</p>
+</div>
+<span class="bg-surface-container text-zinc-400 text-[10px] px-2 py-1 rounded w-fit uppercase font-bold tracking-wider">Completado</span>
+</div>
+</div>
+<div class="bg-[#1C1C1C] p-md rounded-xl border border-white/5 flex gap-md">
+<div class="w-20 aspect-[2/3] rounded-lg overflow-hidden flex-shrink-0">
+<img alt="Movie poster" class="w-full h-full object-cover" data-alt="Dramatic movie poster showing a lone astronaut looking towards a swirling, vibrant nebula in space. The color palette is dominated by deep blues and vibrant reds, creating a sense of wonder and epic scale. The image is designed to feel like a high-fidelity cinematic experience, matching the premium and immersive style of a top-tier theater application." src="https://lh3.googleusercontent.com/aida-public/AB6AXuCz0d_dBp0pHiP6q6GOHHzVADyOmDnGr4a_EkPNQTWnPTn_BHWKVChnuvJUMr-aNixkICTBsdafxnuaMjNrpfuMrLCn3SJyjC5P2VbEQyLpmjjfqNtPb02T6nMcZMYQmzhTHZZjt0IGAxurbRjskN5XX6Ov_MRopSCUYFF34PQpH7BX95WrH6gKuot48taeczaKXOKBas_OMVDYg-aN3c2-JocDSHr7Erm0bohYit3k03PeL4th61U5iCivHor_dqo3GdP7B2H7TWA"/>
+</div>
+<div class="flex flex-col justify-between">
+<div>
+<h4 class="font-h3 text-body-lg line-clamp-1">Interstellar Void</h4>
+<p class="text-zinc-500 text-sm mt-1">28 Sep, 2023 • IMAX</p>
+</div>
+<span class="bg-surface-container text-zinc-400 text-[10px] px-2 py-1 rounded w-fit uppercase font-bold tracking-wider">Completado</span>
+</div>
+</div>
+</div>
+</section>
+<!-- Logout Button -->
+<section class="mt-xl">
+<button class="w-full py-4 rounded-xl border border-red-600/20 text-red-600 font-button text-button active:bg-red-600/10 active:scale-[0.98] transition-all flex items-center justify-center gap-2">
+<span class="material-symbols-outlined" data-icon="logout">logout</span>
+                Cerrar sesión
+            </button>
+</section>
+</main>
+<!-- BottomNavBar Component -->
+<nav class="bg-[#0D0D0D]/80 backdrop-blur-lg fixed bottom-0 w-full z-50 rounded-t-2xl border-t border-white/10 shadow-[0_-4px_24px_rgba(0,0,0,0.5)] fixed bottom-0 left-0 w-full h-20 flex justify-around items-center px-4 pb-safe">
+<div class="flex flex-col items-center justify-center text-zinc-500 hover:text-zinc-200 active:scale-95 transition-all duration-200 cursor-pointer">
+<span class="material-symbols-outlined" data-icon="home">home</span>
+<span class="font-['Be_Vietnam_Pro'] text-[10px] font-semibold">Home</span>
+</div>
+<div class="flex flex-col items-center justify-center text-zinc-500 hover:text-zinc-200 active:scale-95 transition-all duration-200 cursor-pointer">
+<span class="material-symbols-outlined" data-icon="search">search</span>
+<span class="font-['Be_Vietnam_Pro'] text-[10px] font-semibold">Search</span>
+</div>
+<div class="flex flex-col items-center justify-center text-zinc-500 hover:text-zinc-200 active:scale-95 transition-all duration-200 cursor-pointer">
+<span class="material-symbols-outlined" data-icon="confirmation_number">confirmation_number</span>
+<span class="font-['Be_Vietnam_Pro'] text-[10px] font-semibold">Bookings</span>
+</div>
+<div class="flex flex-col items-center justify-center text-red-600 after:content-[''] after:w-1 after:h-1 after:bg-red-600 after:rounded-full after:mt-1 active:scale-95 transition-all duration-200 cursor-pointer">
+<span class="material-symbols-outlined" data-icon="person">person</span>
+<span class="font-['Be_Vietnam_Pro'] text-[10px] font-semibold">Profile</span>
+</div>
+</nav>
+</body></html>

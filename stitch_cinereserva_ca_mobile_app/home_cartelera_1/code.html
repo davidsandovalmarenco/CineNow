@@ -1,0 +1,284 @@
+<!DOCTYPE html>
+
+<html class="dark" lang="es"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>CineReserva CA - Home</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Be+Vietnam+Pro:wght@400;500;600;700;800&amp;family=Inter:wght@400;600&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<style>
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+        }
+        ::-webkit-scrollbar {
+            display: none;
+        }
+        -ms-overflow-style: none;
+        scrollbar-width: none;
+    </style>
+<script id="tailwind-config">
+        tailwind.config = {
+          darkMode: "class",
+          theme: {
+            extend: {
+              "colors": {
+                      "on-error-container": "#ffdad6",
+                      "secondary-fixed": "#e5e2e1",
+                      "secondary": "#c8c6c5",
+                      "on-primary": "#690003",
+                      "primary-container": "#e50914",
+                      "background": "#200e0c",
+                      "surface-container-low": "#2a1614",
+                      "primary": "#ffb4aa",
+                      "inverse-primary": "#c0000c",
+                      "surface-container": "#2e1a18",
+                      "surface-container-highest": "#462f2c",
+                      "on-tertiary-container": "#f8f9ff",
+                      "inverse-surface": "#ffdad5",
+                      "surface-variant": "#462f2c",
+                      "primary-fixed": "#ffdad5",
+                      "on-tertiary-fixed": "#001b3c",
+                      "surface-dim": "#200e0c",
+                      "inverse-on-surface": "#412b28",
+                      "primary-fixed-dim": "#ffb4aa",
+                      "on-error": "#690005",
+                      "on-secondary-fixed": "#1b1b1b",
+                      "error-container": "#93000a",
+                      "outline-variant": "#5e3f3b",
+                      "secondary-container": "#474746",
+                      "on-surface": "#ffdad5",
+                      "tertiary-fixed": "#d5e3ff",
+                      "on-background": "#ffdad5",
+                      "error": "#ffb4ab",
+                      "on-secondary": "#313030",
+                      "surface-tint": "#ffb4aa",
+                      "on-tertiary": "#003061",
+                      "tertiary-container": "#0072d7",
+                      "surface": "#200e0c",
+                      "on-secondary-fixed-variant": "#474746",
+                      "on-secondary-container": "#b7b5b4",
+                      "on-primary-fixed-variant": "#930007",
+                      "on-primary-fixed": "#410001",
+                      "on-primary-container": "#fff7f6",
+                      "surface-bright": "#4a3330",
+                      "surface-container-lowest": "#1a0908",
+                      "surface-container-high": "#3a2522",
+                      "tertiary": "#a7c8ff",
+                      "secondary-fixed-dim": "#c8c6c5",
+                      "outline": "#af8782",
+                      "on-surface-variant": "#e9bcb6",
+                      "on-tertiary-fixed-variant": "#004689",
+                      "tertiary-fixed-dim": "#a7c8ff"
+              },
+              "borderRadius": {
+                      "DEFAULT": "0.25rem",
+                      "lg": "0.5rem",
+                      "xl": "0.75rem",
+                      "full": "9999px"
+              },
+              "spacing": {
+                      "sm": "12px",
+                      "container_margin": "20px",
+                      "md": "16px",
+                      "lg": "24px",
+                      "xl": "32px",
+                      "xs": "8px",
+                      "gutter": "12px",
+                      "base": "4px"
+              },
+              "fontFamily": {
+                      "button": ["Inter"],
+                      "h3": ["Be Vietnam Pro"],
+                      "body-lg": ["Inter"],
+                      "label-caps": ["Inter"],
+                      "h1": ["Be Vietnam Pro"],
+                      "h2": ["Be Vietnam Pro"],
+                      "body-md": ["Inter"]
+              },
+              "fontSize": {
+                      "button": ["16px", {"lineHeight": "20px", "fontWeight": "600"}],
+                      "h3": ["20px", {"lineHeight": "28px", "fontWeight": "600"}],
+                      "body-lg": ["16px", {"lineHeight": "24px", "fontWeight": "400"}],
+                      "label-caps": ["12px", {"lineHeight": "16px", "letterSpacing": "0.05em", "fontWeight": "600"}],
+                      "h1": ["32px", {"lineHeight": "40px", "letterSpacing": "-0.02em", "fontWeight": "700"}],
+                      "h2": ["24px", {"lineHeight": "32px", "letterSpacing": "-0.01em", "fontWeight": "600"}],
+                      "body-md": ["14px", {"lineHeight": "20px", "fontWeight": "400"}]
+              }
+            },
+          },
+        }
+    </script>
+<style>
+    body {
+      min-height: max(884px, 100dvh);
+    }
+  </style>
+  </head>
+<body class="bg-[#0D0D0D] text-on-surface font-body-md min-h-screen pb-32">
+<!-- TopAppBar Shell -->
+<header class="fixed top-0 w-full z-50 bg-black/90 backdrop-blur-md border-b border-white/5 flex justify-between items-center px-5 h-16 w-full">
+<div class="flex items-center gap-2">
+<span class="material-symbols-outlined text-red-600" data-icon="movie">movie</span>
+<h1 class="text-xl font-bold tracking-tight text-red-600 font-['Be_Vietnam_Pro']">CineReserva CA</h1>
+</div>
+<div class="w-10 h-10 rounded-full overflow-hidden border border-outline-variant bg-surface-container-highest transition-transform active:scale-90" title="User profile">
+<img alt="Profile" class="w-full h-full object-cover" data-alt="A close-up professional profile portrait of a stylish movie enthusiast. The person is set against a dark, cinematic background with subtle bokeh lights. The lighting is dramatic, high-contrast chiaroscuro, emphasizing modern sophistication. The overall color scheme is deep black with soft white highlights, aligning with a premium cinema brand aesthetic." src="https://lh3.googleusercontent.com/aida-public/AB6AXuB4hJZVmd5HnlS1UNp7P-Sth4b--grJxAB1L09UWN7Ay3vZLB6a962sCmUw0csTsIYvEYG7nIYy-A3p7uZ5GqsORD2JopGnu0SqWQovUmT4xVtSjxbDY-VdqZ07bVNp0UBnnwFC7rVBDjaOUOYP8WlrW01tJ_mCQwfp4_bb85NJicyiKMwTFRZLx8vd82IyKTXvIGQr2xwnFoYt33sWHl7O5BEMyZWpz6CTo9_mQoNSzsVXynBAfBxJ7sLP8TN9gfiswoF13qeUMJI"/>
+</div>
+</header>
+<!-- Main Content Canvas -->
+<main class="pt-0">
+<!-- Hero Banner Section -->
+<section class="relative h-[751px] w-full overflow-hidden">
+<div class="absolute inset-0 bg-gradient-to-t from-[#0D0D0D] via-transparent to-black/40 z-10"></div>
+<img alt="Main Featured Movie" class="w-full h-full object-cover object-center" data-alt="A high-definition, dramatic wide-angle shot of a cinematic sci-fi movie scene featuring a lone explorer looking out at a futuristic glowing city under a dark purple sky. The atmosphere is epic and immersive, with heavy cinematic grain and deep shadows. Vibrant cinema red accents light up parts of the city. The style is hyper-realistic and high-stakes, fitting a premium theater lobby ambiance." src="https://lh3.googleusercontent.com/aida-public/AB6AXuBm6TTIVRqH5yhnnqUG01VM2EJGK-qrwWBj1INNMZU3jwqgfXZvF_8HsJXPISunI55WykKZLXxAe823jGxc60nhGNJMOYjyw916WEYmYOamSZ_xys1zWCEa8rLZK9WqiqhI-P2oiesUzLgSqNBEFSOit1Tw_zUxKUuw_0r2dAhJ1Un0JOOlwYdqwE7AjUKw6LndrUcC0l-hp-l9NHvQSkCHJxe9vJkc0rZ9QLh8hznEXiLM0lk-x2inO2vJ6ITAMDZ7CpRziac8GpU"/>
+<div class="absolute bottom-0 left-0 w-full z-20 px-container_margin pb-xl flex flex-col gap-md">
+<div class="flex gap-xs">
+<span class="bg-primary-container text-on-primary-container px-sm py-xs rounded-full font-label-caps text-label-caps">IMAX</span>
+<span class="bg-surface-container-highest/60 backdrop-blur-md text-on-surface px-sm py-xs rounded-full font-label-caps text-label-caps">ESTRENO</span>
+</div>
+<h2 class="font-h1 text-h1 text-white max-w-sm leading-tight">Marea Galáctica: El Origen</h2>
+<p class="font-body-md text-on-surface-variant max-w-md">Una odisea visual que desafía los límites del tiempo y el espacio en una experiencia cinematográfica sin precedentes.</p>
+<div class="flex gap-md pt-base">
+<button class="bg-primary-container text-on-primary-container px-lg py-md rounded-xl font-button text-button flex items-center gap-xs active:scale-[0.98] transition-transform">
+<span class="material-symbols-outlined" data-icon="confirmation_number">confirmation_number</span>
+                        Reserve Now
+                    </button>
+<button class="bg-white/10 backdrop-blur-md border border-white/20 text-white px-lg py-md rounded-xl font-button text-button active:scale-[0.98] transition-transform">
+                        Trailer
+                    </button>
+</div>
+</div>
+</section>
+<!-- Horizontal Carousel: Estrenos -->
+<section class="mt-xl px-container_margin">
+<div class="flex justify-between items-center mb-md">
+<h3 class="font-h2 text-h2 text-white">Estrenos</h3>
+<span class="text-red-600 font-label-caps cursor-pointer hover:text-white transition-colors">Ver todo</span>
+</div>
+<div class="flex gap-gutter overflow-x-auto pb-md -mx-base px-base">
+<!-- Movie Card 1 -->
+<div class="flex-none w-44 group">
+<div class="relative aspect-[2/3] rounded-xl overflow-hidden mb-xs border border-white/5 bg-surface-container">
+<img alt="Movie 1" class="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110" data-alt="A dark and moody action movie poster featuring a mysterious figure in a rainy metropolitan alleyway. Neon signs in cinema red and deep blues reflect on the wet pavement. High-fidelity textures, cinematic lighting, and 2:3 vertical aspect ratio. The mood is intense and exclusive, matching a high-end cinema brand." src="https://lh3.googleusercontent.com/aida-public/AB6AXuAUeXsl9PzchDEoLLQkhKy4G_fCE6FrMjs7IjTihmhGNq8CFJ3lrVXQEi-DwByLG5i_vioM1ZOAUY6DF9c_Dt7I4989sM9lchTSr3rVrDYg5E3Rvo0oHDSbf9uTjytvIEFkFItMX5NgkqSRKkosMRY9dLh71Er3MXlHS3nd3z2Mo8SIWsnyo8vxPlq7ILfbDnKN57aUnm2tDa71yCl1YJTbx1PYiT1rd4B3_tQJB5TaCj5v8cFlhoVArDy2qIN4TNf-lnTimDYymfA"/>
+<div class="absolute top-2 right-2 bg-black/60 backdrop-blur-md px-xs py-1 rounded text-[10px] font-bold text-white border border-white/10">8.9</div>
+</div>
+<h4 class="font-body-lg text-body-lg text-white truncate">Código Sombra</h4>
+<p class="font-body-md text-on-surface-variant">Acción • Thriller</p>
+</div>
+<!-- Movie Card 2 -->
+<div class="flex-none w-44 group">
+<div class="relative aspect-[2/3] rounded-xl overflow-hidden mb-xs border border-white/5 bg-surface-container">
+<img alt="Movie 2" class="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110" data-alt="A lush and vibrant animated fantasy world poster with bioluminescent flora and floating islands under a starlit sky. The design uses deep purples and high-key glowing accents. High information density with a focus on immersive imagery and 2:3 aspect ratio. Minimalist glassmorphism elements hint at the high-end digital booking experience." src="https://lh3.googleusercontent.com/aida-public/AB6AXuDmIzVJbOovIYYyld0MDLvH0BAa2er5mvTyLy7Mkipd_IHOe7-fC-R7lRgiJQbcQA6-i4mrETXqM_66QVd7tnwSsRCsPHwe18T1Yd8pCOLB7m_yVrW0DjDrqDHJWfqiOWAUp7m5rlMGnmiPREPovsf454uk1_zXKI0asux0eHBHe29kUVZU4u5VddpXlhgofngOPYVtmhIyhyeOfRMpM4jQFtLO72kMlu2H3xgFQAoILX7WWXZH6QoscxzfS1PoSWhA0WuFAVur1oA"/>
+<div class="absolute top-2 right-2 bg-black/60 backdrop-blur-md px-xs py-1 rounded text-[10px] font-bold text-white border border-white/10">9.2</div>
+</div>
+<h4 class="font-body-lg text-body-lg text-white truncate">Tierras de Cristal</h4>
+<p class="font-body-md text-on-surface-variant">Fantasía • Animación</p>
+</div>
+<!-- Movie Card 3 -->
+<div class="flex-none w-44 group">
+<div class="relative aspect-[2/3] rounded-xl overflow-hidden mb-xs border border-white/5 bg-surface-container">
+<img alt="Movie 3" class="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110" data-alt="A minimalist and sleek horror movie poster with a single dramatic candle illuminating a dark, ancient room. The lighting is low-key with deep blacks and sharp highlights. High-end visual tokens and a vertical aspect ratio. The aesthetic creates an emotional response of mystery and high-stakes excitement." src="https://lh3.googleusercontent.com/aida-public/AB6AXuDhIU46gweMcxDxtmAzX62CQPhg7xCwo1HkK5dtd_rWBwT2twcn8OeUNXWK1_6Vw92I2mje9GWuvlIor-RnexlmwuY-gZZXItUbZwZCoErXalaDb-j-geUs0V2v7-5gHbey257S7f7lM0njVbWzx7ihYRfyIMg3qAmw4GIlzeN1ChZCAjIQ8OCCMlky3jtMth57CIZd-li15PAgxo8Dpw-lXPySIqGY9BmG3F-1md6QoM2FBtTNbw79Kj8nm8lJV04C_OkxLdzowPs"/>
+<div class="absolute top-2 right-2 bg-black/60 backdrop-blur-md px-xs py-1 rounded text-[10px] font-bold text-white border border-white/10">7.5</div>
+</div>
+<h4 class="font-body-lg text-body-lg text-white truncate">El Susurro del Olvido</h4>
+<p class="font-body-md text-on-surface-variant">Horror • Suspenso</p>
+</div>
+</div>
+</section>
+<!-- Horizontal Carousel: Próximamente -->
+<section class="mt-xl px-container_margin">
+<div class="flex justify-between items-center mb-md">
+<h3 class="font-h2 text-h2 text-white">Próximamente</h3>
+</div>
+<div class="flex gap-gutter overflow-x-auto pb-md -mx-base px-base">
+<!-- Upcoming 1 -->
+<div class="flex-none w-72 h-40 group relative rounded-2xl overflow-hidden border border-white/5">
+<img alt="Upcoming Movie 1" class="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105" data-alt="A cinematic landscape of a vintage theater stage with red velvet curtains and golden highlights. The scene is illuminated by warm spotlighting, creating a sense of luxury and exclusivity. Dark mode aesthetic with deep shadows and sophisticated glassmorphism text overlays. Professional 16:9 cinematic aspect ratio." src="https://lh3.googleusercontent.com/aida-public/AB6AXuCS_XpT546AaYfD3v2VCRVbZPoUtjXr1ic_nyEdS8EUwsjYc8E2ZeAK9AAjbOEXc9GVavflgPXVl4_9MO3KEs9tDz9Zf-q_zdGxZ4SjU1m6hHrHMAatn-2H0CssR_QWCuS-hW7m6SOmK23hYLiVLpY2XEYAwiyqdLN7SSAc4Qoi-NOZjnJ8zow99BQ8kXP4OaB047SswoAMe__R5V3JR8IfbM79xlp8-2Pg3FadTPV3rGHX48q4VwNmqSRiyTIb5n_W6uM4ERpFH14"/>
+<div class="absolute inset-0 bg-gradient-to-t from-black/80 to-transparent flex flex-col justify-end p-md">
+<span class="text-red-600 font-label-caps text-[10px] mb-1">24 DE JUNIO</span>
+<h4 class="font-h3 text-h3 text-white leading-tight">Relatos de Oro</h4>
+</div>
+</div>
+<!-- Upcoming 2 -->
+<div class="flex-none w-72 h-40 group relative rounded-2xl overflow-hidden border border-white/5">
+<img alt="Upcoming Movie 2" class="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105" data-alt="A futuristic cockpit view from a spacecraft approaching a massive, glowing nebula. The lighting is dominated by deep space blacks and neon blue and red emissions. High-end minimalist design with a focus on scale and grandeur. The atmosphere is quiet, advanced, and cinematic, tailored for movie lovers." src="https://lh3.googleusercontent.com/aida-public/AB6AXuCIQAUAQXsbC8I_2xE2898h-HIP0hDOV0afdUUiCeVp-vsuEHGXE_TDa7s93vIsPwR3h7R5yo54XxSH_YZ96mOs2u6eHkwujEnlK9V_GlSwfGq37yiEJQVv3gulqY0AqS_gvOhs9aS3uDrPJG_SSF0cQB5veUOYNv9VlOmJJqbC2bllWs1ouX0fXBg3DWsfXWax0nDg7n4_EgqhHfMFuAdSbhXofwnFa1eeNGk7bPbvfcj2ERogrPm6btJN71jQ6YAPX_qwnrKa8QI"/>
+<div class="absolute inset-0 bg-gradient-to-t from-black/80 to-transparent flex flex-col justify-end p-md">
+<span class="text-red-600 font-label-caps text-[10px] mb-1">12 DE JULIO</span>
+<h4 class="font-h3 text-h3 text-white leading-tight">Horizonte Perdido</h4>
+</div>
+</div>
+</div>
+</section>
+<!-- Vertical Scroll: En cartelera -->
+<section class="mt-xl px-container_margin mb-lg">
+<h3 class="font-h2 text-h2 text-white mb-md">En cartelera</h3>
+<div class="flex flex-col gap-md">
+<!-- List Item 1 -->
+<div class="flex gap-md bg-surface-container-low rounded-2xl p-sm border border-white/[0.03]">
+<div class="w-24 aspect-[2/3] rounded-lg overflow-hidden flex-none">
+<img alt="In theaters 1" class="w-full h-full object-cover" data-alt="A vibrant movie poster showing a high-speed chase through a neon-lit futuristic city. Bright streaks of light in shades of red and white blur past a sleek supercar. The composition is dynamic and full of energy, with a premium cinematic grain. Dark background highlights the intense visual effects and sophisticated urban setting." src="https://lh3.googleusercontent.com/aida-public/AB6AXuBLa_YWoPgDMBBDEtEu8vTdsa5dvzpIw7SSXFw_dIV9b4Xz1Lgxhn8f5JXXJGg892g7mrqhZl231MlgqIdPzBB5T8AnbN9NEuTu4mtRQWnfIDEZrz1D0Yd_PijCsnlNIFvfIkmZ4jXNFiRKmxQHY9JiVCl7EJaPTpKG-S1u-x_aS2_yWb0H4qJUsZ9qEzQRmAibAmJTJbIgrCyzPd7wYneBpnrjAJiGJxogD0bzg9sgOc8c2xjsxEitsaN6t98NgD4oi9cQr8k1S4E"/>
+</div>
+<div class="flex flex-col justify-center gap-xs">
+<div class="flex gap-xs">
+<span class="text-red-600 font-bold text-[10px] tracking-widest">4K</span>
+<span class="text-zinc-500 font-bold text-[10px] tracking-widest">SUB</span>
+</div>
+<h4 class="font-h3 text-h3 text-white">Velocidad Terminal</h4>
+<p class="font-body-md text-on-surface-variant line-clamp-1">Cuando el tiempo es el único enemigo, cada segundo cuenta para sobrevivir.</p>
+<div class="flex items-center gap-xs text-on-surface mt-base">
+<span class="material-symbols-outlined text-red-600 text-sm" data-icon="schedule">schedule</span>
+<span class="font-label-caps text-[11px]">1h 55m</span>
+<span class="material-symbols-outlined text-red-600 text-sm ml-sm" data-icon="star">star</span>
+<span class="font-label-caps text-[11px]">4.8</span>
+</div>
+</div>
+</div>
+<!-- List Item 2 -->
+<div class="flex gap-md bg-surface-container-low rounded-2xl p-sm border border-white/[0.03]">
+<div class="w-24 aspect-[2/3] rounded-lg overflow-hidden flex-none">
+<img alt="In theaters 2" class="w-full h-full object-cover" data-alt="An artistic noir-style movie poster with a heavy focus on shadow and light. A detective's silhouette is cast against a foggy streetlamp, creating a high-contrast and dramatic scene. The color palette is strictly deep blacks and soft whites, with a single sharp red accent. The design is minimalist, evocative, and exudes a premium cinematic feel." src="https://lh3.googleusercontent.com/aida-public/AB6AXuCZcD7Az8VBPI9hewtbxLZ39oIiKU87v0LT3NSBbmFgHK0gdNHoZ_gTFcQm7JIz-llP4cRH68K7yuFmlEi_nLqtle9rO_9kzKq2tdkdwwVJk5mWUroBG0FHw0fG5rFeR5f_P3gImC28CYxjIKin-D2YFv0PLuQQyYVRw0mIVL_w4p2TbQxJfFOtHicpWfGEBDG1zbd_94mkt-jXJq7R3emNJo4gtoD9XgSf5MYTzBwIQYj4pIM0Ld2yIPUzGQpNXfE9G2qsqJDK88U"/>
+</div>
+<div class="flex flex-col justify-center gap-xs">
+<div class="flex gap-xs">
+<span class="text-red-600 font-bold text-[10px] tracking-widest">ATMOS</span>
+<span class="text-zinc-500 font-bold text-[10px] tracking-widest">DOB</span>
+</div>
+<h4 class="font-h3 text-h3 text-white">Sombras en la Ciudad</h4>
+<p class="font-body-md text-on-surface-variant line-clamp-1">Un detective retirado debe enfrentar su pasado más oscuro.</p>
+<div class="flex items-center gap-xs text-on-surface mt-base">
+<span class="material-symbols-outlined text-red-600 text-sm" data-icon="schedule">schedule</span>
+<span class="font-label-caps text-[11px]">2h 10m</span>
+<span class="material-symbols-outlined text-red-600 text-sm ml-sm" data-icon="star">star</span>
+<span class="font-label-caps text-[11px]">4.5</span>
+</div>
+</div>
+</div>
+</div>
+</section>
+</main>
+<!-- BottomNavBar Shell -->
+<nav class="fixed bottom-0 left-0 w-full h-20 bg-[#0D0D0D]/80 backdrop-blur-lg border-t border-white/10 flex justify-around items-center px-4 pb-safe z-50 rounded-t-2xl shadow-[0_-4px_24px_rgba(0,0,0,0.5)]">
+<!-- Home (Active) -->
+<a class="flex flex-col items-center justify-center text-red-600 after:content-[''] after:w-1 after:h-1 after:bg-red-600 after:rounded-full after:mt-1 font-['Be_Vietnam_Pro'] text-[10px] font-semibold active:scale-95 transition-all duration-200" href="#">
+<span class="material-symbols-outlined" data-icon="home" style="font-variation-settings: 'FILL' 1;">home</span>
+<span>Home</span>
+</a>
+<!-- Search -->
+<a class="flex flex-col items-center justify-center text-zinc-500 hover:text-zinc-200 font-['Be_Vietnam_Pro'] text-[10px] font-semibold active:scale-95 transition-all duration-200" href="#">
+<span class="material-symbols-outlined" data-icon="search">search</span>
+<span>Search</span>
+</a>
+<!-- Bookings -->
+<a class="flex flex-col items-center justify-center text-zinc-500 hover:text-zinc-200 font-['Be_Vietnam_Pro'] text-[10px] font-semibold active:scale-95 transition-all duration-200" href="#">
+<span class="material-symbols-outlined" data-icon="confirmation_number">confirmation_number</span>
+<span>Bookings</span>
+</a>
+<!-- Profile -->
+<a class="flex flex-col items-center justify-center text-zinc-500 hover:text-zinc-200 font-['Be_Vietnam_Pro'] text-[10px] font-semibold active:scale-95 transition-all duration-200" href="#">
+<span class="material-symbols-outlined" data-icon="person">person</span>
+<span>Profile</span>
+</a>
+</nav>
+</body></html>
