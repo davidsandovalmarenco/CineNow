@@ -1,5 +1,5 @@
 import React from 'react';
-import { View, Text, StyleSheet, Image, ScrollView, TouchableOpacity, SafeAreaView, Dimensions, StatusBar, Platform } from 'react-native';
+import { View, Text, StyleSheet, Image, ScrollView, TouchableOpacity, StatusBar } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import { LinearGradient } from 'expo-linear-gradient';
 import { BlurView } from 'expo-blur';
@@ -7,14 +7,9 @@ import { colors } from '../theme/colors';
 import { spacing, borderRadius } from '../theme/spacing';
 import { typography } from '../theme/typography';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
+import { getMovieImage, normalizeReservationMovie } from '../data/recentMovies';
 
-const MOCK_MOVIE_DETAIL = {
-  title: 'El Legado de las Sombras',
-  duration: '2h 45min',
-  rating: '4.9 (2.4k)',
-  genre: 'Ciencia Ficción',
-  backdropUrl: 'https://lh3.googleusercontent.com/aida-public/AB6AXuDAM7IP4qpMfMDXjQkDe_x4RArQFst_xvZhXTDKFjdrGL7ONUxhY-_cNtGa_0mFwONrQc_67TFgnZdwvGXOHRJfebss_kNWZ2nU-U2KQUUHSnVzajVv6Q71kNWIPsaCHVbLvH_QXVPmTyHBihOOyJK9GxDJqFqSEXuraqUzA7PWU2HedT46ei-C33rjoNouJO-G6Vl3u2OeaXqko2u-7F4WStrrd7Grn-uTy3ZEEFGfC9pEkdaThinics9ISB-8ldg5ZSbtnkNyMpw',
-  synopsis: 'En un futuro distópico donde la luz es el recurso más valioso, un ex-ingeniero de sistemas descubre un secreto enterrado en las profundidades de la infraestructura de la ciudad que podría cambiar el destino de la humanidad para siempre. Acompaña a nuestros protagonistas en una carrera contra el tiempo mientras navegan por traiciones corporativas y dilemas morales en la película más aclamada de la temporada.',
+const MOVIE_DETAIL_EXTRAS = {
   cast: [
     { id: '1', name: 'Julian Drake', role: 'Protagonista', image: 'https://lh3.googleusercontent.com/aida-public/AB6AXuDDHn9udIE_nbyOxVXx487ZH_D6p1kXTy-W5t0mmg7_zmaq86XwUBhtcPztEUsl0Vw4V1081xpcfLOVHo7kxD-qgSmCWqSn0z7lemY_Ps6hRkaDzqoDnJZH_D3ihdjUkVRZkrB5p1q_BW50OnbFoYrUB3gLlMORVIsMZGB_ZoRNq1d0Fx3ntwk3MCB-cOmGfSGvT1LF47ZrmeQ5gq-ljoql-AUKJqNwREEuXjYOMWRC0TAmrf6dj4rECa4z-3bBvqiC7uzqLPp7WKA' },
     { id: '2', name: 'Elena Mars', role: 'Antagonista', image: 'https://lh3.googleusercontent.com/aida-public/AB6AXuDA3TLaFfYZIQAF_jpiUWIp7kFe-vBCjTee1vR36QsyHf3cavoYNq23CTulybbaRGKBbr5XvWXvVsi1tGWRbKSsNFKGUNPBdzL1dqMVE3q0eyIlrxorRYTbTQEkx3lpCxZO6E6fJBNl6XtEaKaemx-7zKU8BDKXe2DhSn6X_EE0JMY_nvVXanXB_5aVrJZ8K7NwxGtj_S0hptuoJjoQPm9KKMdzvF8NFrbW9diH-FF2xBxKrAZFz3FeRY56r5mY2oOLrpsgvIn2hNk' },
@@ -28,14 +23,14 @@ const MOCK_MOVIE_DETAIL = {
   ]
 };
 
-const { width } = Dimensions.get('window');
 const HEADER_HEIGHT = 530;
 
-export const MovieDetailScreen = ({ navigation }: any) => {
+export const MovieDetailScreen = ({ navigation, route }: any) => {
   const insets = useSafeAreaInsets();
+  const movie = normalizeReservationMovie(route.params?.movie);
 
   const handleSchedulePress = () => {
-    navigation.navigate('Schedule');
+    navigation.navigate('Schedule', { movie });
   };
 
   return (
@@ -46,7 +41,7 @@ export const MovieDetailScreen = ({ navigation }: any) => {
         
         {/* Header Hero */}
         <View style={styles.heroContainer}>
-          <Image source={{ uri: MOCK_MOVIE_DETAIL.backdropUrl }} style={styles.heroImage} />
+          <Image source={{ uri: getMovieImage(movie) }} style={styles.heroImage} />
           <LinearGradient
             colors={['transparent', 'rgba(13, 13, 13, 0.4)', '#0D0D0D']}
             locations={[0, 0.6, 1]}
@@ -73,20 +68,20 @@ export const MovieDetailScreen = ({ navigation }: any) => {
               </View>
             </View>
 
-            <Text style={[typography.h1, styles.title]}>{MOCK_MOVIE_DETAIL.title}</Text>
+            <Text style={[typography.h1, styles.title]}>{movie.title}</Text>
 
             <View style={styles.metaRow}>
               <View style={styles.metaItem}>
                 <Ionicons name="time-outline" size={18} color={colors.primaryContainer} />
-                <Text style={styles.metaText}>{MOCK_MOVIE_DETAIL.duration}</Text>
+                <Text style={styles.metaText}>{movie.duration}</Text>
               </View>
               <View style={styles.metaItem}>
                 <Ionicons name="star" size={18} color={colors.primaryContainer} />
-                <Text style={styles.metaText}>{MOCK_MOVIE_DETAIL.rating}</Text>
+                <Text style={styles.metaText}>{movie.rating.toFixed(1)} (2025)</Text>
               </View>
               <View style={styles.metaItem}>
                 <Ionicons name="planet-outline" size={18} color={colors.primaryContainer} />
-                <Text style={styles.metaText}>{MOCK_MOVIE_DETAIL.genre}</Text>
+                <Text style={styles.metaText}>{movie.genre}</Text>
               </View>
             </View>
           </View>
@@ -96,7 +91,7 @@ export const MovieDetailScreen = ({ navigation }: any) => {
         <View style={styles.section}>
           <Text style={[typography.h2, styles.sectionTitle]}>Sinopsis</Text>
           <Text style={[typography.bodyLg, styles.synopsisText]}>
-            {MOCK_MOVIE_DETAIL.synopsis}
+            {movie.synopsis}
           </Text>
         </View>
 
@@ -110,7 +105,7 @@ export const MovieDetailScreen = ({ navigation }: any) => {
           </View>
           
           <View style={styles.castGrid}>
-            {MOCK_MOVIE_DETAIL.cast.map((actor) => (
+            {MOVIE_DETAIL_EXTRAS.cast.map((actor) => (
               <View key={actor.id} style={styles.castCardWrapper}>
                 <BlurView intensity={20} tint="dark" style={styles.castCard}>
                   <Image source={{ uri: actor.image }} style={styles.castImage} />
@@ -126,7 +121,7 @@ export const MovieDetailScreen = ({ navigation }: any) => {
         <View style={[styles.section, { marginBottom: spacing.xl * 2 }]}>
           <Text style={[typography.h2, styles.sectionTitle]}>Formatos disponibles</Text>
           <ScrollView horizontal showsHorizontalScrollIndicator={false} contentContainerStyle={styles.formatsScroll}>
-            {MOCK_MOVIE_DETAIL.formats.map((format) => (
+            {MOVIE_DETAIL_EXTRAS.formats.map((format) => (
               <BlurView 
                 key={format.id} 
                 intensity={20} 

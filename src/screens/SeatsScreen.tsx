@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { View, Text, StyleSheet, ScrollView, TouchableOpacity, SafeAreaView, Dimensions, ImageBackground, StatusBar } from 'react-native';
+import { View, Text, StyleSheet, ScrollView, TouchableOpacity, Dimensions, ImageBackground, StatusBar } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import { BlurView } from 'expo-blur';
 import { LinearGradient } from 'expo-linear-gradient';
@@ -8,6 +8,7 @@ import { spacing, borderRadius } from '../theme/spacing';
 import { typography } from '../theme/typography';
 import { reservationService } from '../services/reservationService';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
+import { RECENT_MOVIES } from '../data/recentMovies';
 
 const SEAT_PRICE = 12.00;
 
@@ -16,10 +17,10 @@ const ROWS = ['A', 'B', 'C', 'D', 'E'];
 const COLS = 10;
 const AISLES = [2, 7];
 
-const BACKGROUND_URL = 'https://lh3.googleusercontent.com/aida-public/AB6AXuBEVfivRlkUKILHoJDOOKa6mmrTTwrNfotEMujrwAZACJVBB2cPkHqMomSn2Fjp_qgy10KWSwrPfTSnOTYwNd_TiDrdARFDf5rn9CCfifWmooQXEdGm2MP313JOuYw1y-sxtl_J-p2NB6cXNbFoN3XNJfjwBI3IAzuGQwSeoGdbo2bZxlmu3qKM50vWSCxvMN-B8sYXk6NJOMNWlq5aSoWSE0FwQJDra6QhiTVYVNqhE3vA-ceNNLPqQBflZDxIj-iDxcqamYA9PiU';
+const BACKGROUND_URL = RECENT_MOVIES.jurassic.posterUrl;
 
 export const SeatsScreen = ({ navigation, route }: any) => {
-  const { movieId, scheduleId } = route.params || {};
+  const { movie, movieId, scheduleId } = route.params || {};
   const [selectedSeats, setSelectedSeats] = useState<string[]>([]);
   const [occupiedSeats, setOccupiedSeats] = useState<string[]>([]);
   const [loading, setLoading] = useState(true);
@@ -59,6 +60,7 @@ export const SeatsScreen = ({ navigation, route }: any) => {
     if (selectedSeats.length > 0) {
       navigation.navigate('Snacks', { 
         movieId, 
+        movie,
         scheduleId, 
         seats: selectedSeats,
         totalSeats: totalPrice 

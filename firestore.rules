@@ -17,22 +17,22 @@ service cloud.firestore {
     match /movies/{movieId} {
       // Cualquiera (incluso no autenticado) puede leer las películas para ver la cartelera
       allow read: if true;
-      // Solo administradores pueden escribir (simplificado para este ejemplo)
-      allow write: if false; 
+      // Usuarios autenticados pueden sembrar/actualizar cartelera durante desarrollo.
+      allow write: if isAuthenticated();
     }
 
     // Colección de Horarios (Schedules)
     match /schedules/{scheduleId} {
       // Cualquiera puede ver los horarios
       allow read: if true;
-      allow write: if false;
+      allow write: if isAuthenticated();
     }
 
     // Colección de Snacks
     match /snacks/{snackId} {
       // Cualquiera puede ver la dulcería
       allow read: if true;
-      allow write: if false;
+      allow write: if isAuthenticated();
     }
 
     // Colección de Reservas
