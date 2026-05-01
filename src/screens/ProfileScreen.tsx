@@ -6,35 +6,15 @@ import { colors } from '../theme/colors';
 import { spacing, borderRadius } from '../theme/spacing';
 import { typography } from '../theme/typography';
 import { useAuth } from '../hooks/useAuth';
-import { seedService } from '../services/seedService';
-import { userService } from '../services/userService';
-import { UserData } from '../services/types';
+import { useProfile } from '../hooks/useProfile';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { RECENT_MOVIES } from '../data/recentMovies';
-import { useFocusEffect } from '@react-navigation/native';
 import { APP_NAME, CINEMA_LOCATION } from '../config/locale';
 
 export const ProfileScreen = ({ navigation }: any) => {
   const { user, logout } = useAuth();
-  const [profile, setProfile] = React.useState<UserData | null>(null);
-  const [isSeeding, setIsSeeding] = React.useState(false);
+  const { avatarUri, displayName, fullName, displayEmail } = useProfile();
   const insets = useSafeAreaInsets();
-
-  const loadProfile = React.useCallback(async () => {
-    if (!user?.uid) return;
-    try {
-      const data = await userService.getUser(user.uid);
-      setProfile(data);
-    } catch (error) {
-      console.error('Error loading profile:', error);
-    }
-  }, [user?.uid]);
-
-  useFocusEffect(
-    React.useCallback(() => {
-      loadProfile();
-    }, [loadProfile])
-  );
 
   const handleLogout = async () => {
     try {
@@ -43,25 +23,6 @@ export const ProfileScreen = ({ navigation }: any) => {
       console.error('Error logging out:', error);
     }
   };
-
-  const handleSeed = async () => {
-    setIsSeeding(true);
-    try {
-      await seedService.seedAll();
-      Alert.alert('Éxito', 'Cartelera respaldada en Firebase para Centro Plaza Chinandega.');
-    } catch (error: any) {
-      Alert.alert('Error', error.message || 'Error al poblar la base de datos');
-    } finally {
-      setIsSeeding(false);
-    }
-  };
-
-  const displayName = profile?.fullName || user?.displayName || 'Usuario CineNow';
-  const displayEmail = profile?.email || user?.email || 'correo@cinenow.com.ni';
-  const profileImage =
-    profile?.photoURL ||
-    user?.photoURL ||
-    `https://ui-avatars.com/api/?name=${encodeURIComponent(displayName)}&background=1f1f1f&color=ffffff&bold=true&size=256`;
 
   return (
     <View style={styles.container}>
@@ -75,7 +36,7 @@ export const ProfileScreen = ({ navigation }: any) => {
             <Text style={[typography.h2, styles.logoText, { fontSize: 20 }]}>{APP_NAME}</Text>
           </View>
           <View style={styles.headerProfileBtn}>
-            <Image source={{ uri: profileImage }} style={styles.headerProfileImg} />
+            <Image source={{ uri: avatarUri }} style={styles.headerProfileImg} />
           </View>
         </View>
       </BlurView>
@@ -86,7 +47,7 @@ export const ProfileScreen = ({ navigation }: any) => {
         <View style={styles.profileSection}>
           <View style={styles.avatarContainer}>
             <View style={styles.avatarWrapper}>
-              <Image source={{ uri: profileImage }} style={styles.avatar} />
+              <Image source={{ uri: avatarUri }} style={styles.avatar} />
             </View>
             <TouchableOpacity style={styles.editBtn} onPress={() => navigation.navigate('EditProfile')} activeOpacity={0.8}>
               <Ionicons name="pencil" size={20} color={colors.onPrimaryContainer} />
@@ -192,25 +153,7 @@ export const ProfileScreen = ({ navigation }: any) => {
           </View>
         </View>
 
-        {/* Admin/Debug Actions */}
-        <View style={styles.section}>
-          <Text style={[typography.h3, styles.sectionTitle]}>Administración</Text>
-          <TouchableOpacity 
-            style={[styles.logoutBtn, { borderColor: colors.primaryContainer, backgroundColor: 'rgba(229,9,20,0.05)', marginBottom: spacing.m }]} 
-            onPress={handleSeed}
-            disabled={isSeeding}
-            activeOpacity={0.8}
-          >
-            {isSeeding ? (
-              <ActivityIndicator color={colors.primaryContainer} />
-            ) : (
-              <>
-                <Ionicons name="cloud-upload" size={20} color={colors.primaryContainer} />
-                <Text style={styles.logoutText}>Respaldar cartelera en Firebase</Text>
-              </>
-            )}
-          </TouchableOpacity>
-        </View>
+
 
         {/* Logout Button */}
         <TouchableOpacity style={styles.logoutBtn} onPress={handleLogout} activeOpacity={0.8}>

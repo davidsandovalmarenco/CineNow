@@ -1,4 +1,4 @@
-import { User, updateProfile } from 'firebase/auth';
+import { User, updateProfile, updateEmail, verifyBeforeUpdateEmail } from 'firebase/auth';
 import { doc, getDoc, setDoc, serverTimestamp } from 'firebase/firestore';
 import { db } from './firebase';
 import { NotificationSettings, PaymentMethod, UserData } from './types';
@@ -36,16 +36,42 @@ export const userService = {
     await setDoc(userRef, data as any, { merge: true });
   },
 
-  async updateUserProfile(authUser: User, data: Pick<UserData, 'fullName' | 'phone' | 'photoURL'>): Promise<void> {
+  async updateUserProfile(authUser: User, data: Pick<UserData, 'fullName' | 'phone' | 'photoURL' | 'email'>): Promise<void> {
+    // 1. Intentar actualizar correo en Auth PRIMERO
+    // Si esto falla, el proceso se detiene aquí y Firestore no se ensucia con un correo falso
+    const isPasswordProvider = authUser.providerData.some(p => p.providerId === 'password');
+    
+    if (data.email && data.email !== authUser.email && isPasswordProvider) {
+      try {
+        // Intentamos el cambio directo para que se refleje de inmediato en Authentication
+        await updateEmail(authUser, data.email);
+      } catch (error: any) {
+        if (error.code === 'auth/requires-recent-login') {
+          throw new Error('Por seguridad, debes cerrar sesión y volver a entrar antes de poder cambiar tu correo de Authentication.');
+        }
+        if (error.code === 'auth/operation-not-allowed') {
+          // Si el cambio directo está deshabilitado en la consola de Firebase, usamos verificación
+          await verifyBeforeUpdateEmail(authUser, data.email);
+          // Avisamos que se requiere verificación para que se refleje en la consola
+          throw new Error('Se ha enviado un enlace de verificación a tu nuevo correo. Debes confirmarlo para que el cambio se refleje en Authentication.');
+        }
+        throw error;
+      }
+    }
+
+    // 2. Actualizar perfil básico en Auth
+    const authPhotoURL = data.photoURL?.startsWith('http') ? data.photoURL : null;
     await updateProfile(authUser, {
       displayName: data.fullName,
-      photoURL: data.photoURL || null,
+      photoURL: authPhotoURL,
     });
 
+    // 3. Solo si lo anterior fue exitoso, actualizamos Firestore
     await this.updateUser(authUser.uid, {
       fullName: data.fullName,
       phone: data.phone,
       photoURL: data.photoURL,
+      email: data.email,
     });
   },
 

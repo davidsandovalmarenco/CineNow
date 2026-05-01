@@ -128,7 +128,13 @@ export const SnacksScreen = ({ navigation, route }: any) => {
         <View style={styles.footerContent}>
           <View style={styles.totalContainer}>
             <Text style={[typography.labelCaps, styles.totalLabel]}>TOTAL DULCERÍA</Text>
-            <Text style={[typography.h2, styles.totalValue]}>{formatCurrency(calculateTotal())}</Text>
+            <Text 
+              style={[typography.h3, styles.totalValue]} 
+              numberOfLines={1} 
+              adjustsFontSizeToFit
+            >
+              {formatCurrency(calculateTotal())}
+            </Text>
           </View>
           <TouchableOpacity 
             style={styles.continueBtn} 
@@ -274,9 +280,12 @@ const styles = StyleSheet.create({
   totalLabel: {
     color: colors.onSurfaceVariant,
     marginBottom: 4,
+    fontSize: 10,
   },
   totalValue: {
     color: colors.onSurface,
+    fontSize: 18,
+    fontWeight: '700',
   },
   continueBtn: {
     backgroundColor: colors.primaryContainer,
@@ -284,9 +293,10 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'center',
     paddingVertical: spacing.md,
-    paddingHorizontal: spacing.xl,
+    paddingHorizontal: spacing.lg,
     borderRadius: borderRadius.lg,
     gap: spacing.xs,
+    minWidth: 100,
     shadowColor: colors.primaryContainer,
     shadowOffset: { width: 0, height: 4 },
     shadowOpacity: 0.2,

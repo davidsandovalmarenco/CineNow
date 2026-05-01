@@ -10,6 +10,7 @@ import { MovieCard } from '../components/MovieCard';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { RECENT_MOVIE_LIST, RECENT_MOVIES } from '../data/recentMovies';
 import { APP_NAME, CINEMA_LOCATION } from '../config/locale';
+import { useProfile } from '../hooks/useProfile';
 
 const HERO_MOVIE = {
   ...RECENT_MOVIES.superman,
@@ -76,6 +77,7 @@ const HERO_HEIGHT = width * 1.5; // Roughly matches the 751px height in mockup
 
 export const HomeScreen = ({ navigation }: any) => {
   const insets = useSafeAreaInsets();
+  const { avatarUri } = useProfile();
 
   const handleMoviePress = (movie: any) => {
     navigation.navigate('MovieDetail', { movie });
@@ -93,10 +95,7 @@ export const HomeScreen = ({ navigation }: any) => {
             <Text style={[typography.h2, styles.logoText, { fontSize: 20 }]}>{APP_NAME}</Text>
           </View>
           <TouchableOpacity style={styles.profileBtn} onPress={() => navigation.navigate('ProfileTab')}>
-            <Image 
-              source={{ uri: 'https://lh3.googleusercontent.com/aida-public/AB6AXuB4hJZVmd5HnlS1UNp7P-Sth4b--grJxAB1L09UWN7Ay3vZLB6a962sCmUw0csTsIYvEYG7nIYy-A3p7uZ5GqsORD2JopGnu0SqWQovUmT4xVtSjxbDY-VdqZ07bVNp0UBnnwFC7rVBDjaOUOYP8WlrW01tJ_mCQwfp4_bb85NJicyiKMwTFRZLx8vd82IyKTXvIGQr2xwnFoYt33sWHl7O5BEMyZWpz6CTo9_mQoNSzsVXynBAfBxJ7sLP8TN9gfiswoF13qeUMJI' }} 
-              style={styles.profileImg}
-            />
+            <Image source={{ uri: avatarUri }} style={styles.profileImg} />
           </TouchableOpacity>
         </View>
       </BlurView>

@@ -7,6 +7,7 @@ import { colors } from '../theme/colors';
 import { spacing, borderRadius } from '../theme/spacing';
 import { typography } from '../theme/typography';
 import { useAuth } from '../hooks/useAuth';
+import { useProfile } from '../hooks/useProfile';
 import { useReservations } from '../hooks/useReservations';
 import { ReservationData } from '../services/types';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
@@ -15,6 +16,7 @@ import { APP_NAME, DEFAULT_ROOM, formatReservationStatus } from '../config/local
 
 export const ReservationsScreen = ({ navigation }: any) => {
   const { user } = useAuth();
+  const { avatarUri } = useProfile();
   const { reservations, isLoading, fetchReservations } = useReservations();
   const [refreshing, setRefreshing] = useState(false);
   const insets = useSafeAreaInsets();
@@ -133,12 +135,9 @@ export const ReservationsScreen = ({ navigation }: any) => {
               <Ionicons name="film" size={24} color={colors.primaryContainer} />
               <Text style={[typography.h2, styles.logoText, { fontSize: 20 }]}>{APP_NAME}</Text>
             </View>
-            <View style={styles.profileBtn}>
-              <Image 
-                source={{ uri: 'https://lh3.googleusercontent.com/aida-public/AB6AXuAXDempXFfJ0PB5o4oVOqjnCO2fKREH3lMHCiIVmyEHNLYpOWpwjTSbwN1et3bQg900uyNiVII6F3O4tCDQIvxIHcTLWTQfvtdPrE7j_-U-OxUtMosDjGr9m9IpHU--0XVER6OEuX4836l1U6KtlYcGTPejfrA00x3CMDZpOk088z6MguESD1CU6r0CdD2RUAfHBOKEtuzILCE_ubmtetrsLXxCY6tUZbWmGoGLnLfSTB9XGOTuTVwx43Gx-TSddSNkwNOx3HWgeG8' }} 
-                style={styles.profileImg}
-              />
-            </View>
+            <TouchableOpacity style={styles.profileBtn} onPress={() => navigation.navigate('ProfileTab')} activeOpacity={0.8}>
+              <Image source={{ uri: avatarUri }} style={styles.profileImg} />
+            </TouchableOpacity>
           </View>
       </BlurView>
 
@@ -223,9 +222,9 @@ const styles = StyleSheet.create({
     color: colors.primaryContainer,
   },
   profileBtn: {
-    width: 32,
-    height: 32,
-    borderRadius: 16,
+    width: 40,
+    height: 40,
+    borderRadius: 20,
     overflow: 'hidden',
     borderWidth: 1,
     borderColor: 'rgba(255, 255, 255, 0.1)',
