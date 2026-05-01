@@ -8,7 +8,7 @@ const firebaseConfig = {
   apiKey: "AIzaSyCNq79dtBQLO8kJNGX-27xTa4c0hEmP-PA",
   authDomain: "cinenow-6b3ca.firebaseapp.com",
   projectId: "cinenow-6b3ca",
-  storageBucket: "cinenow-6b3ca.firebasestorage.app",
+  storageBucket: "cinenow-6b3ca.appspot.com",
   messagingSenderId: "896265964245",
   appId: "1:896265964245:web:730a6fc87adc850117305c"
 };

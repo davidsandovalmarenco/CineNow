@@ -9,6 +9,7 @@ import { reservationService } from '../services/reservationService';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { getMovieImage, normalizeReservationMovie } from '../data/recentMovies';
 import { useAuth } from '../hooks/useAuth';
+import { useProfile } from '../hooks/useProfile';
 import { APP_NAME, CINEMA_LOCATION, DEFAULT_CINEMA_ID, DEFAULT_ROOM, formatCurrency } from '../config/locale';
 
 const SEAT_PRICE = 220;
@@ -18,6 +19,7 @@ export const SummaryScreen = ({ navigation, route }: any) => {
   const [isConfirming, setIsConfirming] = useState(false);
   const insets = useSafeAreaInsets();
   const { user } = useAuth();
+  const { avatarUri } = useProfile();
   const movie = normalizeReservationMovie(routeMovie);
 
   // Mock movie info for summary (since we only pass IDs in navigation for now, 
@@ -104,9 +106,9 @@ export const SummaryScreen = ({ navigation, route }: any) => {
             <Ionicons name="film" size={24} color={colors.primaryContainer} />
             <Text style={[typography.h2, styles.logoText, { fontSize: 20 }]}>{APP_NAME}</Text>
           </View>
-          <View style={styles.profileBtn}>
-            <Ionicons name="person" size={16} color={colors.onSurface} />
-          </View>
+          <TouchableOpacity style={styles.profileBtn} onPress={() => navigation.navigate('ProfileTab')} activeOpacity={0.8}>
+            <Image source={{ uri: avatarUri }} style={styles.profileImg} />
+          </TouchableOpacity>
         </View>
       </BlurView>
 
@@ -215,7 +217,11 @@ export const SummaryScreen = ({ navigation, route }: any) => {
                 <Text style={styles.labelCaps}>TOTAL A PAGAR</Text>
                 <Text style={styles.taxText}>Incluye IVA (16%)</Text>
               </View>
-              <Text style={[typography.h1, styles.grandTotalText]}>
+              <Text 
+                style={[typography.h2, styles.grandTotalText]} 
+                numberOfLines={1} 
+                adjustsFontSizeToFit
+              >
                 {formatCurrency(seats.length > 0 ? grandTotal : 845)}
               </Text>
             </View>
@@ -288,14 +294,16 @@ const styles = StyleSheet.create({
     color: colors.primaryContainer,
   },
   profileBtn: {
-    width: 32,
-    height: 32,
-    borderRadius: 16,
-    backgroundColor: colors.surfaceContainerHighest,
-    alignItems: 'center',
-    justifyContent: 'center',
+    width: 40,
+    height: 40,
+    borderRadius: 20,
+    overflow: 'hidden',
     borderWidth: 1,
     borderColor: 'rgba(255,255,255,0.1)',
+  },
+  profileImg: {
+    width: '100%',
+    height: '100%',
   },
   scrollContent: {
     paddingTop: 100, // space for header
@@ -503,6 +511,8 @@ const styles = StyleSheet.create({
   },
   grandTotalText: {
     color: colors.primaryContainer,
+    fontSize: 28,
+    fontWeight: '800',
   },
   bookingIdFooter: {
     paddingHorizontal: spacing.lg,

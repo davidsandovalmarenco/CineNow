@@ -181,7 +181,11 @@ export const SeatsScreen = ({ navigation, route }: any) => {
                 <View style={styles.summaryValueRow}>
                   <Text style={[typography.h2, styles.summaryValueMain]}>{selectedSeats.length}</Text>
                   {selectedSeats.length > 0 && (
-                    <Text style={[typography.bodyMd, styles.summaryValueSub]}>
+                    <Text 
+                      style={[typography.bodyMd, styles.summaryValueSub]} 
+                      numberOfLines={1}
+                      adjustsFontSizeToFit
+                    >
                       ({selectedSeats.join(', ')})
                     </Text>
                   )}
@@ -192,7 +196,13 @@ export const SeatsScreen = ({ navigation, route }: any) => {
 
               <View style={styles.summaryColumn}>
                 <Text style={[typography.labelCaps, styles.summaryLabel]}>TOTAL</Text>
-                <Text style={[typography.h2, styles.summaryPrice]}>{formatCurrency(totalPrice)}</Text>
+                <Text 
+                  style={[typography.h3, styles.summaryPrice]} 
+                  numberOfLines={1} 
+                  adjustsFontSizeToFit
+                >
+                  {formatCurrency(totalPrice)}
+                </Text>
               </View>
             </View>
 
@@ -402,6 +412,7 @@ const styles = StyleSheet.create({
   summaryLabel: {
     color: colors.onSurfaceVariant,
     marginBottom: 4,
+    fontSize: 10,
   },
   summaryValueRow: {
     flexDirection: 'row',
@@ -410,12 +421,15 @@ const styles = StyleSheet.create({
   },
   summaryValueMain: {
     color: colors.onSurface,
+    fontSize: 18,
   },
   summaryValueSub: {
     color: colors.onSurfaceVariant,
   },
   summaryPrice: {
     color: colors.primaryContainer, // text-red-600
+    fontSize: 18,
+    fontWeight: '700',
   },
   continueBtn: {
     backgroundColor: colors.primaryContainer,
@@ -423,9 +437,10 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'center',
     paddingVertical: spacing.md,
-    paddingHorizontal: spacing.xl,
+    paddingHorizontal: spacing.lg,
     borderRadius: borderRadius.lg,
     gap: spacing.xs,
+    minWidth: 100,
     shadowColor: colors.primaryContainer,
     shadowOffset: { width: 0, height: 4 },
     shadowOpacity: 0.2,

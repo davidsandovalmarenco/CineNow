@@ -8,6 +8,7 @@ import { spacing, borderRadius } from '../theme/spacing';
 import { typography } from '../theme/typography';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { getMovieImage, normalizeReservationMovie } from '../data/recentMovies';
+import { useProfile } from '../hooks/useProfile';
 import { APP_NAME, CINEMA_LOCATION } from '../config/locale';
 
 const DATES = [
@@ -31,6 +32,7 @@ const { width } = Dimensions.get('window');
 export const ScheduleScreen = ({ navigation, route }: any) => {
   const [selectedDate, setSelectedDate] = useState(DATES[0].id);
   const insets = useSafeAreaInsets();
+  const { avatarUri } = useProfile();
   const movie = normalizeReservationMovie(route.params?.movie);
   const selectedFormat = route.params?.selectedFormat || 'IMAX 3D';
 
@@ -64,12 +66,9 @@ export const ScheduleScreen = ({ navigation, route }: any) => {
           </View>
           <View style={styles.headerActions}>
             <Ionicons name="search" size={24} color={colors.secondary} />
-            <View style={styles.profileBtn}>
-              <Image 
-                source={{ uri: 'https://lh3.googleusercontent.com/aida-public/AB6AXuDyqsXrEAufNu9Okb3d4A1sMwB0Q6YYptCZXTIH2oZf0AeemEZzpPxQq5pFzczC06D7orN9xeLxdVGGDEUVNBv6D-J-LYM1ihdM0cXEFgHOCTrD30OXQ51ZFQM3Hc_WVrtVoym7b3qQhGISoWH1x44mWWCRcnumnSzWZgGPF7v-oW8MZYfRx9_rrIFxz1ILMUVCdlZ3F7KfwIVVhMf1GiELmUakF_Mm7NRwXdJiETT1GJyp96ZtS_jfPtEz2yYRnefVAw8yqeMrZQQ' }} 
-                style={styles.profileImg}
-              />
-            </View>
+            <TouchableOpacity style={styles.profileBtn} onPress={() => navigation.navigate('ProfileTab')} activeOpacity={0.8}>
+              <Image source={{ uri: avatarUri }} style={styles.profileImg} />
+            </TouchableOpacity>
           </View>
         </View>
       </BlurView>
@@ -135,7 +134,13 @@ export const ScheduleScreen = ({ navigation, route }: any) => {
               <View key={show.id} style={[styles.showCard, !show.available && styles.showCardDisabled]}>
                 <View style={styles.showInfo}>
                   <View style={styles.showTimeRow}>
-                    <Text style={[typography.h1, { fontSize: 24, lineHeight: 28 }]}>{show.time}</Text>
+                    <Text 
+                      style={[typography.h1, { fontSize: 24, lineHeight: 28 }]}
+                      numberOfLines={1}
+                      adjustsFontSizeToFit
+                    >
+                      {show.time}
+                    </Text>
                     
                     <View style={[
                       styles.formatBadge, 
@@ -155,10 +160,10 @@ export const ScheduleScreen = ({ navigation, route }: any) => {
                   <View style={styles.showMetaRow}>
                     <View style={styles.metaIconRow}>
                       <Ionicons name="easel-outline" size={16} color={colors.secondary} />
-                      <Text style={styles.metaText}>{show.room}</Text>
+                      <Text style={styles.metaText} numberOfLines={1}>{show.room}</Text>
                     </View>
                     <View style={styles.dot} />
-                    <Text style={styles.metaLanguage}>{show.language}</Text>
+                    <Text style={styles.metaLanguage} numberOfLines={1} adjustsFontSizeToFit>{show.language}</Text>
                   </View>
                 </View>
 
@@ -235,9 +240,9 @@ const styles = StyleSheet.create({
     gap: spacing.md,
   },
   profileBtn: {
-    width: 32,
-    height: 32,
-    borderRadius: 16,
+    width: 40,
+    height: 40,
+    borderRadius: 20,
     overflow: 'hidden',
     borderWidth: 1,
     borderColor: 'rgba(255, 255, 255, 0.1)',
@@ -376,12 +381,14 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'center',
+    gap: spacing.sm,
   },
   showCardDisabled: {
     opacity: 0.5,
   },
   showInfo: {
     gap: 4,
+    flex: 1,
   },
   showTimeRow: {
     flexDirection: 'row',

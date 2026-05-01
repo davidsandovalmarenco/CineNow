@@ -10,16 +10,28 @@ import { useAuth } from '../hooks/useAuth';
 import { userService } from '../services/userService';
 import { storageService } from '../services/storageService';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
+import { CustomAlert } from '../components/CustomAlert';
 
 export const EditProfileScreen = ({ navigation }: any) => {
-  const { user } = useAuth();
+  const { user, logout } = useAuth();
   const [loading, setLoading] = useState(false);
   const [uploadingPhoto, setUploadingPhoto] = useState(false);
+  // URI local de la foto seleccionada (antes de procesar/guardar)
+  const [pendingPhotoUri, setPendingPhotoUri] = useState<string | null>(null);
   const insets = useSafeAreaInsets();
   const [formData, setFormData] = useState({
     fullName: user?.displayName || '',
+    email: user?.email || '',
     phone: '',
     photoURL: user?.photoURL || '',
+  });
+
+  const [alertConfig, setAlertConfig] = useState({
+    visible: false,
+    title: '',
+    message: '',
+    type: 'success' as 'success' | 'error' | 'info',
+    onClose: () => {},
   });
 
   const fallbackPhoto = `https://ui-avatars.com/api/?name=${encodeURIComponent(formData.fullName || 'CineNow')}&background=1f1f1f&color=ffffff&bold=true&size=256`;
@@ -31,6 +43,7 @@ export const EditProfileScreen = ({ navigation }: any) => {
         const profile = await userService.getUser(user.uid);
         setFormData({
           fullName: profile?.fullName || user.displayName || '',
+          email: user.email || '',
           phone: profile?.phone || '',
           photoURL: profile?.photoURL || user.photoURL || '',
         });
@@ -60,47 +73,67 @@ export const EditProfileScreen = ({ navigation }: any) => {
 
     if (result.canceled || !result.assets?.[0]?.uri) return;
 
-    setUploadingPhoto(true);
-    try {
-      const downloadURL = await storageService.uploadProfilePhoto(user.uid, result.assets[0].uri);
-      setFormData((current) => ({ ...current, photoURL: downloadURL }));
-      await userService.updateUserProfile(user, {
-        fullName: formData.fullName.trim() || user.displayName || 'Usuario CineNow',
-        phone: formData.phone.trim(),
-        photoURL: downloadURL,
-      });
-      await user.reload();
-      Alert.alert('Listo', 'Foto de perfil actualizada.');
-    } catch (error: any) {
-      Alert.alert('Error', error.message || 'No se pudo subir la foto de perfil');
-    } finally {
-      setUploadingPhoto(false);
-    }
+    // Solo actualiza la previsualización local — se guardará al presionar "Guardar cambios"
+    setPendingPhotoUri(result.assets[0].uri);
   };
 
   const handleSave = async () => {
     if (!user) return;
     if (!formData.fullName.trim()) {
-      Alert.alert('Error', 'El nombre no puede estar vacío');
+      setAlertConfig({
+        visible: true,
+        title: 'Campo requerido',
+        message: 'El nombre completo es necesario para tu perfil.',
+        type: 'error',
+        onClose: () => setAlertConfig(prev => ({ ...prev, visible: false })),
+      });
+      return;
+    }
+    if (!formData.email.trim()) {
+      Alert.alert('Error', 'El correo no puede estar vacío');
       return;
     }
 
     setLoading(true);
     try {
+      let finalPhotoURL = formData.photoURL;
+
+      // Si el usuario seleccionó una foto nueva, procesarla ahora
+      if (pendingPhotoUri) {
+        setUploadingPhoto(true);
+        finalPhotoURL = await storageService.uploadProfilePhoto(user.uid, pendingPhotoUri);
+        setPendingPhotoUri(null);
+        setUploadingPhoto(false);
+      }
+
       await userService.updateUserProfile(user, {
         fullName: formData.fullName.trim(),
+        email: formData.email.trim(),
         phone: formData.phone.trim(),
-        photoURL: formData.photoURL.trim(),
+        photoURL: finalPhotoURL.trim(),
       });
 
-      await user.reload();
-      Alert.alert('Éxito', 'Perfil actualizado correctamente', [
-        { text: 'OK', onPress: () => navigation.goBack() },
-      ]);
+      setAlertConfig({
+        visible: true,
+        title: '¡Éxito!',
+        message: 'Tu perfil ha sido actualizado con éxito. Todos los cambios están sincronizados.',
+        type: 'success',
+        onClose: () => {
+          setAlertConfig(prev => ({ ...prev, visible: false }));
+          navigation.goBack();
+        },
+      });
     } catch (error: any) {
-      Alert.alert('Error', error.message || 'No se pudo actualizar el perfil');
+      setAlertConfig({
+        visible: true,
+        title: 'Hubo un problema',
+        message: error.message || 'No pudimos guardar tus cambios en este momento.',
+        type: 'error',
+        onClose: () => setAlertConfig(prev => ({ ...prev, visible: false })),
+      });
     } finally {
       setLoading(false);
+      setUploadingPhoto(false);
     }
   };
 
@@ -121,7 +154,7 @@ export const EditProfileScreen = ({ navigation }: any) => {
       <ScrollView showsVerticalScrollIndicator={false} contentContainerStyle={[styles.scrollContent, { paddingTop: insets.top + 80, paddingBottom: insets.bottom + 90 }]}>
         <View style={styles.avatarSection}>
           <View style={styles.avatarWrapper}>
-            <Image source={{ uri: formData.photoURL || fallbackPhoto }} style={styles.avatar} />
+            <Image source={{ uri: pendingPhotoUri || formData.photoURL || fallbackPhoto }} style={styles.avatar} />
             <TouchableOpacity
               style={styles.changePhotoBtn}
               onPress={handleChangePhoto}
@@ -169,6 +202,20 @@ export const EditProfileScreen = ({ navigation }: any) => {
               />
             </View>
           </View>
+
+          <View style={styles.inputGroup}>
+            <Text style={[typography.labelCaps, styles.label]}>CORREO ELECTRÓNICO</Text>
+            <View style={[styles.inputWrapper, { opacity: 0.6 }]}>
+              <Ionicons name="mail" size={20} color={colors.secondary} />
+              <TextInput
+                style={[typography.bodyLg, styles.input]}
+                value={formData.email}
+                editable={false}
+                placeholder="correo@ejemplo.com"
+                placeholderTextColor={colors.secondary}
+              />
+            </View>
+          </View>
         </View>
 
         <TouchableOpacity style={styles.saveBtn} onPress={handleSave} disabled={loading} activeOpacity={0.8}>
@@ -179,6 +226,14 @@ export const EditProfileScreen = ({ navigation }: any) => {
           )}
         </TouchableOpacity>
       </ScrollView>
+
+      <CustomAlert 
+        visible={alertConfig.visible}
+        title={alertConfig.title}
+        message={alertConfig.message}
+        type={alertConfig.type}
+        onClose={alertConfig.onClose}
+      />
     </View>
   );
 };
