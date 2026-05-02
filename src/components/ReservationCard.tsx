@@ -1,7 +1,8 @@
 import React from 'react';
-import { View, Text, StyleSheet, Image } from 'react-native';
+import { View, Text, StyleSheet } from 'react-native';
 import { colors } from '../theme/colors';
 import { borderRadius, spacing } from '../theme/spacing';
+import { RemoteImage } from './RemoteImage';
 
 export interface Reservation {
   id: string;
@@ -22,7 +23,7 @@ interface ReservationCardProps {
 export const ReservationCard: React.FC<ReservationCardProps> = ({ reservation }) => {
   return (
     <View style={styles.card}>
-      <Image source={{ uri: reservation.posterUrl }} style={styles.poster} />
+      <RemoteImage uri={reservation.posterUrl} fallbackLabel={reservation.movieTitle} style={styles.poster} />
       
       <View style={styles.content}>
         <Text style={styles.title} numberOfLines={1}>{reservation.movieTitle}</Text>

@@ -1,5 +1,5 @@
 import React from 'react';
-import { View, Text, StyleSheet, ScrollView, Image, TouchableOpacity, ActivityIndicator, StatusBar, Alert } from 'react-native';
+import { View, Text, StyleSheet, ScrollView, Image, TouchableOpacity, StatusBar } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import { BlurView } from 'expo-blur';
 import { colors } from '../theme/colors';
@@ -10,10 +10,11 @@ import { useProfile } from '../hooks/useProfile';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { RECENT_MOVIES } from '../data/recentMovies';
 import { APP_NAME, CINEMA_LOCATION } from '../config/locale';
+import { RemoteImage } from '../components/RemoteImage';
 
 export const ProfileScreen = ({ navigation }: any) => {
-  const { user, logout } = useAuth();
-  const { avatarUri, displayName, fullName, displayEmail } = useProfile();
+  const { logout } = useAuth();
+  const { avatarUri, displayName, displayEmail } = useProfile();
   const insets = useSafeAreaInsets();
 
   const handleLogout = async () => {
@@ -117,8 +118,10 @@ export const ProfileScreen = ({ navigation }: any) => {
           <View style={styles.historyGrid}>
             <View style={styles.historyCard}>
               <View style={styles.historyPoster}>
-                <Image 
-                  source={{ uri: RECENT_MOVIES.fantasticFour.posterUrl }} 
+                <RemoteImage 
+                  uri={RECENT_MOVIES.fantasticFour.posterUrl} 
+                  assetSource={RECENT_MOVIES.fantasticFour.posterAsset}
+                  fallbackLabel={RECENT_MOVIES.fantasticFour.title}
                   style={{ width: '100%', height: '100%' }} 
                 />
               </View>
@@ -135,8 +138,10 @@ export const ProfileScreen = ({ navigation }: any) => {
 
             <View style={styles.historyCard}>
               <View style={styles.historyPoster}>
-                <Image 
-                  source={{ uri: RECENT_MOVIES.missionImpossible.posterUrl }} 
+                <RemoteImage 
+                  uri={RECENT_MOVIES.missionImpossible.posterUrl} 
+                  assetSource={RECENT_MOVIES.missionImpossible.posterAsset}
+                  fallbackLabel={RECENT_MOVIES.missionImpossible.title}
                   style={{ width: '100%', height: '100%' }} 
                 />
               </View>

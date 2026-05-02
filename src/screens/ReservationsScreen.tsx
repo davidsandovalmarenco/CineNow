@@ -13,6 +13,7 @@ import { ReservationData } from '../services/types';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { findRecentMovieByReservation, RECENT_MOVIES } from '../data/recentMovies';
 import { APP_NAME, DEFAULT_ROOM, formatReservationStatus } from '../config/locale';
+import { RemoteImage } from '../components/RemoteImage';
 
 export const ReservationsScreen = ({ navigation }: any) => {
   const { user } = useAuth();
@@ -49,7 +50,10 @@ export const ReservationsScreen = ({ navigation }: any) => {
   };
 
   const getReservationPoster = (item: ReservationData, fallback = RECENT_MOVIES.superman.posterUrl) =>
-    item.moviePosterUrl || findRecentMovieByReservation(item.movieId, item.movieTitle)?.posterUrl || fallback;
+    findRecentMovieByReservation(item.movieId, item.movieTitle)?.posterUrl || item.moviePosterUrl || fallback;
+
+  const getReservationPosterAsset = (item: ReservationData) =>
+    findRecentMovieByReservation(item.movieId, item.movieTitle)?.posterAsset;
 
   const getReservationTitle = (item: ReservationData, fallback = 'Película CineNow') =>
     item.movieTitle || findRecentMovieByReservation(item.movieId)?.title || fallback;
@@ -57,8 +61,10 @@ export const ReservationsScreen = ({ navigation }: any) => {
   const renderActiveCard = (item: ReservationData) => (
     <View key={item.id} style={styles.activeCard}>
       <View style={styles.activePosterWrapper}>
-        <Image 
-          source={{ uri: getReservationPoster(item) }} 
+        <RemoteImage 
+          uri={getReservationPoster(item)} 
+          assetSource={getReservationPosterAsset(item)}
+          fallbackLabel={getReservationTitle(item)}
           style={styles.poster} 
         />
       </View>
@@ -106,8 +112,11 @@ export const ReservationsScreen = ({ navigation }: any) => {
   const renderPastCard = (item: ReservationData) => (
     <View key={item.id} style={styles.pastCard}>
       <View style={styles.pastPosterWrapper}>
-        <Image 
-          source={{ uri: getReservationPoster(item, RECENT_MOVIES.jurassic.posterUrl) }} 
+        <RemoteImage 
+          uri={getReservationPoster(item, RECENT_MOVIES.jurassic.posterUrl)} 
+          assetSource={getReservationPosterAsset(item)}
+          fallbackUri={RECENT_MOVIES.jurassic.posterUrl}
+          fallbackLabel={getReservationTitle(item, item.movieId)}
           style={styles.poster} 
         />
       </View>

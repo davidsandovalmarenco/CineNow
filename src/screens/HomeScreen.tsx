@@ -7,62 +7,66 @@ import { colors } from '../theme/colors';
 import { spacing, borderRadius } from '../theme/spacing';
 import { typography } from '../theme/typography';
 import { MovieCard } from '../components/MovieCard';
+import { RemoteImage } from '../components/RemoteImage';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { RECENT_MOVIE_LIST, RECENT_MOVIES } from '../data/recentMovies';
 import { APP_NAME, CINEMA_LOCATION } from '../config/locale';
 import { useProfile } from '../hooks/useProfile';
 
 const HERO_MOVIE = {
-  ...RECENT_MOVIES.superman,
-  description: RECENT_MOVIES.superman.synopsis,
-  imageUrl: RECENT_MOVIES.superman.posterUrl,
+  ...RECENT_MOVIES.michael,
+  description: RECENT_MOVIES.michael.synopsis,
+  imageUrl: RECENT_MOVIES.michael.posterUrl,
 };
 
 const ESTRENOS = [
   {
-    ...RECENT_MOVIES.jurassic,
-    rating: 8.6,
+    ...RECENT_MOVIES.apex,
+    rating: 7.7,
   },
   {
-    ...RECENT_MOVIES.fantasticFour,
-    rating: 8.4,
-  },
-  {
-    ...RECENT_MOVIES.missionImpossible,
+    ...RECENT_MOVIES.projectHailMary,
     rating: 8.8,
   },
   {
-    ...RECENT_MOVIES.minecraft,
-    rating: 8.1,
+    ...RECENT_MOVIES.mandalorianGrogu,
+    rating: 8.6,
   },
   {
-    ...RECENT_MOVIES.f1,
-    rating: 8.7,
+    ...RECENT_MOVIES.catInTheHat,
+    rating: 8.2,
   },
   {
-    ...RECENT_MOVIES.thunderbolts,
-    rating: 8.0,
+    ...RECENT_MOVIES.moanaLiveAction,
+    rating: 8.4,
+  },
+  {
+    ...RECENT_MOVIES.mastersOfTheUniverse,
+    rating: 8.3,
   },
 ];
 
 const UPCOMING = [
   {
-    id: RECENT_MOVIES.sinners.id,
-    title: RECENT_MOVIES.sinners.title,
-    date: 'HORROR PREMIUM',
-    imageUrl: RECENT_MOVIES.sinners.posterUrl,
+    id: RECENT_MOVIES.michael.id,
+    title: RECENT_MOVIES.michael.title,
+    date: 'ABRIL 2026',
+    imageUrl: RECENT_MOVIES.michael.posterUrl,
+    posterAsset: RECENT_MOVIES.michael.posterAsset,
   },
   {
-    id: RECENT_MOVIES.weapons.id,
-    title: RECENT_MOVIES.weapons.title,
-    date: 'MISTERIO',
-    imageUrl: RECENT_MOVIES.weapons.posterUrl,
+    id: RECENT_MOVIES.apex.id,
+    title: RECENT_MOVIES.apex.title,
+    date: 'NETFLIX 2026',
+    imageUrl: RECENT_MOVIES.apex.posterUrl,
+    posterAsset: RECENT_MOVIES.apex.posterAsset,
   },
   {
-    id: RECENT_MOVIES.blackPhone2.id,
-    title: RECENT_MOVIES.blackPhone2.title,
-    date: 'SUSPENSO',
-    imageUrl: RECENT_MOVIES.blackPhone2.posterUrl,
+    id: RECENT_MOVIES.projectHailMary.id,
+    title: RECENT_MOVIES.projectHailMary.title,
+    date: 'MARZO 2026',
+    imageUrl: RECENT_MOVIES.projectHailMary.posterUrl,
+    posterAsset: RECENT_MOVIES.projectHailMary.posterAsset,
   },
 ];
 
@@ -104,7 +108,7 @@ export const HomeScreen = ({ navigation }: any) => {
         
         {/* Hero Section */}
         <View style={styles.heroContainer}>
-          <Image source={{ uri: HERO_MOVIE.imageUrl }} style={styles.heroImage} resizeMode="cover" />
+          <RemoteImage uri={HERO_MOVIE.imageUrl} assetSource={HERO_MOVIE.posterAsset} fallbackLabel={HERO_MOVIE.title} style={styles.heroImage} resizeMode="cover" />
           <LinearGradient
             colors={['transparent', 'rgba(13, 13, 13, 0.8)', '#0D0D0D']}
             locations={[0, 0.7, 1]}
@@ -172,7 +176,7 @@ export const HomeScreen = ({ navigation }: any) => {
           <ScrollView horizontal showsHorizontalScrollIndicator={false} contentContainerStyle={styles.horizontalScrollPadding}>
             {UPCOMING.map(movie => (
               <TouchableOpacity key={movie.id} style={styles.upcomingCard} activeOpacity={0.9}>
-                <Image source={{ uri: movie.imageUrl }} style={styles.upcomingImage} />
+                <RemoteImage uri={movie.imageUrl} assetSource={movie.posterAsset} fallbackLabel={movie.title} style={styles.upcomingImage} />
                 <LinearGradient
                   colors={['transparent', 'rgba(0,0,0,0.8)']}
                   style={styles.upcomingGradient}
@@ -200,7 +204,7 @@ export const HomeScreen = ({ navigation }: any) => {
                 onPress={() => handleMoviePress(movie)}
                 activeOpacity={0.8}
               >
-                <Image source={{ uri: movie.posterUrl }} style={styles.listPoster} />
+                <RemoteImage uri={movie.posterUrl} assetSource={movie.posterAsset} fallbackLabel={movie.title} style={styles.listPoster} />
                 <View style={styles.listInfo}>
                   <View style={styles.listTagsRow}>
                     <Text style={styles.listTagPrimary}>{movie.tags[0]}</Text>

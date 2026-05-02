@@ -1,5 +1,5 @@
-import React, { useState, useEffect } from 'react';
-import { View, Text, StyleSheet, ScrollView, Image, TouchableOpacity, ActivityIndicator, StatusBar } from 'react-native';
+import React, { useMemo, useState, useEffect } from 'react';
+import { ImageSourcePropType, View, Text, StyleSheet, ScrollView, TouchableOpacity, ActivityIndicator, StatusBar } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import { BlurView } from 'expo-blur';
 import { colors } from '../theme/colors';
@@ -9,6 +9,58 @@ import { snackService } from '../services/snackService';
 import { SnackData } from '../services/types';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { APP_NAME, formatCurrency } from '../config/locale';
+import { RemoteImage } from '../components/RemoteImage';
+import { SNACK_MENU } from '../data/snacks';
+
+const DEFAULT_SNACK_IMAGE =
+  'https://images.unsplash.com/photo-1585647347384-2593bc35786b?q=80&w=300&auto=format&fit=crop';
+
+const SNACK_IMAGES: Record<string, { uri: string; asset?: ImageSourcePropType }> = {
+  'combo-pareja': {
+    uri: 'https://images.unsplash.com/photo-1585647347384-2593bc35786b?q=80&w=500&auto=format&fit=crop',
+    asset: require('../../assets/snacks/combo-pareja.jpg') as ImageSourcePropType,
+  },
+  'combo-individual': {
+    uri: 'https://images.unsplash.com/photo-1578849278619-e73505e9610f?q=80&w=500&auto=format&fit=crop',
+    asset: require('../../assets/snacks/combo-individual.jpg') as ImageSourcePropType,
+  },
+  'combo-familiar': {
+    uri: 'https://images.unsplash.com/photo-1585647347483-22b66260dfff?q=80&w=500&auto=format&fit=crop',
+    asset: require('../../assets/snacks/combo-premium.jpg') as ImageSourcePropType,
+  },
+  'combo-premium-imax': {
+    uri: 'https://images.unsplash.com/photo-1585647347483-22b66260dfff?q=80&w=500&auto=format&fit=crop',
+    asset: require('../../assets/snacks/combo-premium.jpg') as ImageSourcePropType,
+  },
+  'hot-dog-premium': {
+    uri: 'https://images.unsplash.com/photo-1612392062631-94dd858cba88?q=80&w=500&auto=format&fit=crop',
+    asset: require('../../assets/snacks/hot-dog-premium.jpg') as ImageSourcePropType,
+  },
+  'nachos-cheddar': {
+    uri: 'https://images.unsplash.com/photo-1513456852971-30c0b8199d4d?q=80&w=500&auto=format&fit=crop',
+    asset: require('../../assets/snacks/nachos-cheddar.jpg') as ImageSourcePropType,
+  },
+  'soda-refill': {
+    uri: 'https://images.unsplash.com/photo-1622483767028-3f66f32aef97?q=80&w=500&auto=format&fit=crop',
+    asset: require('../../assets/snacks/soda-refill.jpg') as ImageSourcePropType,
+  },
+  'candy-mix': {
+    uri: 'https://images.unsplash.com/photo-1582058091505-f87a2e55a40f?q=80&w=500&auto=format&fit=crop',
+    asset: require('../../assets/snacks/candy-mix.jpg') as ImageSourcePropType,
+  },
+};
+
+const normalizeSnackKey = (snack: SnackData) =>
+  (snack.id || snack.name || '').toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/(^-|-$)/g, '');
+
+const getSnackImage = (snack: SnackData) => {
+  const key = normalizeSnackKey(snack);
+  if (SNACK_IMAGES[key]) return SNACK_IMAGES[key];
+  if (key.includes('hot-dog')) return SNACK_IMAGES['hot-dog-premium'];
+  if (key.includes('pareja')) return SNACK_IMAGES['combo-pareja'];
+  if (key.includes('individual')) return SNACK_IMAGES['combo-individual'];
+  return { uri: snack.imageUrl || DEFAULT_SNACK_IMAGE };
+};
 
 export const SnacksScreen = ({ navigation, route }: any) => {
   const { movie, movieId, scheduleId, selectedFormat, showtime, seats } = route.params || {};
@@ -31,34 +83,70 @@ export const SnacksScreen = ({ navigation, route }: any) => {
     fetchSnacks();
   }, []);
 
+  const menuItems = useMemo(() => {
+    const byName = new Map<string, SnackData>();
+
+    const sourceSnacks = snacks.length > 0 ? snacks : SNACK_MENU;
+
+    sourceSnacks.forEach((snack) => {
+      const key = snack.name.toLowerCase().trim();
+      if (!byName.has(key)) {
+        byName.set(key, {
+          ...snack,
+          id: snack.id || normalizeSnackKey(snack),
+        });
+      }
+    });
+
+    return Array.from(byName.values()).sort((a, b) => {
+      const order = [
+        'combo pareja',
+        'combo individual',
+        'combo familiar',
+        'combo premium imax',
+        'hot dog premium',
+        'nachos cheddar',
+        'soda refill',
+        'candy mix',
+      ];
+      const aIndex = order.indexOf(a.name.toLowerCase());
+      const bIndex = order.indexOf(b.name.toLowerCase());
+      if (aIndex === -1 && bIndex === -1) return a.name.localeCompare(b.name);
+      if (aIndex === -1) return 1;
+      if (bIndex === -1) return -1;
+      return aIndex - bIndex;
+    });
+  }, [snacks]);
+
   const updateQuantity = (snackId: string, delta: number) => {
-    setCart(prev => {
+    setCart((prev) => {
       const current = prev[snackId] || 0;
       const next = Math.max(0, current + delta);
       return { ...prev, [snackId]: next };
     });
   };
 
-  const calculateTotal = () => {
-    return snacks.reduce((sum, snack) => {
-      const quantity = snack.id ? (cart[snack.id] || 0) : 0;
-      return sum + (snack.price * quantity);
+  const calculateTotal = () =>
+    menuItems.reduce((sum, snack) => {
+      const quantity = snack.id ? cart[snack.id] || 0 : 0;
+      return sum + snack.price * quantity;
     }, 0);
-  };
+
+  const selectedCount = menuItems.reduce((sum, snack) => sum + (snack.id ? cart[snack.id] || 0 : 0), 0);
 
   const handleContinue = () => {
-    const selectedSnacks = snacks
-      .filter(s => s.id && cart[s.id] > 0)
-      .map(s => ({ ...s, quantity: cart[s.id as string] }));
-    
-    navigation.navigate('Summary', { 
-      movieId, 
+    const selectedSnacks = menuItems
+      .filter((snack) => snack.id && cart[snack.id] > 0)
+      .map((snack) => ({ ...snack, quantity: cart[snack.id as string] }));
+
+    navigation.navigate('Summary', {
+      movieId,
       movie,
-      scheduleId, 
+      scheduleId,
       selectedFormat,
       showtime,
-      seats, 
-      snacks: selectedSnacks 
+      seats,
+      snacks: selectedSnacks,
     });
   };
 
@@ -74,11 +162,10 @@ export const SnacksScreen = ({ navigation, route }: any) => {
     <View style={styles.container}>
       <StatusBar barStyle="light-content" translucent backgroundColor="transparent" />
 
-      {/* Header */}
       <BlurView intensity={80} tint="dark" style={[styles.header, { paddingTop: insets.top }]}>
         <View style={styles.headerContent}>
           <View style={styles.logoContainer}>
-            <TouchableOpacity onPress={() => navigation.goBack()} style={{ marginRight: spacing.sm }}>
+            <TouchableOpacity onPress={() => navigation.goBack()} style={styles.backButton}>
               <Ionicons name="arrow-back" size={24} color={colors.onSurface} />
             </TouchableOpacity>
             <Ionicons name="film" size={24} color={colors.primaryContainer} />
@@ -87,60 +174,76 @@ export const SnacksScreen = ({ navigation, route }: any) => {
         </View>
       </BlurView>
 
-      <ScrollView showsVerticalScrollIndicator={false} contentContainerStyle={[styles.scrollContent, { paddingTop: insets.top + 80 }]}>
+      <ScrollView
+        showsVerticalScrollIndicator={false}
+        contentContainerStyle={[
+          styles.scrollContent,
+          { paddingTop: insets.top + 86, paddingBottom: insets.bottom + 150 },
+        ]}
+      >
         <View style={styles.promoSection}>
-          <Text style={[typography.h1, styles.promoTitle]}>¿Algo para picar?</Text>
-          <Text style={[typography.bodyMd, styles.promoSubtitle]}>Completa tu experiencia con la dulcería de Centro Plaza Chinandega.</Text>
+          <Text style={[typography.h1, styles.promoTitle]}>Algo para picar?</Text>
+          <Text style={[typography.bodyMd, styles.promoSubtitle]}>
+            Completa tu experiencia con la dulceria de Centro Plaza Chinandega.
+          </Text>
         </View>
 
-        {snacks.map((snack) => {
-          const snackId = snack.id || Math.random().toString();
+        {menuItems.map((snack) => {
+          const snackId = snack.id || normalizeSnackKey(snack);
+          const quantity = cart[snackId] || 0;
+          const snackImage = getSnackImage(snack);
+
           return (
-            <BlurView key={snackId} intensity={20} tint="dark" style={styles.snackCard}>
-              <Image source={{ uri: snack.imageUrl }} style={styles.snackImg} />
+            <View key={snackId} style={[styles.snackCard, quantity > 0 && styles.snackCardSelected]}>
+              <RemoteImage
+                uri={snackImage.uri}
+                assetSource={snackImage.asset}
+                fallbackUri={DEFAULT_SNACK_IMAGE}
+                style={styles.snackImg}
+              />
+
               <View style={styles.snackInfo}>
-                <Text style={[typography.h3, styles.snackName]}>{snack.name}</Text>
-                <Text style={[typography.bodyMd, styles.snackDesc]} numberOfLines={2}>{snack.description}</Text>
+                <Text style={styles.snackName} numberOfLines={2}>{snack.name}</Text>
+                <Text style={styles.snackDesc} numberOfLines={2}>{snack.description}</Text>
                 <Text style={styles.snackPrice}>{formatCurrency(snack.price)}</Text>
               </View>
+
               <View style={styles.counter}>
-                <TouchableOpacity 
-                  style={styles.counterBtn} 
+                <TouchableOpacity
+                  style={[styles.counterBtn, quantity === 0 && styles.counterBtnDisabled]}
                   onPress={() => updateQuantity(snackId, -1)}
+                  disabled={quantity === 0}
+                  hitSlop={{ top: 8, right: 8, bottom: 8, left: 8 }}
                 >
                   <Ionicons name="remove" size={20} color={colors.onSurface} />
                 </TouchableOpacity>
-                <Text style={styles.counterText}>{cart[snackId] || 0}</Text>
-                <TouchableOpacity 
-                  style={styles.counterBtn} 
+
+                <Text style={styles.counterText}>{quantity}</Text>
+
+                <TouchableOpacity
+                  style={[styles.counterBtn, styles.counterBtnAdd]}
                   onPress={() => updateQuantity(snackId, 1)}
+                  hitSlop={{ top: 8, right: 8, bottom: 8, left: 8 }}
                 >
-                  <Ionicons name="add" size={20} color={colors.onSurface} />
+                  <Ionicons name="add" size={20} color={colors.onPrimaryContainer} />
                 </TouchableOpacity>
               </View>
-            </BlurView>
+            </View>
           );
         })}
       </ScrollView>
 
-      {/* Footer */}
       <BlurView intensity={80} tint="dark" style={[styles.footer, { paddingBottom: insets.bottom }]}>
         <View style={styles.footerContent}>
           <View style={styles.totalContainer}>
-            <Text style={[typography.labelCaps, styles.totalLabel]}>TOTAL DULCERÍA</Text>
-            <Text 
-              style={[typography.h3, styles.totalValue]} 
-              numberOfLines={1} 
-              adjustsFontSizeToFit
-            >
+            <Text style={[typography.labelCaps, styles.totalLabel]}>TOTAL DULCERIA</Text>
+            <Text style={[typography.h3, styles.totalValue]} numberOfLines={1} adjustsFontSizeToFit>
               {formatCurrency(calculateTotal())}
             </Text>
+            <Text style={styles.totalItems}>{selectedCount} productos seleccionados</Text>
           </View>
-          <TouchableOpacity 
-            style={styles.continueBtn} 
-            onPress={handleContinue}
-            activeOpacity={0.9}
-          >
+
+          <TouchableOpacity style={styles.continueBtn} onPress={handleContinue} activeOpacity={0.9}>
             <Text style={styles.continueBtnText}>Continuar</Text>
             <Ionicons name="chevron-forward" size={20} color={colors.onPrimaryContainer} />
           </TouchableOpacity>
@@ -170,7 +273,6 @@ const styles = StyleSheet.create({
   headerContent: {
     height: 64,
     flexDirection: 'row',
-    justifyContent: 'space-between',
     alignItems: 'center',
     paddingHorizontal: spacing.containerMargin,
   },
@@ -179,16 +281,17 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     gap: spacing.xs,
   },
+  backButton: {
+    marginRight: spacing.sm,
+  },
   logoText: {
     color: colors.primaryContainer,
   },
   scrollContent: {
-    paddingTop: 100, // space for header
-    paddingBottom: 160, // space for footer
     paddingHorizontal: spacing.containerMargin,
   },
   promoSection: {
-    marginBottom: spacing.xl,
+    marginBottom: spacing.lg,
   },
   promoTitle: {
     color: colors.onSurface,
@@ -196,62 +299,86 @@ const styles = StyleSheet.create({
   },
   promoSubtitle: {
     color: colors.onSurfaceVariant,
+    maxWidth: 320,
   },
   snackCard: {
     flexDirection: 'row',
-    backgroundColor: 'rgba(28, 28, 28, 0.4)',
+    alignItems: 'center',
+    minHeight: 112,
+    backgroundColor: '#171717',
     borderRadius: borderRadius.xl,
     padding: spacing.md,
     marginBottom: spacing.md,
-    alignItems: 'center',
     borderWidth: 1,
-    borderColor: 'rgba(255,255,255,0.05)',
+    borderColor: 'rgba(255,255,255,0.07)',
+    gap: spacing.md,
+  },
+  snackCardSelected: {
+    borderColor: 'rgba(229, 9, 20, 0.65)',
+    backgroundColor: '#211313',
   },
   snackImg: {
-    width: 80,
-    height: 80,
+    width: 76,
+    height: 76,
     borderRadius: borderRadius.lg,
     backgroundColor: colors.surfaceContainer,
+    flexShrink: 0,
   },
   snackInfo: {
     flex: 1,
-    marginLeft: spacing.md,
-    justifyContent: 'center',
+    minWidth: 0,
   },
   snackName: {
     color: colors.onSurface,
+    fontFamily: 'Be Vietnam Pro',
+    fontSize: 17,
+    fontWeight: '700',
+    lineHeight: 22,
   },
   snackDesc: {
     color: colors.onSurfaceVariant,
-    marginVertical: 4,
+    fontFamily: 'Inter',
+    fontSize: 12,
+    lineHeight: 17,
+    marginTop: 3,
+    marginBottom: 6,
   },
   snackPrice: {
-    color: colors.primaryContainer, // text-red-600
+    color: colors.primaryContainer,
     fontSize: 16,
-    fontWeight: 'bold',
+    fontWeight: '800',
     fontFamily: 'Inter',
   },
   counter: {
     flexDirection: 'row',
     alignItems: 'center',
-    backgroundColor: 'rgba(255,255,255,0.05)',
+    alignSelf: 'center',
+    backgroundColor: 'rgba(255,255,255,0.06)',
     borderRadius: borderRadius.full,
     padding: 4,
+    width: 110,
+    justifyContent: 'space-between',
+    flexShrink: 0,
   },
   counterBtn: {
     width: 32,
     height: 32,
     justifyContent: 'center',
     alignItems: 'center',
-    backgroundColor: 'rgba(255, 255, 255, 0.05)',
+    backgroundColor: 'rgba(255,255,255,0.08)',
     borderRadius: 16,
+  },
+  counterBtnAdd: {
+    backgroundColor: colors.primaryContainer,
+  },
+  counterBtnDisabled: {
+    opacity: 0.35,
   },
   counterText: {
     color: colors.onSurface,
     fontSize: 16,
-    fontWeight: 'bold',
-    marginHorizontal: spacing.sm,
-    minWidth: 20,
+    fontWeight: '800',
+    minWidth: 24,
     textAlign: 'center',
     fontFamily: 'Inter',
   },
@@ -262,20 +389,23 @@ const styles = StyleSheet.create({
     right: 0,
     borderTopWidth: 1,
     borderTopColor: 'rgba(255,255,255,0.1)',
-    borderTopLeftRadius: 24,
-    borderTopRightRadius: 24,
+    borderTopLeftRadius: borderRadius.xl,
+    borderTopRightRadius: borderRadius.xl,
     overflow: 'hidden',
+    backgroundColor: 'rgba(13, 13, 13, 0.9)',
   },
   footerContent: {
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'space-between',
     paddingHorizontal: spacing.containerMargin,
-    paddingTop: spacing.sm,
+    paddingTop: spacing.md,
     paddingBottom: spacing.lg,
+    gap: spacing.md,
   },
   totalContainer: {
     flex: 1,
+    minWidth: 0,
   },
   totalLabel: {
     color: colors.onSurfaceVariant,
@@ -284,19 +414,26 @@ const styles = StyleSheet.create({
   },
   totalValue: {
     color: colors.onSurface,
-    fontSize: 18,
-    fontWeight: '700',
+    fontSize: 22,
+    lineHeight: 26,
+    fontWeight: '800',
+  },
+  totalItems: {
+    color: colors.onSurfaceVariant,
+    fontFamily: 'Inter',
+    fontSize: 11,
+    marginTop: 2,
   },
   continueBtn: {
     backgroundColor: colors.primaryContainer,
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'center',
-    paddingVertical: spacing.md,
-    paddingHorizontal: spacing.lg,
+    height: 56,
+    paddingHorizontal: spacing.xl,
     borderRadius: borderRadius.lg,
     gap: spacing.xs,
-    minWidth: 100,
+    minWidth: 132,
     shadowColor: colors.primaryContainer,
     shadowOffset: { width: 0, height: 4 },
     shadowOpacity: 0.2,
@@ -306,7 +443,7 @@ const styles = StyleSheet.create({
   continueBtnText: {
     color: colors.onPrimaryContainer,
     fontFamily: 'Inter',
-    fontWeight: '600',
+    fontWeight: '700',
     fontSize: 16,
   },
 });

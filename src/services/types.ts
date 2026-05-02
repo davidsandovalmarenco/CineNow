@@ -98,5 +98,5 @@ export interface SnackData {
   price: number;
   imageUrl: string;
   available: boolean;
-  createdAt: FieldValue | Date;
+  createdAt?: FieldValue | Date;
 }

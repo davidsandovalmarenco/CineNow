@@ -8,6 +8,7 @@ import { typography } from '../theme/typography';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { findRecentMovieByReservation, RECENT_MOVIES } from '../data/recentMovies';
 import { APP_NAME, DEFAULT_ROOM } from '../config/locale';
+import { RemoteImage } from '../components/RemoteImage';
 
 export const ConfirmationScreen = ({ navigation, route }: any) => {
   const { ticket } = route.params || {};
@@ -21,9 +22,10 @@ export const ConfirmationScreen = ({ navigation, route }: any) => {
   };
 
   const movieTitle = ticket?.movieTitle || RECENT_MOVIES.superman.title;
+  const localMovie = findRecentMovieByReservation(ticket?.movieId, ticket?.movieTitle);
   const moviePosterUrl =
+    localMovie?.posterUrl ||
     ticket?.moviePosterUrl ||
-    findRecentMovieByReservation(ticket?.movieId, ticket?.movieTitle)?.posterUrl ||
     RECENT_MOVIES.superman.posterUrl;
   const seats = ticket?.seats?.join(', ') || 'G12, G13, G14';
   const reservationCode = ticket?.reservationCode || `CR-${Math.floor(1000 + Math.random() * 9000)}-X09`;
@@ -77,8 +79,10 @@ export const ConfirmationScreen = ({ navigation, route }: any) => {
         <View style={styles.ticketCard}>
           {/* Top Section */}
           <View style={styles.ticketTop}>
-            <Image 
-              source={{ uri: moviePosterUrl }} 
+            <RemoteImage 
+              uri={moviePosterUrl} 
+              assetSource={localMovie?.posterAsset}
+              fallbackLabel={movieTitle}
               style={styles.poster} 
               resizeMode="cover"
             />

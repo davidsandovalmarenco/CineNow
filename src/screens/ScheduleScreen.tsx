@@ -10,15 +10,25 @@ import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { getMovieImage, normalizeReservationMovie } from '../data/recentMovies';
 import { useProfile } from '../hooks/useProfile';
 import { APP_NAME, CINEMA_LOCATION } from '../config/locale';
+import { RemoteImage } from '../components/RemoteImage';
 
-const DATES = [
-  { id: '1', dayName: 'HOY', dayNum: '14', month: 'OCT' },
-  { id: '2', dayName: 'MAR', dayNum: '15', month: 'OCT' },
+const RAW_DATES = [
+  { id: '1', dayName: 'HOY', dayNum: '01', month: 'MAY' },
+  { id: '2', dayName: 'SAB', dayNum: '02', month: 'MAY' },
   { id: '3', dayName: 'MIÉ', dayNum: '16', month: 'OCT' },
-  { id: '4', dayName: 'JUE', dayNum: '17', month: 'OCT' },
-  { id: '5', dayName: 'VIE', dayNum: '18', month: 'OCT' },
+  { id: '4', dayName: 'LUN', dayNum: '04', month: 'MAY' },
+  { id: '5', dayName: 'MAR', dayNum: '05', month: 'MAY' },
   { id: '6', dayName: 'SÁB', dayNum: '19', month: 'OCT' },
 ];
+
+const DATES = RAW_DATES.map((date, index) => [
+  { id: '1', dayName: 'HOY', dayNum: '01', month: 'MAY' },
+  { id: '2', dayName: 'SAB', dayNum: '02', month: 'MAY' },
+  { id: '3', dayName: 'DOM', dayNum: '03', month: 'MAY' },
+  { id: '4', dayName: 'LUN', dayNum: '04', month: 'MAY' },
+  { id: '5', dayName: 'MAR', dayNum: '05', month: 'MAY' },
+  { id: '6', dayName: 'MIE', dayNum: '06', month: 'MAY' },
+][index] || date);
 
 const SHOWTIMES = [
   { id: 's1', time: '14:30', format: 'DOLBY', room: 'Sala 04', language: 'SUB (Español)', formatType: 'primary', available: true },
@@ -28,6 +38,16 @@ const SHOWTIMES = [
 ];
 
 const { width } = Dimensions.get('window');
+
+const formatTime12Hour = (time: string) => {
+  const [hourText, minuteText = '00'] = time.split(':');
+  const hour = Number(hourText);
+  if (Number.isNaN(hour)) return time;
+
+  const period = hour >= 12 ? 'PM' : 'AM';
+  const hour12 = hour % 12 || 12;
+  return `${hour12}:${minuteText.padStart(2, '0')} ${period}`;
+};
 
 export const ScheduleScreen = ({ navigation, route }: any) => {
   const [selectedDate, setSelectedDate] = useState(DATES[0].id);
@@ -77,8 +97,10 @@ export const ScheduleScreen = ({ navigation, route }: any) => {
         
         {/* Hero Section */}
         <View style={styles.heroContainer}>
-          <Image 
-            source={{ uri: getMovieImage(movie) }} 
+          <RemoteImage 
+            uri={getMovieImage(movie)} 
+            assetSource={movie.posterAsset}
+            fallbackLabel={movie.title}
             style={[styles.heroImage, { opacity: 0.8 }]} // To simulate grayscale/contrast somewhat
           />
           <LinearGradient
@@ -125,21 +147,24 @@ export const ScheduleScreen = ({ navigation, route }: any) => {
         {/* Showtimes List */}
         <View style={styles.showtimesContainer}>
           <View style={styles.showtimesHeader}>
-            <Text style={typography.h2}>Horarios disponibles</Text>
+            <View style={styles.showtimesTitleBlock}>
+              <Text style={typography.h2}>Horarios disponibles</Text>
+              <Text style={styles.showtimesSubtitle}>Elige una funcion para continuar con tus butacas.</Text>
+            </View>
             <Ionicons name="options-outline" size={24} color={colors.secondary} />
           </View>
 
           <View style={styles.showtimesList}>
             {SHOWTIMES.map((show) => (
               <View key={show.id} style={[styles.showCard, !show.available && styles.showCardDisabled]}>
-                <View style={styles.showInfo}>
+                <View style={styles.showTopRow}>
                   <View style={styles.showTimeRow}>
                     <Text 
                       style={[typography.h1, { fontSize: 24, lineHeight: 28 }]}
                       numberOfLines={1}
                       adjustsFontSizeToFit
                     >
-                      {show.time}
+                      {formatTime12Hour(show.time)}
                     </Text>
                     
                     <View style={[
@@ -156,32 +181,36 @@ export const ScheduleScreen = ({ navigation, route }: any) => {
                       ]}>{show.format}</Text>
                     </View>
                   </View>
-                  
-                  <View style={styles.showMetaRow}>
-                    <View style={styles.metaIconRow}>
-                      <Ionicons name="easel-outline" size={16} color={colors.secondary} />
-                      <Text style={styles.metaText} numberOfLines={1}>{show.room}</Text>
-                    </View>
-                    <View style={styles.dot} />
-                    <Text style={styles.metaLanguage} numberOfLines={1} adjustsFontSizeToFit>{show.language}</Text>
-                  </View>
-                </View>
 
-                {show.available ? (
-                  <TouchableOpacity 
-                    style={styles.btnSelect}
-                    onPress={() => handleSelectTime(show)}
-                    activeOpacity={0.8}
-                  >
-                    <Text style={styles.btnSelectText}>Seleccionar</Text>
-                  </TouchableOpacity>
-                ) : (
-                  <View style={styles.soldOutContainer}>
+                  {show.available ? (
+                    <TouchableOpacity 
+                      style={styles.btnSelect}
+                      onPress={() => handleSelectTime(show)}
+                      activeOpacity={0.8}
+                    >
+                      <Text style={styles.btnSelectText}>Seleccionar</Text>
+                      <Ionicons name="chevron-forward" size={16} color={colors.onPrimaryContainer} />
+                    </TouchableOpacity>
+                  ) : (
                     <View style={styles.btnSoldOut}>
                       <Text style={styles.btnSoldOutText}>Agotado</Text>
                     </View>
-                    <Text style={styles.soldOutSubtext}>Siguiente función: 22:30</Text>
+                  )}
+                </View>
+
+                <View style={styles.showMetaRow}>
+                  <View style={styles.metaChip}>
+                    <Ionicons name="easel-outline" size={16} color={colors.secondary} />
+                    <Text style={styles.metaText} numberOfLines={1}>{show.room}</Text>
                   </View>
+                  <View style={styles.metaChip}>
+                    <Ionicons name="language-outline" size={16} color={colors.secondary} />
+                    <Text style={styles.metaText} numberOfLines={1}>{show.language}</Text>
+                  </View>
+                </View>
+
+                {!show.available && (
+                  <Text style={styles.soldOutSubtext}>Siguiente funcion disponible: {formatTime12Hour('22:30')}</Text>
                 )}
               </View>
             ))}
@@ -366,8 +395,19 @@ const styles = StyleSheet.create({
   showtimesHeader: {
     flexDirection: 'row',
     justifyContent: 'space-between',
-    alignItems: 'center',
+    alignItems: 'flex-start',
+    gap: spacing.md,
     marginBottom: spacing.lg,
+  },
+  showtimesTitleBlock: {
+    flex: 1,
+  },
+  showtimesSubtitle: {
+    color: colors.secondary,
+    fontFamily: 'Inter',
+    fontSize: 13,
+    lineHeight: 18,
+    marginTop: 2,
   },
   showtimesList: {
     gap: spacing.md,
@@ -377,23 +417,24 @@ const styles = StyleSheet.create({
     borderWidth: 1,
     borderColor: 'rgba(255, 255, 255, 0.05)',
     borderRadius: borderRadius.xl,
-    padding: spacing.md,
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    alignItems: 'center',
-    gap: spacing.sm,
+    padding: spacing.lg,
+    gap: spacing.md,
   },
   showCardDisabled: {
     opacity: 0.5,
   },
-  showInfo: {
-    gap: 4,
-    flex: 1,
+  showTopRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+    gap: spacing.md,
   },
   showTimeRow: {
     flexDirection: 'row',
     alignItems: 'center',
-    gap: spacing.xs,
+    gap: spacing.sm,
+    flex: 1,
+    minWidth: 0,
   },
   formatBadge: {
     paddingHorizontal: 6,
@@ -426,33 +467,36 @@ const styles = StyleSheet.create({
   showMetaRow: {
     flexDirection: 'row',
     alignItems: 'center',
+    flexWrap: 'wrap',
     gap: spacing.xs,
   },
-  metaIconRow: {
+  metaChip: {
     flexDirection: 'row',
     alignItems: 'center',
-    gap: 4,
+    gap: 6,
+    backgroundColor: 'rgba(255, 255, 255, 0.05)',
+    borderWidth: 1,
+    borderColor: 'rgba(255, 255, 255, 0.06)',
+    borderRadius: borderRadius.full,
+    paddingHorizontal: spacing.sm,
+    paddingVertical: 6,
+    maxWidth: '100%',
   },
   metaText: {
     color: colors.secondary,
-    fontSize: 14,
-  },
-  dot: {
-    width: 4,
-    height: 4,
-    borderRadius: 2,
-    backgroundColor: colors.secondary,
-  },
-  metaLanguage: {
-    color: '#a1a1aa', // zinc-400 equivalent
+    fontSize: 13,
     fontWeight: '600',
-    fontSize: 14,
+    flexShrink: 1,
   },
   btnSelect: {
     backgroundColor: colors.primaryContainer,
-    paddingHorizontal: spacing.lg,
+    paddingHorizontal: spacing.md,
     paddingVertical: spacing.sm,
     borderRadius: borderRadius.lg,
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 4,
+    flexShrink: 0,
   },
   btnSelectText: {
     color: colors.onPrimaryContainer,
@@ -460,14 +504,12 @@ const styles = StyleSheet.create({
     fontWeight: '600',
     fontSize: 14,
   },
-  soldOutContainer: {
-    alignItems: 'flex-end',
-  },
   btnSoldOut: {
     backgroundColor: 'rgba(255, 255, 255, 0.1)',
-    paddingHorizontal: spacing.lg,
+    paddingHorizontal: spacing.md,
     paddingVertical: spacing.sm,
     borderRadius: borderRadius.lg,
+    flexShrink: 0,
   },
   btnSoldOutText: {
     color: colors.secondary,
@@ -478,7 +520,7 @@ const styles = StyleSheet.create({
   soldOutSubtext: {
     fontSize: 10,
     color: 'rgba(255, 255, 255, 0.4)',
-    marginTop: 4,
+    marginTop: -spacing.xs,
   },
   disclosureContainer: {
     paddingHorizontal: spacing.containerMargin,

@@ -8,6 +8,7 @@ import { spacing, borderRadius } from '../theme/spacing';
 import { typography } from '../theme/typography';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { getMovieImage, normalizeReservationMovie } from '../data/recentMovies';
+import { RemoteImage } from '../components/RemoteImage';
 
 const MOVIE_DETAIL_EXTRAS = {
   formats: [
@@ -36,7 +37,7 @@ export const MovieDetailScreen = ({ navigation, route }: any) => {
         
         {/* Header Hero */}
         <View style={styles.heroContainer}>
-          <Image source={{ uri: getMovieImage(movie) }} style={styles.heroImage} />
+          <RemoteImage uri={getMovieImage(movie)} assetSource={movie.posterAsset} fallbackLabel={movie.title} style={styles.heroImage} />
           <LinearGradient
             colors={['transparent', 'rgba(13, 13, 13, 0.4)', '#0D0D0D']}
             locations={[0, 0.6, 1]}

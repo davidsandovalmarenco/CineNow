@@ -1,8 +1,9 @@
 import React from 'react';
-import { View, Text, Image, StyleSheet, TouchableOpacity } from 'react-native';
+import { ImageSourcePropType, View, Text, StyleSheet, TouchableOpacity } from 'react-native';
 import { colors } from '../theme/colors';
 import { borderRadius, spacing } from '../theme/spacing';
 import { typography } from '../theme/typography';
+import { RemoteImage } from './RemoteImage';
 
 export interface Movie {
   id: string;
@@ -11,6 +12,7 @@ export interface Movie {
   duration?: string;
   rating: number;
   posterUrl: string;
+  posterAsset?: ImageSourcePropType;
   classification?: string;
   synopsis?: string;
 }
@@ -29,8 +31,10 @@ export const MovieCard: React.FC<MovieCardProps> = ({ movie, onPress, width = 16
       activeOpacity={0.8}
     >
       <View style={styles.imageContainer}>
-        <Image 
-          source={{ uri: movie.posterUrl }} 
+        <RemoteImage 
+          uri={movie.posterUrl} 
+          assetSource={movie.posterAsset}
+          fallbackLabel={movie.title}
           style={styles.poster} 
           resizeMode="cover"
         />

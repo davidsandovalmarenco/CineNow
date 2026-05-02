@@ -11,6 +11,7 @@ import { getMovieImage, normalizeReservationMovie } from '../data/recentMovies';
 import { useAuth } from '../hooks/useAuth';
 import { useProfile } from '../hooks/useProfile';
 import { APP_NAME, CINEMA_LOCATION, DEFAULT_CINEMA_ID, DEFAULT_ROOM, formatCurrency } from '../config/locale';
+import { RemoteImage } from '../components/RemoteImage';
 
 const SEAT_PRICE = 220;
 
@@ -29,6 +30,7 @@ export const SummaryScreen = ({ navigation, route }: any) => {
     duration: movie.duration,
     genre: movie.genre,
     posterUrl: getMovieImage(movie),
+    posterAsset: movie.posterAsset,
     dateStr: 'Vie, 24 de mayo',
     timeStr: showtime?.time || '20:30',
     room: showtime?.room?.toUpperCase?.() || DEFAULT_ROOM.toUpperCase(),
@@ -127,7 +129,7 @@ export const SummaryScreen = ({ navigation, route }: any) => {
         {/* Movie Info */}
         <View style={styles.movieInfoRow}>
           <View style={styles.posterContainer}>
-            <Image source={{ uri: MOCK_MOVIE.posterUrl }} style={styles.posterImg} />
+            <RemoteImage uri={MOCK_MOVIE.posterUrl} assetSource={MOCK_MOVIE.posterAsset} fallbackLabel={MOCK_MOVIE.title} style={styles.posterImg} />
           </View>
           <View style={styles.movieDetails}>
             <View style={styles.exclusiveBadge}>
@@ -184,7 +186,7 @@ export const SummaryScreen = ({ navigation, route }: any) => {
                   <View style={styles.itemIconBox}>
                     <Ionicons name="easel" size={20} color={colors.secondary} />
                   </View>
-                  <View>
+                  <View style={styles.itemTextBlock}>
                     <Text style={[typography.bodyLg, styles.itemName]}>Butacas seleccionadas</Text>
                     <Text style={[typography.bodyMd, styles.itemDesc]}>
                       Fila G: {seats.length > 0 ? seats.join(', ') : '12, 13, 14'}
@@ -201,7 +203,7 @@ export const SummaryScreen = ({ navigation, route }: any) => {
                     <View style={styles.itemIconBox}>
                       <Ionicons name="fast-food" size={20} color={colors.secondary} />
                     </View>
-                    <View>
+                    <View style={styles.itemTextBlock}>
                       <Text style={[typography.bodyLg, styles.itemName]}>{snack.name}</Text>
                       <Text style={[typography.bodyMd, styles.itemDesc]}>{snack.description}</Text>
                     </View>
@@ -472,13 +474,15 @@ const styles = StyleSheet.create({
   itemRow: {
     flexDirection: 'row',
     justifyContent: 'space-between',
-    alignItems: 'center',
+    alignItems: 'flex-start',
+    gap: spacing.sm,
   },
   itemInfo: {
     flexDirection: 'row',
-    alignItems: 'center',
+    alignItems: 'flex-start',
     gap: spacing.md,
     flex: 1,
+    minWidth: 0,
   },
   itemIconBox: {
     width: 40,
@@ -487,15 +491,32 @@ const styles = StyleSheet.create({
     backgroundColor: colors.surfaceContainerHighest,
     alignItems: 'center',
     justifyContent: 'center',
+    flexShrink: 0,
+  },
+  itemTextBlock: {
+    flex: 1,
+    minWidth: 0,
   },
   itemName: {
     color: '#fff',
+    fontSize: 15,
+    lineHeight: 20,
+    flexShrink: 1,
   },
   itemDesc: {
     color: colors.secondary,
+    fontSize: 12,
+    lineHeight: 16,
+    marginTop: 2,
+    flexShrink: 1,
   },
   itemPrice: {
     color: '#fff',
+    width: 92,
+    textAlign: 'right',
+    fontSize: 18,
+    lineHeight: 24,
+    flexShrink: 0,
   },
   grandTotalBox: {
     backgroundColor: 'rgba(58, 37, 34, 0.5)', // surface-container-high/50
@@ -504,6 +525,7 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'flex-end',
+    gap: spacing.sm,
   },
   taxText: {
     fontSize: 10,
@@ -511,8 +533,11 @@ const styles = StyleSheet.create({
   },
   grandTotalText: {
     color: colors.primaryContainer,
-    fontSize: 28,
+    fontSize: 26,
     fontWeight: '800',
+    flex: 1,
+    textAlign: 'right',
+    minWidth: 120,
   },
   bookingIdFooter: {
     paddingHorizontal: spacing.lg,

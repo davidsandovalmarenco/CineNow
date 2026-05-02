@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { View, Text, StyleSheet, TextInput, ScrollView, TouchableOpacity, FlatList, Image, ActivityIndicator } from 'react-native';
+import { View, Text, StyleSheet, TextInput, ScrollView, TouchableOpacity, FlatList, ActivityIndicator } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import { colors } from '../theme/colors';
 import { spacing, borderRadius } from '../theme/spacing';
@@ -14,16 +14,35 @@ import {
   RECENT_MOVIES,
   ReservationMovie,
 } from '../data/recentMovies';
+import { RemoteImage } from '../components/RemoteImage';
 
 const FALLBACK_MOVIES = RECENT_MOVIE_LIST.map((movie) => normalizeReservationMovie(movie));
+const CURATED_MOVIE_KEYS = new Set(
+  FALLBACK_MOVIES.map((movie) => (movie.id || movie.title).toLowerCase())
+);
 const CATEGORIES = ['Todos', 'Acción', 'Aventura', 'Ciencia ficción', 'Fantasía', 'Familiar', 'Comedia', 'Terror', 'Suspenso'];
 
 const mergeMovies = (remoteMovies: ReservationMovie[]) => {
   const movieMap = new Map<string, ReservationMovie>();
 
-  [...FALLBACK_MOVIES, ...remoteMovies].forEach((movie) => {
+  FALLBACK_MOVIES.forEach((movie) => {
     const key = (movie.id || movie.title).toLowerCase();
     movieMap.set(key, movie);
+  });
+
+  remoteMovies.forEach((movie) => {
+    const key = (movie.id || movie.title).toLowerCase();
+    if (CURATED_MOVIE_KEYS.has(key)) {
+      const localMovie = movieMap.get(key);
+      movieMap.set(key, {
+        ...localMovie,
+        ...movie,
+        posterUrl: localMovie?.posterUrl || movie.posterUrl,
+        posterAsset: localMovie?.posterAsset || movie.posterAsset,
+        imageUrl: localMovie?.imageUrl || movie.imageUrl,
+        backdropUrl: localMovie?.backdropUrl || movie.backdropUrl,
+      });
+    }
   });
 
   return Array.from(movieMap.values());
@@ -149,7 +168,7 @@ export const SearchScreen = ({ navigation }: any) => {
                   activeOpacity={0.8}
                 >
                   <View style={styles.resultImageContainer}>
-                    <Image source={{ uri: getMovieImage(item) }} style={styles.resultPoster} />
+                    <RemoteImage uri={getMovieImage(item)} assetSource={item.posterAsset} fallbackLabel={item.title} style={styles.resultPoster} />
                     <View style={styles.ratingBadge}>
                       <Text style={styles.ratingText}>{item.rating}</Text>
                     </View>

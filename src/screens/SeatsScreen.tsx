@@ -26,7 +26,10 @@ export const SeatsScreen = ({ navigation, route }: any) => {
   const [selectedSeats, setSelectedSeats] = useState<string[]>([]);
   const [occupiedSeats, setOccupiedSeats] = useState<string[]>([]);
   const [loading, setLoading] = useState(true);
+  const [backgroundFailed, setBackgroundFailed] = useState(false);
   const insets = useSafeAreaInsets();
+  const backgroundUri = backgroundFailed ? BACKGROUND_URL : getMovieImage(movie) || BACKGROUND_URL;
+  const backgroundSource = movie.posterAsset && !backgroundFailed ? movie.posterAsset : { uri: backgroundUri };
 
   useEffect(() => {
     const loadOccupiedSeats = async () => {
@@ -107,10 +110,11 @@ export const SeatsScreen = ({ navigation, route }: any) => {
       <StatusBar barStyle="light-content" translucent backgroundColor="transparent" />
       
       <ImageBackground 
-        source={{ uri: getMovieImage(movie) || BACKGROUND_URL }} 
+        source={backgroundSource} 
         style={styles.backgroundImage}
         imageStyle={{ opacity: 0.2 }}
         blurRadius={40}
+        onError={() => setBackgroundFailed(true)}
       >
         
         {/* Header */}

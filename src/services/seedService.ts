@@ -1,6 +1,7 @@
 import { collection, serverTimestamp, getDocs, deleteDoc, doc, setDoc } from 'firebase/firestore';
 import { db } from './firebase';
 import { RECENT_MOVIE_LIST } from '../data/recentMovies';
+import { SNACK_MENU } from '../data/snacks';
 
 const MOVIES = RECENT_MOVIE_LIST.map((movie, index) => ({
   id: movie.id,
@@ -11,20 +12,16 @@ const MOVIES = RECENT_MOVIE_LIST.map((movie, index) => ({
   classification: movie.classification,
   synopsis: movie.synopsis,
   posterUrl: movie.posterUrl,
+  imageUrl: movie.posterUrl,
+  backdropUrl: movie.posterUrl,
   bannerUrl: movie.posterUrl,
   status: index < 8 ? 'now_showing' : index < 10 ? 'popular' : 'coming_soon',
 }));
 
-const SNACKS = [
-  { id: 'combo-individual', name: 'Combo individual', price: 185, description: 'Palomitas medianas + soda 500 ml', imageUrl: 'https://images.unsplash.com/photo-1572177191856-3cde6403ec1b?q=80&w=200&auto=format&fit=crop', available: true },
-  { id: 'combo-pareja', name: 'Combo pareja', price: 320, description: 'Palomitas grandes + 2 sodas 500 ml + nachos', imageUrl: 'https://images.unsplash.com/photo-1585647347384-2593bc35786b?q=80&w=200&auto=format&fit=crop', available: true },
-  { id: 'hot-dog-premium', name: 'Hot dog premium', price: 145, description: 'Salchicha de res con salsas especiales', imageUrl: 'https://images.unsplash.com/photo-1612392062631-94dd858cba88?q=80&w=200&auto=format&fit=crop', available: true },
-];
-
 export const seedService = {
-  async seedAll() {
-    console.log('Starting seed...');
-    
+  async seedMovies() {
+    console.log('Syncing movies...');
+
     for (const movie of MOVIES) {
       const { id, ...movieData } = movie;
       await setDoc(doc(db, 'movies', id), {
@@ -34,7 +31,13 @@ export const seedService = {
       }, { merge: true });
     }
 
-    for (const snack of SNACKS) {
+    console.log('Movies synced successfully!');
+  },
+
+  async seedSnacks() {
+    console.log('Syncing snacks...');
+
+    for (const snack of SNACK_MENU) {
       const { id, ...snackData } = snack;
       await setDoc(doc(db, 'snacks', id), {
         ...snackData,
@@ -42,6 +45,15 @@ export const seedService = {
         createdAt: serverTimestamp(),
       }, { merge: true });
     }
+
+    console.log('Snacks synced successfully!');
+  },
+
+  async seedAll() {
+    console.log('Starting seed...');
+    
+    await this.seedMovies();
+    await this.seedSnacks();
 
     console.log('Seed completed successfully!');
   },
