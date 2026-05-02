@@ -14,51 +14,60 @@ import { SNACK_MENU } from '../data/snacks';
 
 const DEFAULT_SNACK_IMAGE =
   'https://images.unsplash.com/photo-1585647347384-2593bc35786b?q=80&w=300&auto=format&fit=crop';
+const DEFAULT_SNACK_ASSET = require('../../assets/snacks/combo-pareja.jpg') as ImageSourcePropType;
 
-const SNACK_IMAGES: Record<string, { uri: string; asset?: ImageSourcePropType }> = {
+type SnackImageSource = {
+  asset?: ImageSourcePropType;
+  uri?: string;
+};
+
+const SNACK_IMAGES: Record<string, SnackImageSource> = {
   'combo-pareja': {
-    uri: 'https://images.unsplash.com/photo-1585647347384-2593bc35786b?q=80&w=500&auto=format&fit=crop',
     asset: require('../../assets/snacks/combo-pareja.jpg') as ImageSourcePropType,
   },
   'combo-individual': {
-    uri: 'https://images.unsplash.com/photo-1578849278619-e73505e9610f?q=80&w=500&auto=format&fit=crop',
     asset: require('../../assets/snacks/combo-individual.jpg') as ImageSourcePropType,
   },
   'combo-familiar': {
-    uri: 'https://images.unsplash.com/photo-1585647347483-22b66260dfff?q=80&w=500&auto=format&fit=crop',
     asset: require('../../assets/snacks/combo-premium.jpg') as ImageSourcePropType,
   },
   'combo-premium-imax': {
-    uri: 'https://images.unsplash.com/photo-1585647347483-22b66260dfff?q=80&w=500&auto=format&fit=crop',
     asset: require('../../assets/snacks/combo-premium.jpg') as ImageSourcePropType,
   },
   'hot-dog-premium': {
-    uri: 'https://images.unsplash.com/photo-1612392062631-94dd858cba88?q=80&w=500&auto=format&fit=crop',
     asset: require('../../assets/snacks/hot-dog-premium.jpg') as ImageSourcePropType,
   },
   'nachos-cheddar': {
-    uri: 'https://images.unsplash.com/photo-1513456852971-30c0b8199d4d?q=80&w=500&auto=format&fit=crop',
     asset: require('../../assets/snacks/nachos-cheddar.jpg') as ImageSourcePropType,
   },
   'soda-refill': {
-    uri: 'https://images.unsplash.com/photo-1622483767028-3f66f32aef97?q=80&w=500&auto=format&fit=crop',
     asset: require('../../assets/snacks/soda-refill.jpg') as ImageSourcePropType,
   },
   'candy-mix': {
-    uri: 'https://images.unsplash.com/photo-1582058091505-f87a2e55a40f?q=80&w=500&auto=format&fit=crop',
     asset: require('../../assets/snacks/candy-mix.jpg') as ImageSourcePropType,
   },
 };
 
-const normalizeSnackKey = (snack: SnackData) =>
-  (snack.id || snack.name || '').toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/(^-|-$)/g, '');
+const normalizeSnackKey = (value?: string) =>
+  (value || '')
+    .toLowerCase()
+    .normalize('NFD')
+    .replace(/[\u0300-\u036f]/g, '')
+    .replace(/[^a-z0-9]+/g, '-')
+    .replace(/(^-|-$)/g, '');
 
 const getSnackImage = (snack: SnackData) => {
-  const key = normalizeSnackKey(snack);
-  if (SNACK_IMAGES[key]) return SNACK_IMAGES[key];
-  if (key.includes('hot-dog')) return SNACK_IMAGES['hot-dog-premium'];
-  if (key.includes('pareja')) return SNACK_IMAGES['combo-pareja'];
-  if (key.includes('individual')) return SNACK_IMAGES['combo-individual'];
+  const searchKey = `${normalizeSnackKey(snack.name)} ${normalizeSnackKey(snack.id)}`;
+
+  if (searchKey.includes('premium') || searchKey.includes('imax')) return SNACK_IMAGES['combo-premium-imax'];
+  if (searchKey.includes('familiar')) return SNACK_IMAGES['combo-familiar'];
+  if (searchKey.includes('pareja')) return SNACK_IMAGES['combo-pareja'];
+  if (searchKey.includes('individual')) return SNACK_IMAGES['combo-individual'];
+  if (searchKey.includes('hot-dog') || searchKey.includes('hotdog')) return SNACK_IMAGES['hot-dog-premium'];
+  if (searchKey.includes('nachos')) return SNACK_IMAGES['nachos-cheddar'];
+  if (searchKey.includes('soda') || searchKey.includes('refill')) return SNACK_IMAGES['soda-refill'];
+  if (searchKey.includes('candy') || searchKey.includes('dulce')) return SNACK_IMAGES['candy-mix'];
+
   return { uri: snack.imageUrl || DEFAULT_SNACK_IMAGE };
 };
 
@@ -93,7 +102,7 @@ export const SnacksScreen = ({ navigation, route }: any) => {
       if (!byName.has(key)) {
         byName.set(key, {
           ...snack,
-          id: snack.id || normalizeSnackKey(snack),
+          id: snack.id || normalizeSnackKey(snack.name),
         });
       }
     });
@@ -189,7 +198,7 @@ export const SnacksScreen = ({ navigation, route }: any) => {
         </View>
 
         {menuItems.map((snack) => {
-          const snackId = snack.id || normalizeSnackKey(snack);
+          const snackId = snack.id || normalizeSnackKey(snack.name);
           const quantity = cart[snackId] || 0;
           const snackImage = getSnackImage(snack);
 
@@ -199,7 +208,9 @@ export const SnacksScreen = ({ navigation, route }: any) => {
                 uri={snackImage.uri}
                 assetSource={snackImage.asset}
                 fallbackUri={DEFAULT_SNACK_IMAGE}
+                fallbackAssetSource={DEFAULT_SNACK_ASSET}
                 style={styles.snackImg}
+                resizeMode="cover"
               />
 
               <View style={styles.snackInfo}>

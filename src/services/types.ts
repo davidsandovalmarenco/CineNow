@@ -1,4 +1,5 @@
 import { FieldValue } from 'firebase/firestore';
+import { ImageSourcePropType } from 'react-native';
 
 export interface UserData {
   id?: string;
@@ -38,6 +39,9 @@ export interface MovieData {
   classification: string;
   synopsis: string;
   posterUrl: string;
+  posterAsset?: ImageSourcePropType;
+  imageUrl?: string;
+  backdropUrl?: string;
   bannerUrl: string;
   status: 'now_showing' | 'coming_soon' | 'popular';
   createdAt: FieldValue | Date;

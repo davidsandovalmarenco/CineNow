@@ -509,8 +509,9 @@ export const getMovieImage = (movie: ReservationMovie) =>
   movie.posterUrl || movie.imageUrl || movie.backdropUrl || RECENT_MOVIES.superman.posterUrl;
 
 export const normalizeReservationMovie = (movie?: Partial<ReservationMovie> | null): ReservationMovie => {
-  const fallback =
-    findRecentMovieByReservation(movie?.id, movie?.title) || RECENT_MOVIES.superman;
+  const localMovie = findRecentMovieByReservation(movie?.id, movie?.title);
+  const fallback = localMovie || RECENT_MOVIES.superman;
+  const imageUrl = movie?.posterUrl || movie?.imageUrl || movie?.backdropUrl || fallback.posterUrl;
 
   return {
     id: movie?.id || fallback.id,
@@ -521,10 +522,10 @@ export const normalizeReservationMovie = (movie?: Partial<ReservationMovie> | nu
     classification: movie?.classification || fallback.classification,
     synopsis: movie?.synopsis || movie?.description || fallback.synopsis,
     description: movie?.description || movie?.synopsis || fallback.synopsis,
-    posterUrl: fallback.posterUrl || movie?.posterUrl || movie?.imageUrl || movie?.backdropUrl,
-    imageUrl: fallback.posterUrl || movie?.posterUrl || movie?.imageUrl || movie?.backdropUrl,
-    backdropUrl: fallback.posterUrl || movie?.posterUrl || movie?.imageUrl || movie?.backdropUrl,
-    posterAsset: movie?.posterAsset || fallback.posterAsset,
+    posterUrl: imageUrl,
+    imageUrl,
+    backdropUrl: imageUrl,
+    posterAsset: movie?.posterAsset || localMovie?.posterAsset,
     cast: movie?.cast?.length ? movie.cast : fallback.cast,
   };
 };
